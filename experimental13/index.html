@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="./index.css" rel="stylesheet" />
+</head>
+<body>
+  <script defer src="https://cdn.jsdelivr.net/npm/rison2"></script>
+  <script type="module">
+    setupButton('#button1', './seq-and-synth-saw/index.html',  rison2.stringify({ urls: [],                                   midiOutput: { parent: ['parent']             } })); // risonの用途は、URLを常時読みやすくして開発効率化する用
+    setupButton('#button2', './seq-and-synth-sine/index.html', rison2.stringify({ urls: [],                                   midiOutput: { parent: ['parent']             } }));
+    setupButton('#button3', './seq-and-synth-saw/index.html',  rison2.stringify({ urls: ['../seq-and-synth-saw/index.html'],  midiOutput: { parent: ['child1'], child1: [] } }));
+    setupButton('#button4', './seq-and-synth-sine/index.html', rison2.stringify({ urls: ['../seq-and-synth-sine/index.html'], midiOutput: { parent: ['child1'], child1: [] } }));
+    setupButton('#button5', './seq-and-synth-saw/index.html',  rison2.stringify({ urls: ['../seq-and-synth-sine/index.html'], midiOutput: { parent: ['child1'], child1: [] } }));
+    setupButton('#button6', './seq-and-synth-sine/index.html', rison2.stringify({ urls: ['../seq-and-synth-saw/index.html'],  midiOutput: { parent: ['child1'], child1: [] } }));
+    function setupButton(selector, baseUrl, urlParams) {
+      const url = `${baseUrl}?query=${urlParams}`;
+      const button = document.querySelector(selector);
+      button.onclick = () => { window.location.href = url };
+    }
+  </script>
+  <button id="button1">standalone seq and synth(saw)</button><br>
+  <button id="button2">standalone seq and synth(sine)</button><br>
+  <button id="button3">seq → synth(saw) 自分自身のpageに接続</button><br>
+  <button id="button4">seq → synth(sine) 自分自身のpageに接続</button><br>
+  <button id="button5">seq → synth(sine)</button><br>
+  <button id="button6">seq → synth(saw)</button><br>
+</body>
+</html>

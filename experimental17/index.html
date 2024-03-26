@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="./index.css" rel="stylesheet" />
+</head>
+<body>
+  <script defer src="https://cdn.jsdelivr.net/npm/rison2"></script>
+  <script type="module">
+    setupButton('#button1', './parent/index.html', rison2.stringify({ urls: ['../seq/index.html', '../generator/index.html', '../sampler/index.html'], midiOutput: { parent: [], child1: ['child3'], child2: [], child3: [] }, sendToSampler: { parent: [], child1: [], child2: ['child3'], child3: [] } })); // risonの用途は、URLを常時読みやすくして開発効率化する用
+    function setupButton(selector, baseUrl, urlParams) {
+      const url = `${baseUrl}?query=${urlParams}`;
+      const button = document.querySelector(selector);
+      button.onclick = () => { window.location.href = url };
+      button.focus();
+    }
+  </script>
+  <button id="button1">seq → sampler<br>generator → sampler</button><br>
+</body>
+</html>

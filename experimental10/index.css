@@ -1,0 +1,32 @@
+/*全環境で共通*/
+h1 {
+  margin: 0px; /*見出しの上下のムダな余白を削除して、画面を広く使えるように。*/
+}
+
+/*for dark mode*/
+@media (prefers-color-scheme: dark) {
+  body, textarea, select {
+    background: #333;
+    /*color: #c84;*/
+    color: #bbb;
+  }
+  button {
+    background: #444; /*背景より明るくして、目立つように。*/
+    color: #fff; /*面積が狭いぶんコントラストをつけ、画面を開いて最初に気がつくくらい目立つように。*/
+  }
+}
+
+/*for スマートフォン*/
+@media (max-width: 450px) { /*meta viewport指定が前提*/
+  button { /*巨大ボタンにして、押しやすく。*/
+    margin: calc(1rem);
+    font-size: calc(2rem + 3vw);
+  }
+  textarea, select {
+    margin: calc(0.5rem) auto; /*上下の間を広くして、誤タップ防止。*/
+    font-size: calc(1rem + 1vw); /*fontを大きくして、読めるように。*/
+  }
+  textarea, select, iframe {
+    width: 95vw; /*Cutoffリボンやオシロを横幅いっぱいにして、Cutoff変更しやすくオシロ見やすく。*/
+  }
+}
