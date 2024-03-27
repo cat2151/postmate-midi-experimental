@@ -2,19 +2,19 @@
 
 const gn = { setupTonejsPreRenderer };
 
-function setupTonejsPreRenderer(context) {
-  const synth = new Tone.PolySynth({ context, volume: -6 });
+function setupTonejsPreRenderer() {
+  const synth = new Tone.PolySynth({ volume: -6 });
   synth.set({
     oscillator: {type: "sawtooth"},
     envelope: {attack: 0.1, decay: 0.8}
   });
-  const filter = new Tone.Filter({context, type: "bandpass", frequency: 2400, Q: 5});
-  const freqEnv = new Tone.FrequencyEnvelope({context, attack: 0.2, decay: 0.4, baseFrequency: "C3", octaves: 4 });
-  const phaser = new Tone.Phaser({context, frequency: 0.09});
-  const distortion = new Tone.Distortion({context, distortion: 5});
+  const filter = new Tone.Filter({type: "bandpass", frequency: 2400, Q: 5});
+  const freqEnv = new Tone.FrequencyEnvelope({attack: 0.2, decay: 0.4, baseFrequency: "C3", octaves: 4 });
+  const phaser = new Tone.Phaser({frequency: 0.09});
+  const distortion = new Tone.Distortion({distortion: 5});
 
   freqEnv.connect(filter.frequency);
-  synth.chain(filter, phaser, distortion, context.destination);
+  synth.chain(filter, phaser, distortion, Tone.getDestination());
 
   // seq for prerender
   freqEnv.triggerAttack();

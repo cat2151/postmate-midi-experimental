@@ -698,12 +698,13 @@ function sendWavAfterHandshakeAllChildren() {
   if (gn.isSent) return;
 
   if (gn.setupTonejsPreRenderer) {
+    const orgContext = Tone.getContext();
     const ch = 1;
     const bufferSec = 7;
-    const offlineContext = new Tone.OfflineContext(ch, bufferSec, Tone.getContext().sampleRate); // 48000決め打ちだとiPadで再生pitchが下がってしまったので対策用
+    Tone.setContext(new Tone.OfflineContext(ch, bufferSec, orgContext.sampleRate));
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
-    gn.setupTonejsPreRenderer(offlineContext);
-    renderContextAsync(gn, offlineContext);
+    gn.setupTonejsPreRenderer();
+    renderContextAsync(gn, Tone.getContext());
     return;
   }
   if (gn.createWav) {
@@ -716,10 +717,11 @@ function sendWavAfterHandshakeAllChildren() {
   }
 }
 
-async function renderContextAsync(gn, context) {
+async function renderContextAsync(gn, context, orgContext) {
   const startTime = Date.now();
   gn.noteNum = 60;
   gn.wav = await context.render();
+  Tone.setContext(orgContext);
   gn.wav = gn.wav.toArray();
   console.log(`${getParentOrChild()} : preRendering completed : ${Date.now() - startTime}msec`);
   sendWavAfterHandshakeAllChildrenSub(gn);
