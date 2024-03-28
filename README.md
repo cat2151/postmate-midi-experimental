@@ -105,3 +105,10 @@
 - Tone.jsの演奏そのものをOfflineContextでプリレンダリングするサンプルです。
 - Tone.jsのdefault contextをそのままにして、すべてのsynth等のコンストラクタに明示的にcontextを指定する場合のサンプルです。（default contextを変更するサンプルは、切り分けて別途やります）
 
+## Experimental19
+- [Demo Experimental19 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental19/)
+- Postmate + Tone.js + 疑似MIDImessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
+- seq + tone generator + sampler。audioをゼロからFloat32Arrayにレンダリングしたものを、別pageのsamplerに通信で転送して鳴らすサンプルです。
+- Tone.jsの演奏そのものをOfflineContextでプリレンダリングするサンプルです。
+- Tone.jsのdefault contextを書き換える場合のサンプルです。
+
