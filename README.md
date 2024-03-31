@@ -16,45 +16,45 @@
 
 # DEMO & 仕様の網羅用
 
-## Experimental
-- [Demo Experimental 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental/)
+## Experimental1
+- [Demo Experimental 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental01/)
 - Web MIDI API未実装の環境によっては、postmate実行がされない等の不具合が発生します。それの確認用など。
 
 ## Experimental2
-- [Demo Experimental2 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental2/)
+- [Demo Experimental2 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental02/)
 - Postmate + Tone.js という組み合わせで鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 
 ## Experimental3
-- [Demo Experimental3 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental3/)
+- [Demo Experimental3 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental03/)
 - Postmate + Tone.js + 疑似midimessage で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 
 ## Experimental4
-- [Demo Experimental4 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental4/)
+- [Demo Experimental4 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental04/)
 - Postmate + Tone.js + 疑似midimessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - Experimental5の土台用。seq部分のみの実装。
 
 ## Experimental5
-- [Demo Experimental5 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental5/)
+- [Demo Experimental5 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental05/)
 - Postmate + Tone.js + 疑似midimessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - Experimental4を土台に、実際に擬似midimessage送受信を実装。
 
 ## Experimental6
-- [Demo Experimental6 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental6/)
+- [Demo Experimental6 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental06/)
 - Postmate + Tone.js + 疑似midimessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - 和音を鳴らせるようにしました。
 
 ## Experimental7
-- [Demo Experimental7 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental7/)
+- [Demo Experimental7 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental07/)
 - Postmate + Tone.js + 疑似midimessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - 簡易的な曲データをJSONで入力できるようにしました。
 
 ## Experimental8
-- [Demo Experimental8 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental8/)
+- [Demo Experimental8 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental08/)
 - Postmate + Tone.js + 疑似midimessage + 簡易Seq で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - Experimental7の課題であった発音タイミングのヨレやズレを、シンプル優先の範囲内でできるだけ改善しました。
 
 ## Experimental9
-- [Demo Experimental9 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental9/)
+- [Demo Experimental9 開発中](https://cat2151.github.io/postmate-midi-experimental/experimental09/)
 - Postmate + Tone.js + 疑似midimessage + 簡易仮想MIDIキーボード で鳴ることの確認用。シンプルにとどめます。もしこれ以上機能追加する場合は別dirに切り分けて実施します。
 - iPadだけはplayボタン必須。それ以外はplayボタンなしで、mouseやtouchで音が鳴ります。
 
