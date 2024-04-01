@@ -687,9 +687,11 @@ function initCh(ch) {
 ////////
 // Tone Generator
 //  wav format : Float32Array
-function registerGenerator(gn) {
+function registerGenerator(gn, initSynth) {
   console.log(`${getParentOrChild()} : gn : `, gn);
   postmateMidi.tonejs.generator = gn; // register時、generatorそのものが外部gnに上書きされる
+  gn.initSynth = initSynth;
+  gn.ch = postmateMidi.ch;
 }
 
 // child用
@@ -703,7 +705,7 @@ function sendWavAfterHandshakeAllChildren() {
     const bufferSec = 7;
     Tone.setContext(new Tone.OfflineContext(ch, bufferSec, orgContext.sampleRate));
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
-    gn.setupTonejsPreRenderer();
+    gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
     renderContextAsync(gn, Tone.getContext());
     return;
   }
