@@ -706,7 +706,7 @@ function sendWavAfterHandshakeAllChildren() {
     Tone.setContext(new Tone.OfflineContext(ch, bufferSec, orgContext.sampleRate));
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
     gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
-    renderContextAsync(gn, Tone.getContext());
+    renderContextAsync(gn, Tone.getContext(), orgContext);
     return;
   }
   if (gn.createWav) {
