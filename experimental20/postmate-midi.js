@@ -59,7 +59,7 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
     const selector = '#child' + (childId + 1);
     const container = document.querySelector(selector);
     console.log(`parent : container : `, container);
-    if (!container) alert(`index.htmlに ${selector} を書いてください`)
+    if (!container) alert(`${getParentOrChild()}の index.htmlに ${selector} を書いてください`)
     const handshake = new Postmate({
       container,
       url
