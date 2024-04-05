@@ -99,7 +99,7 @@ function playStep() {
     }
   }
 
-  seq.index = (seq.index + 1) % seq.json.length;
+  seq.index = (seq.index + 1) % seq.json.length; // loop
   return waitTime;
 
   function isNoteOn(event) {

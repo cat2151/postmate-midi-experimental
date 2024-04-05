@@ -122,6 +122,17 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
         // child1～n がrecvしたMIDImessageを、一度ここparentに集約したのち、振り分けてMIDIoutする
         sendMidiMessageFromDevice(data[0], data[1], /*deviceId=*/childId + 1);
       });
+      child.on('onStartPreRender' + (childId + 1), data => { // onStartPreRender1 ～ : child1からcallされた場合は、onStartPreRender1 となる
+        console.log(`parent : onStartPreRender : from ${childName} : received data : [`, data, `]`);
+        for (let i = 0; i < postmateMidi.midiOutputIds.length; i++) {
+          let id = postmateMidi.midiOutputIds[i];
+          if (id == childId + 1) {
+            // 逆引き
+            console.log(`midiOutput : child${i} to child${id}`);
+            postmateMidi.children[i - 1].call('onStartPreRender', data);
+          }
+        }
+      });
       child.on('sendToSampler' + (childId + 1), data => { // sendToSampler1 ～ : child1からcallされた場合は、sendToSampler1 となる。意味は、わかりづらいが sendToSampler from child1 である。
         // console.log(`parent : sendToSampler : from ${childName} : received data : [`, data, `]`);
         console.log(`parent : sendToSampler : from ${childName}`); // iPad chrome inspect のログが波形データで埋め尽くされて調査できない、のを防止する用
@@ -208,6 +219,7 @@ function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemp
     onClickPlayButton,
     onStartPlaying,
     onAllSynthReady,
+    onStartPreRender,
     onmidimessage,
     sendToSampler
   });
@@ -706,6 +718,10 @@ function sendWavAfterHandshakeAllChildren() {
     Tone.setContext(new Tone.OfflineContext(ch, bufferSec, orgContext.sampleRate));
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
     gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
+
+    console.log(`${getParentOrChild()} : emit onStartPreRender`);
+    postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
+
     renderContextAsync(gn, Tone.getContext(), orgContext);
     return;
   }
@@ -717,6 +733,16 @@ function sendWavAfterHandshakeAllChildren() {
     sendWavAfterHandshakeAllChildrenSub(gn);
     return;
   }
+}
+
+function onStartPreRender(data) {
+  // sq
+  console.log(`${getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
+  const sq = postmateMidi.seq;
+  console.log(`${getParentOrChild()} : sq : `, sq);
+  const t = sq.getTemplates();
+  console.log(`${getParentOrChild()} : t : `, t);
+  sq.startPlayJson(t[1][1]);
 }
 
 async function renderContextAsync(gn, context, orgContext) {

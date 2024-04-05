@@ -9,14 +9,14 @@ function setupTonejsPreRenderer(ch, initSynth) {
 
   // seq for preRender
   // postmateMidiのchのcontrolChange初期化等を利用するので
-  ch[1-1].noteOn(60, Tone.now());
-  ch[1-1].noteOn(64, Tone.now());
-  ch[1-1].noteOn(67, Tone.now());
-  ch[1-1].noteOn(71, Tone.now());
-  ch[1-1].noteOff(60, Tone.now() + 7);
-  ch[1-1].noteOff(64, Tone.now() + 7);
-  ch[1-1].noteOff(67, Tone.now() + 7);
-  ch[1-1].noteOff(71, Tone.now() + 7);
+  // ch[1-1].noteOn(60, Tone.now());
+  // ch[1-1].noteOn(64, Tone.now());
+  // ch[1-1].noteOn(67, Tone.now());
+  // ch[1-1].noteOn(71, Tone.now());
+  // ch[1-1].noteOff(60, Tone.now() + 7);
+  // ch[1-1].noteOff(64, Tone.now() + 7);
+  // ch[1-1].noteOff(67, Tone.now() + 7);
+  // ch[1-1].noteOff(71, Tone.now() + 7);
 }
 
 export { gn };
