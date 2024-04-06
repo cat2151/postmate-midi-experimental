@@ -15,6 +15,7 @@ function initSynth(s, synthParam) {
   s.controlChange[74] = cutoff;
 
   function noteOn(noteNum, timestamp) {
+    // console.log(`synth : noteOn : noteNum = ${noteNum}, timestamp = ${timestamp}`);
     synth.triggerAttack(Tone.Midi(noteNum).toFrequency(), timestamp);
   };
 

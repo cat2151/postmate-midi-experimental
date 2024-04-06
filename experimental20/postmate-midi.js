@@ -128,9 +128,16 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
           let id = postmateMidi.midiOutputIds[i];
           if (id == childId + 1) {
             // 逆引き
-            console.log(`midiOutput : child${i} to child${id}`);
+            console.log(`${getParentOrChild()} : midiOutput : child${i} to child${id}`);
             postmateMidi.children[i - 1].call('onStartPreRender', data);
           }
+        }
+      });
+      child.on('onCompletePreRenderSeq' + (childId + 1), data => { // onCompletePreRenderSeq1 ～ : child1からcallされた場合は、onCompletePreRenderSeq1 となる
+        console.log(`parent : onCompletePreRenderSeq : from ${childName} : received data : [`, data, `]`);
+        for (let i = 0; i < postmateMidi.midiOutputIds[childId + 1].length; i++) {
+          const id = postmateMidi.midiOutputIds[childId + 1][i] - 1;
+          postmateMidi.children[id].call('onCompletePreRenderSeq', data);
         }
       });
       child.on('sendToSampler' + (childId + 1), data => { // sendToSampler1 ～ : child1からcallされた場合は、sendToSampler1 となる。意味は、わかりづらいが sendToSampler from child1 である。
@@ -181,7 +188,7 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
       }
       // console.log(`ids: ${ids}`);
     }
-    console.log(`midiOutput: ${JSON.stringify(midiOutput)} → midiOutputIds: ${JSON.stringify(ids)}`);
+    console.log(`${getParentOrChild()} : midiOutput: ${JSON.stringify(midiOutput)} → midiOutputIds: ${JSON.stringify(ids)}`);
     return ids;
 
     function getOutputIds(deviceNames) {
@@ -220,6 +227,7 @@ function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemp
     onStartPlaying,
     onAllSynthReady,
     onStartPreRender,
+    onCompletePreRenderSeq,
     onmidimessage,
     sendToSampler
   });
@@ -318,6 +326,7 @@ function linkPlayButton() {
 // すべてのparentやchildのplayボタンを、postMessage経由で同時に押したことにする用
 function onClickPlayButton() {
   if (postmateMidi.ui.playButtonFnc) {
+    if (isPreRenderSeq()) return;
     postmateMidi.ui.playButtonFnc();
   }
 }
@@ -504,6 +513,7 @@ function sendMidiMessageFromDevice(events, playTime, deviceId) {
       onmidimessage([events, playTime]);
     } else {
       const childId = outputId - 1;
+      // console.log(`${getParentOrChild()} : onmidimessage : to child${outputId} : ${[events, playTime]}`);
       postmateMidi.children[childId].call('onmidimessage', [events, playTime]);
     }
   }
@@ -521,9 +531,14 @@ function onmidimessage(data) {
   const baseMsec = postmateMidi.tonejs.baseTimeStampAudioContext * 1000;
   let timestamp = (baseMsec + playTimeMsec + ofsMsec) / 1000;
   if (isNaN(timestamp)) timestamp = undefined; // NaNのときnoteOnされないのを防止する用
+  if (isPreRenderSynth()) {
+    timestamp = Tone.now() + (playTimeMsec / 1000);
+    console.log(`${getParentOrChild()} : preRendering scheduling... : Tone.now() = ${Tone.now()} : events = ${data[0]} : timestamp = ${timestamp}`);
+  }
   // console.log(`${getParentOrChild()} : synth : ${getMidiEventName(events[0][0])} ${events[0][1]} ${Math.floor((timestamp - Tone.now()) * 1000)}`); // ofsMsecのチューニング用
   // if (timestamp - Tone.now() < 0) alert(); // timestampが過去になっていないことをチェック
   for (const event of events) {
+    // console.log(`event : ${event} : chId : ${event[0] & 0x0F}`);
     const ch = postmateMidi.ch[event[0] & 0x0F];
     switch (event[0] & 0xF0) {
     // note on
@@ -711,18 +726,17 @@ function sendWavAfterHandshakeAllChildren() {
   const gn = postmateMidi.tonejs.generator;
   if (gn.isSent) return;
 
-  if (gn.setupTonejsPreRenderer) {
-    const orgContext = Tone.getContext();
+  if (isPreRenderSynth()) {
+    gn.orgContext = Tone.getContext();
     const ch = 1;
     const bufferSec = 7;
-    Tone.setContext(new Tone.OfflineContext(ch, bufferSec, orgContext.sampleRate));
+    Tone.setContext(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
     gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
-
+    console.log(`${getParentOrChild()} : Tone.now() : ${Tone.now()}`);
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
-
-    renderContextAsync(gn, Tone.getContext(), orgContext);
+    // 以降は非同期で後続処理へ
     return;
   }
   if (gn.createWav) {
@@ -734,24 +748,49 @@ function sendWavAfterHandshakeAllChildren() {
     return;
   }
 }
+function isPreRenderSynth() {
+  return postmateMidi.tonejs.generator.setupTonejsPreRenderer;
+}
 
 function onStartPreRender(data) {
   // sq
   console.log(`${getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
   const sq = postmateMidi.seq;
   console.log(`${getParentOrChild()} : sq : `, sq);
-  const t = sq.getTemplates();
-  console.log(`${getParentOrChild()} : t : `, t);
-  sq.startPlayJson(t[1][1]);
+  const templates = sq.getTemplates();
+  console.log(`${getParentOrChild()} : t : `, templates);
+  if (!isPreRenderSeq()) {
+    console.error(`${getParentOrChild()} : seqに getPreRenderMidiData を実装してください`);
+    return;
+  }
+  const templateId = 1;
+  const midiJson = templates[templateId][1/*body*/];
+  const preRenderMidi = sq.getPreRenderMidiData(midiJson);
+  console.log(`${getParentOrChild()} : preRenderMidi : `, preRenderMidi);
+  postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), preRenderMidi);
+}
+function isPreRenderSeq() {
+  return postmateMidi.seq.getPreRenderMidiData;
+}
+
+function onCompletePreRenderSeq(preRenderMidi) {
+  const gn = postmateMidi.tonejs.generator;
+  console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : preRenderMidi [${preRenderMidi}]`);
+  console.log(`${getParentOrChild()} : Tone.js preRender scheduling start... : time : ${Date.now() % 10000}`);
+  for (let i = 0; i < preRenderMidi.length; i++) {
+    onmidimessage(preRenderMidi[i]);
+  }
+  renderContextAsync(gn, Tone.getContext(), gn.orgContext);
 }
 
 async function renderContextAsync(gn, context, orgContext) {
   const startTime = Date.now();
   gn.noteNum = 60;
+  console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : time : ${Date.now() % 10000}`);
   gn.wav = await context.render();
   Tone.setContext(orgContext);
   gn.wav = gn.wav.toArray();
-  console.log(`${getParentOrChild()} : preRendering completed : ${Date.now() - startTime}msec`);
+  console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : ${Date.now() - startTime}msec`);
   sendWavAfterHandshakeAllChildrenSub(gn);
 }
 
@@ -776,7 +815,7 @@ function sendToSamplerFromDevice(data, deviceId) {
 }
 
 function sendToSampler(data) {
-  // console.log(`${getParentOrChild()} : received : ` , data); // iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  // console.log(`${getParentOrChild()} : received : ` , data); // コメントアウトした、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const noteNum = data[0];
   const wav = data[1];
   for (let ch = 1-1; ch < 16; ch++) {

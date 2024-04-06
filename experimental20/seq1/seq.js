@@ -2,16 +2,17 @@
 // usage : parent.js / child.js の import "./seq.js"; 付近を参照ください
 const BPM = 130;
 const TICKS_PER_MEASURE = 192;
-const seq = {};
+const seq = { isPreRender: false };
 
 seq.getTemplates = () => {
   return [
     ["テンプレートを選んでください", ``],
     //   event           st   gt
     ["test1", `[
-      [ [0x90, 72, 127],  96,  96 ],
-      [ [0x90, 60, 127],  96,  96 ],
-      [ [0x90, 48, 127],  96,  96 ]
+      [ [0xB0, 74,  90],   0,   0 ],
+      [ [0x90, 60, 127],   0, 478 ],
+      [ [0x90, 64, 127],   0, 478 ],
+      [ [0x90, 67, 127], 480, 478 ]
     ]`]
   ];
 }
@@ -43,6 +44,23 @@ seq.startPlayJson = (data) => {
   seqPlay();
 }
 
+seq.getPreRenderMidiData = (data) => {
+  console.log(`seq : getPreRenderMidiData (${location.pathname})`);
+  seq.setupByData(data);
+  seq.isPreRender = true;
+  init();
+  seq.isPlaying = true;
+  // seqPlay for preRender
+  {
+    seq.midiMessagesBuffer = [];
+    seq.preRenderMidiBuffer = [];
+    while (seq.index < seq.json.length) {
+      playStep();
+    }
+  }
+  return seq.preRenderMidiBuffer;
+}
+
 function seqPlay() {
   if (!seq.isPlaying) return;
 
@@ -56,13 +74,13 @@ function seqPlay() {
 }
 
 function init() {
-  allSoundOff();
+  if (!seq.isPreRender) allSoundOff();
   seq.timeOf1st = calcStepTimeMsec(BPM, TICKS_PER_MEASURE);
   seq.baseTimeStamp = performance.now();
   seq.playTime = 0;
   seq.nextTime = 0;
   seq.index = 0;
-  seq.initOnStartPlaying();
+  if (!seq.isPreRender) seq.initOnStartPlaying();
   clearTimeouts();
 
   function clearTimeouts() {
@@ -83,23 +101,38 @@ function playStep() {
   const st = seq.json[seq.index][1];
   const waitTime = procNextTime(seq.timeOf1st * st);
 
-  seq.midiMessagesBuffer.push(event);
+  if (seq.isPreRender) {
+    seq.preRenderMidiBuffer.push([[event], seq.playTime]);
+  } else {
+    seq.midiMessagesBuffer.push(event);
+  }
   if (isNoteOn(event)) {
     setupNoteOff();
     function setupNoteOff() {
       const gt = seq.json[seq.index][2];
       const noteOffTimeLogical = seq.timeOf1st * gt;
       const playTime = seq.playTime + noteOffTimeLogical;
-      seq.timeoutIds.push(setTimeout(noteOff, noteOffTimeLogical, new Uint8Array(arr), playTime));
+      if (seq.isPreRender) {
+        noteOff(new Uint8Array(arr), playTime);
+      } else {
+        seq.timeoutIds.push(setTimeout(noteOff, noteOffTimeLogical, new Uint8Array(arr), playTime));
+      }
       function noteOff(event, playTime) {
         const ch = event[0] & 0x0F;
         event[0] = 0x80 | ch;
-        seq.sendMidiMessage([event], playTime);
+        if (seq.isPreRender) {
+          seq.preRenderMidiBuffer.push([[event], playTime]);
+        } else {
+          seq.sendMidiMessage([event], playTime);
+        }
       }
     }
   }
 
-  seq.index = (seq.index + 1) % seq.json.length; // loop
+  seq.index += 1;
+  if (!seq.isPreRender) {
+    seq.index %= seq.json.length; // loop
+  }
   return waitTime;
 
   function isNoteOn(event) {
