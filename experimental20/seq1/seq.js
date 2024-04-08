@@ -1,18 +1,13 @@
 // 用途 : JSON演奏のtest用
 // usage : parent.js / child.js の import "./seq.js"; 付近を参照ください
-const BPM = 130;
-const TICKS_PER_MEASURE = 192;
-const seq = { isPreRender: false };
+const seq = { BPM: 120, TICKS_PER_MEASURE: 192, isPreRender: false };
 
 seq.getTemplates = () => {
   return [
     ["テンプレートを選んでください", ``],
     //   event           st   gt
     ["test1", `[
-      [ [0xB0, 74,  90],   0,   0 ],
-      [ [0x90, 60, 127],   0, 478 ],
-      [ [0x90, 64, 127],   0, 478 ],
-      [ [0x90, 67, 127], 480, 478 ]
+      [ [0x90, 60, 127], 192, 190 ]
     ]`]
   ];
 }
@@ -75,7 +70,7 @@ function seqPlay() {
 
 function init() {
   if (!seq.isPreRender) allSoundOff();
-  seq.timeOf1st = calcStepTimeMsec(BPM, TICKS_PER_MEASURE);
+  seq.timeOf1st = calcStepTimeMsec(seq.BPM, seq.TICKS_PER_MEASURE);
   seq.baseTimeStamp = performance.now();
   seq.playTime = 0;
   seq.nextTime = 0;
