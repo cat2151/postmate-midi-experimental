@@ -431,12 +431,12 @@ function visualizeGeneratedSound() {
   document.body.appendChild(canvas);
   const ctx = canvas.getContext("2d");
 
-  // オシロスコープ
+  // 波形全体を表示
   let eventId = Tone.Transport.scheduleRepeat(() => {
     const gn = postmateMidi.tonejs.generator;
     if (!gn.wav) return; // wavが生成されるまでは、描画しない
-    const pos = gn.wav.length / 2;
-    const waveform = gn.wav.slice(pos, pos + 256); // slow attackの波形で0が表示される、のを防止する用
+    const startTime = Date.now(); // かかった時間計測用
+    const waveform = getWaveform(gn.wav, canvas.width);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
@@ -450,7 +450,45 @@ function visualizeGeneratedSound() {
     // 一度描画したら描画をとめる
     // console.log(`${getParentOrChild()} : visualizeGeneratedSound : stopped`)
     Tone.Transport.clear(eventId);
-  }, "60hz");
+
+    // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
+    console.log(`${getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
+
+    function getWaveform(wav, xSize) {
+      let waveform = getPeakWav(wav, xSize);
+      waveform = normalizeWav(waveform);
+      return waveform;
+
+      // もしより厳密に音量を描画したいなら1sampleごとに前後一定sampleのエネルギーの大きさを上下幅として描画したほうがよさげ。
+      // とはいえ、そこに手間かけるよりほかを優先する。ひとまず絶対値の最大のpointを、1sampleごとに交互に上下に描画する。なお交互上下にしない場合は意図しない周期性が出て、確認したい音量と乖離したものになった。
+      function getPeakWav(wav, xSize) {
+        const chunkSize = wav.length / xSize;
+        const peakWav = new Float32Array(xSize);
+        for (let i = 0; i < xSize; i++) {
+          peakWav[i] = getPeakAbs(wav.slice(chunkSize * i, chunkSize * (i + 1)));
+          if (i % 2) peakWav[i] *= -1;
+        }
+        return peakWav;
+      }
+
+      function normalizeWav(wav) {
+        const maxAbs = getPeakAbs(wav);
+        for (let i = 0; i < wav.length; i++) {
+          wav[i] /= maxAbs * 2;
+        }
+        return wav;
+      }
+
+      function getPeakAbs(wav) {
+        let maxAbs = 0;
+        for (let i = 0; i < wav.length; i++) {
+          const v = Math.abs(wav[i]);
+          if (v > maxAbs) maxAbs = v;
+        }
+        return maxAbs;
+      }
+    }
+  }, "60hz"); // let eventId = Tone.Transport.scheduleRepeat(() => {
 
   // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
   Tone.Transport.start();
