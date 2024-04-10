@@ -766,12 +766,6 @@ function sendWavAfterHandshakeAllChildren() {
 
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
-    const ch = 1;
-    const bufferSec = 7;
-    Tone.setContext(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
-    console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
-    gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
-    console.log(`${getParentOrChild()} : Tone.now() : ${Tone.now()}`);
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
     // 以降は非同期で後続処理へ
@@ -795,48 +789,70 @@ function onStartPreRender(data) {
   console.log(`${getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
   const sq = postmateMidi.seq;
   console.log(`${getParentOrChild()} : sq : `, sq);
+
   const templates = sq.getTemplates();
   console.log(`${getParentOrChild()} : t : `, templates);
   if (!isPreRenderSeq()) {
     console.error(`${getParentOrChild()} : seqに getPreRenderMidiData を実装してください`);
     return;
   }
-  const templateId = 1;
-  const midiJson = templates[templateId][1/*body*/];
-  const preRenderMidi = sq.getPreRenderMidiData(midiJson);
-  console.log(`${getParentOrChild()} : preRenderMidi : `, preRenderMidi);
-  postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), preRenderMidi);
+
+  const songs = [];
+  for (let templateId = 1; templateId < templates.length; templateId++) {
+    const midiJson = templates[templateId][1/*body*/];
+    songs.push(sq.getPreRenderMidiData(midiJson));
+  }
+  console.log(`${getParentOrChild()} : songs : `, songs);
+  postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), songs);
 }
 function isPreRenderSeq() {
   return postmateMidi.seq.getPreRenderMidiData;
 }
 
-function onCompletePreRenderSeq(preRenderMidi) {
+function onCompletePreRenderSeq(data) {
+  console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
+  doPreRenderAsync(data);
+}
+async function doPreRenderAsync(songs) {
   const gn = postmateMidi.tonejs.generator;
-  console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : preRenderMidi [${preRenderMidi}]`);
-  console.log(`${getParentOrChild()} : Tone.js preRender scheduling start... : time : ${Date.now() % 10000}`);
+  const wavs = [];
+  gn.noteNum = 60;
+  for (let songId = 0; songId < songs.length; songId++) {
+    const preRenderMidi = songs[songId];
+    console.log(`${getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
+    schedulingPreRender(gn, preRenderMidi);
+    gn.wav = await renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
+    wavs.push([gn.noteNum, gn.wav]);
+  }
+  sendWavAfterHandshakeAllChildrenSub(wavs);
+}
+
+function schedulingPreRender(gn, preRenderMidi) {
+  const ch = 1;
+  const bufferSec = 7;
+  Tone.setContext(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
+  console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
+  gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
   for (let i = 0; i < preRenderMidi.length; i++) {
     onmidimessage(preRenderMidi[i]);
   }
-  renderContextAsync(gn, Tone.getContext(), gn.orgContext);
 }
 
-async function renderContextAsync(gn, context, orgContext) {
+async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
-  gn.noteNum = 60;
-  console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : time : ${Date.now() % 10000}`);
-  gn.wav = await context.render();
+  console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
+  let wav = await context.render();
   Tone.setContext(orgContext);
-  gn.wav = gn.wav.toArray();
-  console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : ${Date.now() - startTime}msec`);
-  sendWavAfterHandshakeAllChildrenSub(gn);
+  wav = wav.toArray();
+  console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
+  return wav;
 }
 
-function sendWavAfterHandshakeAllChildrenSub(gn) {
+function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.parent) return;
   if (!isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
-  postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), [gn.noteNum, gn.wav]);
+  postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
 }
 
 // parent用
@@ -852,11 +868,13 @@ function sendToSamplerFromDevice(data, deviceId) {
   }
 }
 
-function sendToSampler(data) {
+function sendToSampler(wavs) {
   // console.log(`${getParentOrChild()} : received : ` , data); // コメントアウトした、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
-  const noteNum = data[0];
-  const wav = data[1];
-  for (let ch = 1-1; ch < 16; ch++) {
+  for (let i = 0; i < wavs.length; i++) {
+    const data = wavs[i];
+    const noteNum = data[0];
+    const wav = data[1];
+    const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
     if (postmateMidi.ch[ch].synth) {
       postmateMidi.ch[ch].synth.add(noteNum, Tone.Buffer.fromArray(wav));
     }
