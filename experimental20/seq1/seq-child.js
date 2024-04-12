@@ -5,7 +5,7 @@ const urlParams = rison2.parse(new URL(window.location.href).searchParams.get('q
 
 sq.getTemplates = () => {
   return [
-    ["テンプレートを選んでください", ``],
+    ["---", ``],
     //   event           st   gt
     ["preRender1", `[
       [ [0xB0, 74,  90],   0,   0 ],
@@ -14,9 +14,10 @@ sq.getTemplates = () => {
       [ [0x90, 67, 127], 480, 478 ]
     ]`],
     ["preRender2", `[
-      [ [0xB0, 74,  90],   0,   0 ],
+      [ [0xB0, 74, 127],   0,   0 ],
       [ [0x90, 48, 127],   0, 478 ],
-      [ [0x90, 36, 127], 480, 478 ]
+      [ [0x90, 36, 127],   0, 478 ],
+      [ [0x90, 24, 127], 480, 478 ]
     ]`]
   ];
 }
@@ -24,5 +25,5 @@ sq.BPM = 120;
 
 postmateMidi.registerChild(urlParams, '#textarea', sq.startPlayJson, 'select', sq.getTemplates, sq.setupByData);
 postmateMidi.seq.registerSeq(sq);
-postmateMidi.ui.registerPlayButton('button', sq.togglePlay);
+postmateMidi.ui.registerPlayButton('button', sq.togglePlay, /*isRemovePlayButtonAtTonejsStartRunning=*/true);
 console.log(`postmate-midi child:`, postmateMidi);

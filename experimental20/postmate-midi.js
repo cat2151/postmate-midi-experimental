@@ -786,6 +786,7 @@ function isPreRenderSynth() {
 
 function onStartPreRender(data) {
   // sq
+  postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。あると混乱する。混乱防止用。
   console.log(`${getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
   const sq = postmateMidi.seq;
   console.log(`${getParentOrChild()} : sq : `, sq);
