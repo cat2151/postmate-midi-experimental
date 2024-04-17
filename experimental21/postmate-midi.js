@@ -6,7 +6,7 @@ const postmateMidi = {
   parent: null, childId: null,   // childのみが保持するもの
   midiOutputIds: [], sendToSamplerIds: [],
   ch: Array.from({ length: 16 }, () => ({ noteOn: null, noteOff: null, controlChange: [] })),
-  ui: { registerPlayButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound },
+  ui: { registerPlayButton, registerPrerenderButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound },
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
@@ -359,6 +359,16 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
       return trimmedLines.join('\n');
     }
   }
+}
+
+function registerPrerenderButton(buttonSelector) {
+  // TODO
+  const ui = postmateMidi.ui;
+  ui.button = document.querySelector(buttonSelector);
+  ui.button.onclick = function() {
+    console.log(`${getParentOrChild()} : onclick prerenderButton`);
+    // TODO
+  };
 }
 
 function isIpad() {
