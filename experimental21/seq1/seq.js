@@ -53,6 +53,8 @@ seq.getPreRenderMidiData = (data) => {
       playStep();
     }
   }
+  seq.isPlaying = false;
+  seq.isPreRender = false; // samplerのprerender後に、seqのplayボタンでplayできるようにする用
   return seq.preRenderMidiBuffer;
 }
 
@@ -69,6 +71,7 @@ function seqPlay() {
 }
 
 function init() {
+  console.log(`seq : init : isPreRender : ${seq.isPreRender}`);
   if (!seq.isPreRender) allSoundOff();
   seq.timeOf1st = calcStepTimeMsec(seq.BPM, seq.TICKS_PER_MEASURE);
   seq.baseTimeStamp = performance.now();

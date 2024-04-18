@@ -16,6 +16,7 @@ function initSampler(s, samplerParam, volume) {
   s.synth = sampler;
 
   function noteOn(noteNum, timestamp) {
+    console.log(`sampler : noteOn : ${noteNum}, ${timestamp}`);
     sampler.triggerAttack(Tone.Midi(noteNum).toFrequency(), timestamp);
   };
 

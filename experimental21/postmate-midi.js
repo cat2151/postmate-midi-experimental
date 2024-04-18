@@ -326,8 +326,15 @@ function linkPlayButton() {
 // すべてのparentやchildのplayボタンを、postMessage経由で同時に押したことにする用
 function onClickPlayButton() {
   if (postmateMidi.ui.playButtonFnc) {
-    if (isPreRenderSeq()) return;
-    postmateMidi.ui.playButtonFnc();
+    if (isPreRenderSeq()) {
+      console.log(`${getParentOrChild()} : onClickPlayButton : prerender seq`);
+      return;
+    } else {
+      console.log(`${getParentOrChild()} : onClickPlayButton : playButtonFnc`);
+      postmateMidi.ui.playButtonFnc();
+    }
+  } else {
+    console.log(`${getParentOrChild()} : onClickPlayButton : no playButtonFnc`);
   }
 }
 
@@ -362,13 +369,30 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
 }
 
 function registerPrerenderButton(buttonSelector) {
-  // TODO
   const ui = postmateMidi.ui;
   ui.button = document.querySelector(buttonSelector);
   ui.button.onclick = function() {
     console.log(`${getParentOrChild()} : onclick prerenderButton`);
-    // TODO
+
+    // register ※この2行は、ひとまずgeneratorのchildのコピー。あとで見直す予定
+    if (postmateMidi.tonejs.generator.registerGenerator) {
+      const gn = { setupTonejsPreRenderer: function(ch, initSynth) { initSynth(ch[1-1], {oscillator: {type: 'fatsawtooth'}}); } };
+      postmateMidi.tonejs.generator.registerGenerator(gn, initSynth);
+    }
+
+    const gn = postmateMidi.tonejs.generator;
+
+    // prerender ※この3行は、ひとまずsendWavAfterHandshakeAllChildrenのコピー。あとでfncにして共通化するかも
+    gn.orgContext = Tone.getContext();
+    console.log(`${getParentOrChild()} : emit onStartPreRender`);
+    postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
+    // 以降は非同期で後続処理へ
   };
+
+  function initSynth() {
+    // ひとまず落とさずに様子見する用
+    console.log(`${getParentOrChild()} : registerPrerenderButton prerender initSynth`);
+  }
 }
 
 function isIpad() {
@@ -864,10 +888,13 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
+  // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
+  delete postmateMidi.tonejs.generator.setupTonejsPreRenderer;
 }
 
 // parent用
 function sendToSamplerFromDevice(data, deviceId) {
+  if (!postmateMidi.sendToSamplerIds[deviceId].length) console.log(`${getParentOrChild()} : sendToSamplerFromDevice : 接続先を定義してください`);
   for (let i = 0; i < postmateMidi.sendToSamplerIds[deviceId].length; i++) {
     const outputId = postmateMidi.sendToSamplerIds[deviceId][i];
     if (!outputId) {
@@ -880,17 +907,28 @@ function sendToSamplerFromDevice(data, deviceId) {
 }
 
 function sendToSampler(wavs) {
-  // console.log(`${getParentOrChild()} : received : ` , data); // コメントアウトした、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  // console.log(`${getParentOrChild()} : received : ` , wavs); // コメントアウトした、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     const noteNum = data[0];
     const wav = data[1];
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
+    checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
       postmateMidi.ch[ch].synth.add(noteNum, Tone.Buffer.fromArray(wav));
     }
   }
   console.log(`${getParentOrChild()} : wav added to sampler : time : ${Date.now() % 10000}`);
+
+  function checkWavOk(wav) {
+    const startTime = Date.now();
+    for (let i = 0; i < wav.length; i++) {
+      if (wav[i]) return true;
+    }
+    console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
+    return false;
+  }
 }
 
 /////////////////////////
