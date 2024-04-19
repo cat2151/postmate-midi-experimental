@@ -1,6 +1,7 @@
 // import * as Tone from 'tone'; // コメントアウトする。index.htmlでTone.jsをsrcする。そうしないとバンドラーを使わない別projectにおいてソースをそのまま利用できず不便だったので。
 
 function initSampler(s, samplerParam, volume) {
+  console.log(`initSampler : ${samplerParam}, ${volume}`);
   let sampler;
   if (samplerParam) {
     sampler = new Tone.Sampler(samplerParam);

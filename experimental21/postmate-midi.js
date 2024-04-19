@@ -10,8 +10,9 @@ const postmateMidi = {
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
-      generator: { registerGenerator } // register時、generatorそのものが外部gnに上書きされる
-    } };
+      generator: { registerGenerator } }, // register時、generatorそのものが外部gnに上書きされる
+  isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false
+};
 
 let isParent = false; // ひとまず非公開、postmateMidiをシンプルにする優先
 let isChild  = false;
@@ -369,17 +370,11 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
 }
 
 function registerPrerenderButton(buttonSelector) {
+  postmateMidi.hasPreRenderButton = true;
   const ui = postmateMidi.ui;
   ui.button = document.querySelector(buttonSelector);
   ui.button.onclick = function() {
     console.log(`${getParentOrChild()} : onclick prerenderButton`);
-
-    // register ※この2行は、ひとまずgeneratorのchildのコピー。あとで見直す予定
-    if (postmateMidi.tonejs.generator.registerGenerator) {
-      const gn = { setupTonejsPreRenderer: function(ch, initSynth) { initSynth(ch[1-1], {oscillator: {type: 'fatsawtooth'}}); } };
-      postmateMidi.tonejs.generator.registerGenerator(gn, initSynth);
-    }
-
     const gn = postmateMidi.tonejs.generator;
 
     // prerender ※この3行は、ひとまずsendWavAfterHandshakeAllChildrenのコピー。あとでfncにして共通化するかも
@@ -388,11 +383,6 @@ function registerPrerenderButton(buttonSelector) {
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
     // 以降は非同期で後続処理へ
   };
-
-  function initSynth() {
-    // ひとまず落とさずに様子見する用
-    console.log(`${getParentOrChild()} : registerPrerenderButton prerender initSynth`);
-  }
 }
 
 function isIpad() {
@@ -513,14 +503,6 @@ function visualizeGeneratedSound() {
         return wav;
       }
 
-      function getPeakAbs(wav) {
-        let maxAbs = 0;
-        for (let i = 0; i < wav.length; i++) {
-          const v = Math.abs(wav[i]);
-          if (v > maxAbs) maxAbs = v;
-        }
-        return maxAbs;
-      }
     }
   }, "60hz"); // let eventId = Tone.Transport.scheduleRepeat(() => {
 
@@ -528,7 +510,16 @@ function visualizeGeneratedSound() {
   Tone.Transport.start();
 }
 
-//////////
+function getPeakAbs(wav) {
+  let maxAbs = 0;
+  for (let i = 0; i < wav.length; i++) {
+    const v = Math.abs(wav[i]);
+    if (v > maxAbs) maxAbs = v;
+  }
+  return maxAbs;
+}
+
+  //////////
 // MIDI
 function registerSeq(sq) {
   postmateMidi.seq = sq;
@@ -815,7 +806,7 @@ function sendWavAfterHandshakeAllChildren() {
   }
 }
 function isPreRenderSynth() {
-  return postmateMidi.tonejs.generator.setupTonejsPreRenderer;
+  return postmateMidi.isPreRenderSynth;
 }
 
 function onStartPreRender(data) {
@@ -868,6 +859,7 @@ function schedulingPreRender(gn, preRenderMidi) {
   Tone.setContext(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
   gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
+  if (postmateMidi.isSampler) samplerAddWavs(gn.wavs); // samplerにてprerenderする用
   for (let i = 0; i < preRenderMidi.length; i++) {
     onmidimessage(preRenderMidi[i]);
   }
@@ -879,6 +871,8 @@ async function renderContextAsync(gn, context, orgContext, songId) {
   let wav = await context.render();
   Tone.setContext(orgContext);
   wav = wav.toArray();
+  if (!isIpad()) console.log(`${getParentOrChild()} : rendered wav : `, wav);
+  checkWavOk(wav);
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
 }
@@ -889,7 +883,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
   // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
-  delete postmateMidi.tonejs.generator.setupTonejsPreRenderer;
+  if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
 }
 
 // parent用
@@ -907,8 +901,13 @@ function sendToSamplerFromDevice(data, deviceId) {
 }
 
 function sendToSampler(wavs) {
-  // console.log(`${getParentOrChild()} : received : ` , wavs); // コメントアウトした、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  if (!isIpad()) console.log(`${getParentOrChild()} : received : ` , wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  samplerAddWavs(wavs);
+  const gn = postmateMidi.tonejs.generator;
+  gn.wavs = wavs; // prerenderボタンで使う用
+}
 
+function samplerAddWavs(wavs) {
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     const noteNum = data[0];
@@ -917,18 +916,22 @@ function sendToSampler(wavs) {
     checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
       postmateMidi.ch[ch].synth.add(noteNum, Tone.Buffer.fromArray(wav));
+      console.log(`${getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
   }
-  console.log(`${getParentOrChild()} : wav added to sampler : time : ${Date.now() % 10000}`);
+}
 
-  function checkWavOk(wav) {
-    const startTime = Date.now();
-    for (let i = 0; i < wav.length; i++) {
-      if (wav[i]) return true;
+function checkWavOk(wav) {
+  const startTime = Date.now();
+  for (let i = 0; i < wav.length; i++) {
+    if (wav[i]) {
+      const peak = getPeakAbs(wav);
+      console.log(`${getParentOrChild()} : checkWav : wav[${i}] = ${wav[i]}, peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
+      return true;
     }
-    console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
-    return false;
   }
+  console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
+  return false;
 }
 
 /////////////////////////

@@ -7,6 +7,7 @@ postmateMidi.registerChild(urlParams, null, null, null, null, null);
 
 const gn = { setupTonejsPreRenderer: function(ch, initSynth) { initSynth(ch[1-1], {oscillator: {type: 'fatsawtooth'}}); } };
 postmateMidi.tonejs.generator.registerGenerator(gn, initSynth);
+postmateMidi.isPreRenderSynth = true;
 
 postmateMidi.ui.visualizeGeneratedSound();
 console.log(`postmate-midi child:`, postmateMidi);
