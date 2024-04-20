@@ -10,7 +10,7 @@ const postmateMidi = {
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
-      generator: { registerGenerator } }, // register時、generatorそのものが外部gnに上書きされる
+            registerSynth, initSynthFnc: null, generator: {} },
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false
 };
 
@@ -627,6 +627,13 @@ function getMidiEventName(i) { // for debug
 // 用途、各種Tone.js系synth js（以下synth js）のコードのうち共通部分をここに集約することで、synth jsの実装をシンプルにする。
 //  必要に応じてsynth js側でそれらを上書きしてよい。
 //  注意、ただしnote onと、セットとなるnote offだけは、synth js側で実装必須とする。そうしないとsynth jsソースだけ見たとき鳴らし方がわからず、ソースが読みづらいため。
+
+// child.jsから呼ばれて、chとsynthを紐つける
+function registerSynth(initSynthFnc) {
+  postmateMidi.tonejs.initSynthFnc = initSynthFnc; // prerender setContext 後に使う用
+  postmateMidi.tonejs.initSynthFnc(postmateMidi.ch);
+}
+
 function initTonejsByUserAction() {
   if (postmateMidi.tonejs.isStartTone) return;
     // ↑ 備忘、if (Tone.context.state === "running") return; だと、ここでは用途にマッチしない。LiveServerのライブリロード後は常時runningになるため。
@@ -777,12 +784,6 @@ function initCh(ch) {
 ////////
 // Tone Generator
 //  wav format : Float32Array
-function registerGenerator(gn, initSynth) {
-  console.log(`${getParentOrChild()} : gn : `, gn);
-  postmateMidi.tonejs.generator = gn; // register時、generatorそのものが外部gnに上書きされる
-  gn.initSynth = initSynth;
-  gn.ch = postmateMidi.ch;
-}
 
 // child用
 function sendWavAfterHandshakeAllChildren() {
@@ -856,10 +857,8 @@ async function doPreRenderAsync(songs) {
 function schedulingPreRender(gn, preRenderMidi) {
   const ch = 1;
   const bufferSec = 7;
-  Tone.setContext(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
+  setContextInitSynthAddWav(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
-  gn.setupTonejsPreRenderer(postmateMidi.ch, gn.initSynth);
-  if (postmateMidi.isSampler) samplerAddWavs(gn.wavs); // samplerにてprerenderする用
   for (let i = 0; i < preRenderMidi.length; i++) {
     onmidimessage(preRenderMidi[i]);
   }
@@ -869,12 +868,19 @@ async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
   let wav = await context.render();
-  Tone.setContext(orgContext);
+  setContextInitSynthAddWav(orgContext);
   wav = wav.toArray();
   if (!isIpad()) console.log(`${getParentOrChild()} : rendered wav : `, wav);
   checkWavOk(wav);
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
+}
+
+function setContextInitSynthAddWav(context) {
+  const gn = postmateMidi.tonejs.generator;
+  Tone.setContext(context);
+  if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
+  if (postmateMidi.isSampler) samplerAddWavs(gn.wavs); // samplerにてprerenderする用
 }
 
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
