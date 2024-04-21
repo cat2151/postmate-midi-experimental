@@ -6,12 +6,12 @@ const postmateMidi = {
   parent: null, childId: null,   // childのみが保持するもの
   midiOutputIds: [], sendToSamplerIds: [],
   ch: Array.from({ length: 16 }, () => ({ noteOn: null, noteOff: null, controlChange: [] })),
-  ui: { registerPlayButton, registerPrerenderButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound },
+  ui: { registerPlayButton, registerPrerenderButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound, removeButton },
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
-  isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false
+  isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, isLinkPlay: false
 };
 
 let isParent = false; // ひとまず非公開、postmateMidiをシンプルにする優先
@@ -312,6 +312,11 @@ function registerPlayButton(buttonSelector, playButtonFnc, isRemovePlayButtonAtT
   ui.button.focus(); // pageを開いてspace keyを押すだけでplay開始できる用。開発時に便利。今後は必要に応じて自動focusのon/offを設定可能にするかも検討予定。
 }
 
+function removeButton(buttonSelector) {
+  const button = document.querySelector(buttonSelector);
+  button.remove();
+}
+
 // すべてのparentやchildのplayボタンを、postMessage経由で同時に押したことにする用
 function linkPlayButton() {
   if (isParent) {
@@ -326,16 +331,10 @@ function linkPlayButton() {
 
 // すべてのparentやchildのplayボタンを、postMessage経由で同時に押したことにする用
 function onClickPlayButton() {
-  if (postmateMidi.ui.playButtonFnc) {
-    if (isPreRenderSeq()) {
-      console.log(`${getParentOrChild()} : onClickPlayButton : prerender seq`);
-      return;
-    } else {
-      console.log(`${getParentOrChild()} : onClickPlayButton : playButtonFnc`);
+  if (   postmateMidi.ui.playButtonFnc
+      && postmateMidi.isLinkPlay
+  ) {
       postmateMidi.ui.playButtonFnc();
-    }
-  } else {
-    console.log(`${getParentOrChild()} : onClickPlayButton : no playButtonFnc`);
   }
 }
 
@@ -812,7 +811,7 @@ function isPreRenderSynth() {
 
 function onStartPreRender(data) {
   // sq
-  postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。あると混乱する。混乱防止用。
+  if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
   console.log(`${getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
   const sq = postmateMidi.seq;
   console.log(`${getParentOrChild()} : sq : `, sq);

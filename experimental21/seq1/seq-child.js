@@ -23,7 +23,8 @@ sq.getTemplates = () => {
 }
 sq.BPM = 120;
 
-postmateMidi.registerChild(urlParams, '#textarea', sq.startPlayJson, 'select', sq.getTemplates, sq.setupByData);
+postmateMidi.registerChild(urlParams, '#textarea', null/*sq.startPlayJson*/, 'select', sq.getTemplates, sq.setupByData);
 postmateMidi.seq.registerSeq(sq);
-postmateMidi.ui.registerPlayButton('button', sq.togglePlay, /*isRemovePlayButtonAtTonejsStartRunning=*/true);
+postmateMidi.ui.removeButton('button');
+
 console.log(`postmate-midi child:`, postmateMidi);
