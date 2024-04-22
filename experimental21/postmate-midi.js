@@ -376,6 +376,8 @@ function registerPrerenderButton(buttonSelector) {
     console.log(`${getParentOrChild()} : onclick prerenderButton`);
     const gn = postmateMidi.tonejs.generator;
 
+    postmateMidi.isPreRenderSynth = true; // noteOn時にprerender用のtimestamp制御をする用
+
     // prerender ※この3行は、ひとまずsendWavAfterHandshakeAllChildrenのコピー。あとでfncにして共通化するかも
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
