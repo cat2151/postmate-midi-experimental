@@ -915,6 +915,7 @@ function sendToSampler(wavs) {
 }
 
 function samplerAddWavs(wavs) {
+  // TODO ここのch2へのaddが不足でエラーになるケースがあったので、修正する、修正案を検討する
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     const noteNum = data[0];
