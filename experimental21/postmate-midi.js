@@ -856,9 +856,9 @@ async function doPreRenderAsync(songs) {
 }
 
 function schedulingPreRender(gn, preRenderMidi) {
-  const ch = 1;
+  const audioCh = 1;
   const bufferSec = 7;
-  setContextInitSynthAddWav(new Tone.OfflineContext(ch, bufferSec, gn.orgContext.sampleRate));
+  setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
   for (let i = 0; i < preRenderMidi.length; i++) {
     onmidimessage(preRenderMidi[i]);
@@ -908,14 +908,26 @@ function sendToSamplerFromDevice(data, deviceId) {
 }
 
 function sendToSampler(wavs) {
-  if (!isIpad()) console.log(`${getParentOrChild()} : received : ` , wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
-  samplerAddWavs(wavs);
+  if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
-  gn.wavs = wavs; // prerenderボタンで使う用
+  gn.wavs = updateGnWavs(gn, wavs);
+  samplerAddWavs(gn.wavs);
+}
+
+// prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
+function updateGnWavs(gn, wavs) {
+  if (!gn.wavs) gn.wavs = [];
+  for (let i = 0; i < wavs.length; i++) {
+    if (i < gn.wavs.length) {
+      gn.wavs[i] = wavs[i];
+    } else {
+      gn.wavs.push(wavs[i]);
+    }
+  }
+  return gn.wavs;
 }
 
 function samplerAddWavs(wavs) {
-  // TODO ここのch2へのaddが不足でエラーになるケースがあったので、修正する、修正案を検討する
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     const noteNum = data[0];
