@@ -891,6 +891,10 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
   // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
   if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
+  saveWavDialog(wavs);
+}
+
+function saveWavDialog(wavs) {
   // TODO dialogを表示して、ファイル保存できるようにする
 }
 
