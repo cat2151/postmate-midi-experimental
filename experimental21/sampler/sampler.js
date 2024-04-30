@@ -10,18 +10,19 @@ function initSampler(s, samplerParam, volume) {
   }
 
   const filter = new Tone.Filter({type: "lowpass", frequency: 2400});
-  const pan = new Tone.Panner(1); // -1～1 ひとまずtest用に1（right）。TODO control change 10 0と1を-1に、127を1に、64を0にする。MIDI RP-036。Pan Law設定の実装は後回しにする。
+  const panner = new Tone.Panner();
   const vol = new Tone.Volume(volume);
 
   sampler.connect(filter);
-  filter.connect(pan);
-  pan.connect(vol);
+  filter.connect(panner);
+  panner.connect(vol);
   vol.toDestination();
 
   s.noteOn = noteOn;
   s.noteOff = noteOff;
   s.synth = sampler;
   s.controlChange[74] = cutoff;
+  s.controlChange[10] = panpot;
 
   function noteOn(noteNum, timestamp) {
     console.log(`sampler : noteOn : ${noteNum}, ${timestamp}`);
@@ -41,6 +42,16 @@ function initSampler(s, samplerParam, volume) {
   function v2mul(v) {
     return Math.pow(2, 1 / 12 * v);
   }
+
+  function panpot(v, timestamp) {
+    v = v.clamp(1, 127); // MIDI RP-036
+    v -= 64;
+    v /= 63; // Pan Law設定の実装は後回しにする
+    panner.pan.setValueAtTime(v, timestamp);
+  }
+  Number.prototype.clamp = function (_min, _max) {
+    return Math.min(Math.max(this, _min), _max);
+  };
 }
 
 export { initSampler };
