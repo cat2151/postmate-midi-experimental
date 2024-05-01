@@ -142,7 +142,7 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
         }
       });
       child.on('sendToSampler' + (childId + 1), data => { // sendToSampler1 ～ : child1からcallされた場合は、sendToSampler1 となる。意味は、わかりづらいが sendToSampler from child1 である。
-        // console.log(`parent : sendToSampler : from ${childName} : received data : [`, data, `]`);
+        if (!isIpad()) console.log(`parent : sendToSampler : from ${childName} : received data : `, data);
         console.log(`parent : sendToSampler : from ${childName}`); // iPad chrome inspect のログが波形データで埋め尽くされて調査できない、のを防止する用
         // child1～n がgenerateした wav を、一度ここparentに集約したのち、振り分けて sendToSampler する
         sendToSamplerFromDevice(data, /*deviceId=*/childId + 1);
@@ -856,7 +856,8 @@ async function doPreRenderAsync(songs) {
 }
 
 function schedulingPreRender(gn, preRenderMidi) {
-  const audioCh = 1;
+  // const audioCh = 1/*MONO*/;
+  const audioCh = 2/*STEREO*/;
   const bufferSec = 7;
   setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
@@ -888,6 +889,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.parent) return;
   if (!isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
+  // to sampler
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
   // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
   if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
@@ -962,18 +964,23 @@ function samplerAddWavs(wavs) {
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
     checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
-      postmateMidi.ch[ch].synth.add(noteNum, Tone.Buffer.fromArray(wav));
+      if (!isIpad()) console.log(`${getParentOrChild()} : wav add to sampler wav : `, wav);
+      const toneBuffer = Tone.Buffer.fromArray(wav);
+      console.log(`${getParentOrChild()} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
+      postmateMidi.ch[ch].synth.add(noteNum, toneBuffer);
       console.log(`${getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
   }
 }
 
+// TODO stereo時は、[Float32Array(336000), Float32Array(336000)] なのでそれを識別し、両方とも無音のときには無音、とする
 function checkWavOk(wav) {
   const startTime = Date.now();
   for (let i = 0; i < wav.length; i++) {
     if (wav[i]) {
       const peak = getPeakAbs(wav);
-      console.log(`${getParentOrChild()} : checkWav : wav[${i}] = ${wav[i]}, peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
+      if (!isIpad()) console.log(`${getParentOrChild()} : checkWav : wav[${i}]`, wav[i]);
+      console.log(`${getParentOrChild()} : checkWav : peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
       return true;
     }
   }

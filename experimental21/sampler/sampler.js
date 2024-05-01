@@ -1,5 +1,8 @@
 // import * as Tone from 'tone'; // コメントアウトする。index.htmlでTone.jsをsrcする。そうしないとバンドラーを使わない別projectにおいてソースをそのまま利用できず不便だったので。
 
+// 問題、samplerとsynthで重複コードが大規模になりつつある。
+// 案、postmate-midi.jsと同じdirに、ライブラリとして切り出してimportする。
+
 function initSampler(s, samplerParam, volume) {
   console.log(`initSampler : ${samplerParam}, ${volume}`);
   let sampler;
