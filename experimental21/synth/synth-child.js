@@ -6,7 +6,7 @@ const urlParams = rison2.parse(new URL(window.location.href).searchParams.get('q
 postmateMidi.registerChild(urlParams, null, null, null, null, null);
 
 postmateMidi.tonejs.registerSynth((ch) => {
-  initSynth(ch[1-1], {oscillator: {type: 'fatsawtooth'}});
+  initSynth(ch[1-1], {oscillator: {type: 'fatsawtooth'}}, /*volume=*/0);
 });
 postmateMidi.isPreRenderSynth = true;
 
