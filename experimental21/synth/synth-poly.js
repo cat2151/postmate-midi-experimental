@@ -1,21 +1,44 @@
 // import * as Tone from 'tone'; // コメントアウトする。index.htmlでTone.jsをsrcする。そうしないとバンドラーを使わない別projectにおいてソースをそのまま利用できず不便だったので。
 
-function initSynth(s, synthFnc, synthParam, volume) {
-  if (synthFnc == Tone.PolySynth) initSynthPoly(s, synthFnc, synthParam, volume);
-  if (synthFnc == Tone.Sampler) initSampler(s, synthFnc, synthParam, volume);
+function initSynth(ch, instrumentArgsArray) {
+  for (const a of instrumentArgsArray) {
+    const s = ch[a.ch];
+    switch (a.instrument) {
+    case 'PolySynth':
+      let voice;
+      switch (a.voice) {
+      case 'Synth': voice = Tone.Synth; break;
+      default:
+        const msg = `voice ${a.voice} を実装してください`;
+        alert(msg);
+        console.error(msg);
+        break;
+      }
+      initSynthPoly(s, Tone.PolySynth, voice, a.voiceArgs, a.volume);
+      break;
+    case 'Sampler':
+      initSampler(s, a.samples, a.volume);
+      break;
+    default:
+      const msg = `instrument ${a.instrument} を実装してください`;
+      alert(msg);
+      console.error(msg);
+      break;
+    }
+  }
 }
 
-function initSynthPoly(s, synthFnc, synthParam, volume) {
-  s.synth = new synthFnc(Tone.Synth, synthParam);
+function initSynthPoly(s, synthFnc, voice, voiceArgs, volume) {
+  s.synth = new synthFnc(voice, voiceArgs);
   initSynthCommon(s, volume);
 }
 
-function initSampler(s, samplerFnc, samplerParam, volume) {
-  console.log(`initSampler : ${samplerParam}, ${volume}`);
-  if (samplerParam) {
-    s.synth = new samplerFnc(samplerParam);
+function initSampler(s, samples, volume) {
+  console.log(`initSampler : ${samples}, ${volume}`);
+  if (samples) {
+    s.synth = new Tone.Sampler(samples);
   } else {
-    s.synth = new samplerFnc(); // あとでaddする用
+    s.synth = new Tone.Sampler(); // あとでaddする用
   }
   initSynthCommon(s, volume);
 }
