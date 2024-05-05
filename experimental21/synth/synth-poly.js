@@ -30,7 +30,7 @@ function initSynth(ch, instrumentArgsArray) {
 
 function initSynthPoly(s, synthFnc, voice, voiceArgs, volume) {
   s.synth = new synthFnc(voice, voiceArgs);
-  initSynthCommon(s, volume);
+  initSynthCommon(s, volume, /*isUsingPan=*/true);
 }
 
 function initSampler(s, samples, volume) {
@@ -40,19 +40,25 @@ function initSampler(s, samples, volume) {
   } else {
     s.synth = new Tone.Sampler(); // あとでaddする用
   }
-  initSynthCommon(s, volume);
+  initSynthCommon(s, volume, /*isUsingPan=*/false);
 }
 
-function initSynthCommon(s, volume) {
+function initSynthCommon(s, volume, isUsingPan) {
   const synth = s.synth;
   const filter = new Tone.Filter({type: "lowpass", frequency: 2400});
-  const panner = new Tone.Panner();
   const vol = new Tone.Volume(volume);
+  const split = new Tone.Split();
+  const panner = new Tone.Panner();
 
   synth.connect(filter);
-  filter.connect(panner);
-  panner.connect(vol);
-  vol.toDestination();
+  synth.connect(split);
+  filter.connect(vol);
+  if (isUsingPan) {
+    vol.connect(panner);
+    panner.toDestination();
+  } else {
+    vol.toDestination();
+  }
 
   s.noteOn = noteOn;
   s.noteOff = noteOff;
@@ -61,6 +67,7 @@ function initSynthCommon(s, volume) {
 
   function noteOn(noteNum, timestamp) {
     // console.log(`synth : noteOn : noteNum = ${noteNum}, timestamp = ${timestamp}`);
+    // console.log(`synth : channelCount : ${synth.channelCount} ${filter.channelCount} ${vol.channelCount} ${Tone.getContext().destination.channelCount}`);
     synth.triggerAttack(Tone.Midi(noteNum).toFrequency(), timestamp);
   };
 
@@ -79,9 +86,12 @@ function initSynthCommon(s, volume) {
   }
 
   function panpot(v, timestamp) {
+    if (!isUsingPan) return;
+    // console.log(`panpot : ${v}`);
     v = v.clamp(1, 127); // MIDI RP-036
     v -= 64;
     v /= 63; // Pan Law設定の実装は後回しにする
+    // console.log(`panpot : ${v}`);
     panner.pan.setValueAtTime(v, timestamp);
   }
   Number.prototype.clamp = function (_min, _max) {
