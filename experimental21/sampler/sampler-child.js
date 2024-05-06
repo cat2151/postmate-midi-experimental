@@ -6,8 +6,8 @@ const urlParams = rison2.parse(new URL(window.location.href).searchParams.get('q
 postmateMidi.registerChild(urlParams, null, null, null, null, null);
 
 postmateMidi.tonejs.registerSynth((ch) => {
-  initSynth(ch, [ {ch: 1-1, instrument: 'Sampler', samples: null, volume: -9},
-                  {ch: 2-1, instrument: 'Sampler', samples: null, volume: -6} ]);
+  initSynth(ch, [ {ch: 1-1, instrument: 'Sampler', samples: null, volume: -9, isUsingPan: false},
+                  {ch: 2-1, instrument: 'Sampler', samples: null, volume: -6, isUsingPan: false} ]);
 });
 
 postmateMidi.ui.registerPrerenderButton('#prerender');

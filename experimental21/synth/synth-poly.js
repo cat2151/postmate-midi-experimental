@@ -14,10 +14,10 @@ function initSynth(ch, instrumentArgsArray) {
         console.error(msg);
         break;
       }
-      initSynthPoly(s, Tone.PolySynth, voice, a.voiceArgs, a.volume);
+      initSynthPoly(s, Tone.PolySynth, voice, a.voiceArgs, a.volume, a.isUsingPan);
       break;
     case 'Sampler':
-      initSampler(s, a.samples, a.volume);
+      initSampler(s, a.samples, a.volume, a.isUsingPan);
       break;
     default:
       const msg = `instrument ${a.instrument} を実装してください`;
@@ -28,19 +28,19 @@ function initSynth(ch, instrumentArgsArray) {
   }
 }
 
-function initSynthPoly(s, synthFnc, voice, voiceArgs, volume) {
+function initSynthPoly(s, synthFnc, voice, voiceArgs, volume, isUsingPan) {
   s.synth = new synthFnc(voice, voiceArgs);
-  initSynthCommon(s, volume, /*isUsingPan=*/true);
+  initSynthCommon(s, volume, isUsingPan);
 }
 
-function initSampler(s, samples, volume) {
+function initSampler(s, samples, volume, isUsingPan) {
   console.log(`initSampler : ${samples}, ${volume}`);
   if (samples) {
     s.synth = new Tone.Sampler(samples);
   } else {
     s.synth = new Tone.Sampler(); // あとでaddする用
   }
-  initSynthCommon(s, volume, /*isUsingPan=*/false);
+  initSynthCommon(s, volume, isUsingPan);
 }
 
 function initSynthCommon(s, volume, isUsingPan) {
