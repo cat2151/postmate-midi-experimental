@@ -57,7 +57,7 @@ function initSynthCommon(s, volume, isUsingPan) {
     vol.connect(panner);
     panner.toDestination();
   } else {
-    vol.toDestination();
+    vol.toDestination(); // stereo wavをsamplerでstereoのまま鳴らす用。Tone.Panner はstereo wavをmonoにしてパンニングする仕様なので。
   }
 
   s.noteOn = noteOn;
