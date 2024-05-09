@@ -6,12 +6,12 @@ const postmateMidi = {
   parent: null, childId: null,   // childのみが保持するもの
   midiOutputIds: [], sendToSamplerIds: [],
   ch: Array.from({ length: 16 }, () => ({ noteOn: null, noteOff: null, controlChange: [] })),
-  ui: { registerPlayButton, registerPrerenderButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound, removeButton },
+  ui: { registerPlayButton, registerPrerenderButton, registerWavImportButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound, removeButton },
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
-  isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, isLinkPlay: false
+  isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
 let isParent = false; // ひとまず非公開、postmateMidiをシンプルにする優先
@@ -383,6 +383,16 @@ function registerPrerenderButton(buttonSelector) {
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
     // 以降は非同期で後続処理へ
+  };
+}
+
+function registerWavImportButton(buttonSelector) {
+  postmateMidi.hasWavImportButton = true;
+  const ui = postmateMidi.ui;
+  ui.wavImportButton = document.querySelector(buttonSelector);
+  ui.wavImportButton.onclick = function() {
+    console.log(`${getParentOrChild()} : onclick wavImportButton`);
+    // TODO dialogを実装する
   };
 }
 
