@@ -392,11 +392,11 @@ function registerWavImportButton(buttonSelector) {
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
     console.log(`${getParentOrChild()} : onclick wavImportButton`);
-    handleFileUpload();
+    handleFileUpload(afterWavFileUpload);
   };
 }
 
-function handleFileUpload() {
+function handleFileUpload(afterFileUpload) {
   const inputElement = document.createElement('input');
   inputElement.type = 'file';
   inputElement.addEventListener('change', async (event) => {
@@ -404,7 +404,7 @@ function handleFileUpload() {
     if (selectedFile) {
       const fileContent = await readFileContentAsync(selectedFile);
       console.log('file uploaded : ', selectedFile.name);
-      console.log(fileContent);
+      afterFileUpload(fileContent);
     } else {
       alert('ファイルが選択されていません。'); // 到達しない想定。キャンセル時は到達しなかった。
     }
@@ -423,6 +423,11 @@ async function readFileContentAsync(file) {
     };
     reader.readAsArrayBuffer(file);
   });
+}
+
+function afterWavFileUpload(fileContent) {
+  console.log(`${getParentOrChild()} : afterWavFileUpload`);
+  console.log(fileContent);
 }
 
 function isIpad() {
