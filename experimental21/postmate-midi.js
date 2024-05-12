@@ -392,7 +392,7 @@ function registerWavImportButton(buttonSelector) {
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
     console.log(`${getParentOrChild()} : onclick wavImportButton`);
-    handleFileUpload(afterWavFileUpload);
+    handleFileUpload(afterWavFileUploadAsync);
   };
 }
 
@@ -425,9 +425,14 @@ async function readFileContentAsync(file) {
   });
 }
 
-function afterWavFileUpload(fileContent) {
+async function afterWavFileUploadAsync(fileContent) {
   console.log(`${getParentOrChild()} : afterWavFileUpload`);
   console.log(fileContent);
+  const audioBuffer = await Tone.getContext().decodeAudioData(fileContent);
+  console.log(audioBuffer);
+  const wavFloat32 = new Tone.ToneAudioBuffer(audioBuffer).toArray();
+  console.log(wavFloat32);
+  // TODO add to sampler を実装する
 }
 
 function isIpad() {
