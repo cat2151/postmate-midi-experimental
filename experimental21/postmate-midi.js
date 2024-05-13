@@ -426,13 +426,26 @@ async function readFileContentAsync(file) {
 }
 
 async function afterWavFileUploadAsync(fileContent) {
-  console.log(`${getParentOrChild()} : afterWavFileUpload`);
+  console.log(`${getParentOrChild()} : afterWavFileUploadAsync`);
+  const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
+
+  // update gn wavs
+  const wavs = [[60, wav]];
+  const gn = postmateMidi.tonejs.generator;
+  gn.wavs = updateGnWavs(gn, wavs);
+
+  // add to sampler
+  const context = Tone.getContext();
+  setContextInitSynthAddWav(context);
+}
+
+async function getFloat32ArrayFromWavFileAsync(fileContent) {
   console.log(fileContent);
   const audioBuffer = await Tone.getContext().decodeAudioData(fileContent);
   console.log(audioBuffer);
   const wavFloat32 = new Tone.ToneAudioBuffer(audioBuffer).toArray();
   console.log(wavFloat32);
-  // TODO add to sampler を実装する
+  return wavFloat32;
 }
 
 function isIpad() {
