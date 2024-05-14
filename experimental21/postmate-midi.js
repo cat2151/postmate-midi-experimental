@@ -431,6 +431,7 @@ async function afterWavFileUploadAsync(fileContent) {
 
   // update gn wavs
   const wavs = [[60, wav]];
+  // const wavs = [null, [60, wav]];
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = updateGnWavs(gn, wavs);
 
@@ -1010,6 +1011,7 @@ function updateGnWavs(gn, wavs) {
   if (!gn.wavs) gn.wavs = [];
   for (let i = 0; i < wavs.length; i++) {
     if (i < gn.wavs.length) {
+      if (!wavs[i]) continue; // 例えばch02用のwavs[1]だけを上書きし、ch01用はgn.wavs[0]のままとする用
       gn.wavs[i] = wavs[i];
     } else {
       gn.wavs.push(wavs[i]);
