@@ -396,15 +396,14 @@ function registerWavImportButton(buttonSelector) {
   };
 }
 
-function handleFileUpload(afterFileUpload) {
+function handleFileUpload(afterFileUploadFnc) {
   const inputElement = document.createElement('input');
   inputElement.type = 'file';
   inputElement.addEventListener('change', async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const fileContent = await readFileContentAsync(selectedFile);
-      console.log('file uploaded : ', selectedFile.name);
-      afterFileUpload(fileContent);
+      afterFileUploadFnc(fileContent, selectedFile.name);
     } else {
       alert('ファイルが選択されていません。'); // 到達しない想定。キャンセル時は到達しなかった。
     }
@@ -425,8 +424,9 @@ async function readFileContentAsync(file) {
   });
 }
 
-async function afterWavFileUploadAsync(fileContent) {
-  console.log(`${getParentOrChild()} : afterWavFileUploadAsync`);
+async function afterWavFileUploadAsync(fileContent, filename) {
+  console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
+  // TODO filenameから、ch1,ch2等の情報を得る。関数に切り出す想定
   const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
