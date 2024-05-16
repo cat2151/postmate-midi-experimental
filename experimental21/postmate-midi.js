@@ -426,7 +426,7 @@ async function readFileContentAsync(file) {
 
 async function afterWavFileUploadAsync(fileContent, filename) {
   console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
-  // TODO filenameから、ch1,ch2等の情報を得る。関数に切り出す想定
+  const chNum = getChNum(filename);
   const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
@@ -438,6 +438,11 @@ async function afterWavFileUploadAsync(fileContent, filename) {
   // add to sampler
   const context = Tone.getContext();
   setContextInitSynthAddWav(context);
+}
+
+function getChNum(filename) {
+  // TODO filenameから、ch1,ch2等の情報を得る
+  return 0;
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
