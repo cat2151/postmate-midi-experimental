@@ -430,8 +430,8 @@ async function afterWavFileUploadAsync(fileContent, filename) {
   const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
-  const wavs = [[60, wav]];
-  // const wavs = [null, [60, wav]];
+  const wavs = new Array(16).fill(null);
+  wavs[chNum] = [60, wav];
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = updateGnWavs(gn, wavs);
 
@@ -442,7 +442,7 @@ async function afterWavFileUploadAsync(fileContent, filename) {
 
 function getChNum(filename) {
   // TODO filenameから、ch1,ch2等の情報を得る
-  return 0;
+  return 1;
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
