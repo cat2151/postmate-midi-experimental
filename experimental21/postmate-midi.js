@@ -443,7 +443,8 @@ async function afterWavFileUploadAsync(fileContent, filename) {
 function getChNum(filename) {
   // TODO filenameから、ch1,ch2等の情報を得る
   const removeExtension = filename => filename.replace(/\.[^.]*$/, '');
-  console.log(removeExtension(filename));
+  const mainFilename = removeExtension(filename);
+  console.log(mainFilename);
   return 1;
 }
 
