@@ -441,11 +441,12 @@ async function afterWavFileUploadAsync(fileContent, filename) {
 }
 
 function getChNum(filename) {
-  // TODO filenameから、ch1,ch2等の情報を得る
   const removeExtension = filename => filename.replace(/\.[^.]*$/, '');
   const mainFilename = removeExtension(filename);
   console.log(mainFilename);
-  return 1;
+  // TODO mainFilename から、ch1,ch2等の情報を得る
+  let chNum = 1;
+  return chNum;
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
