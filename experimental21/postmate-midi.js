@@ -444,9 +444,19 @@ function getChNum(filename) {
   const removeExtension = filename => filename.replace(/\.[^.]*$/, '');
   const mainFilename = removeExtension(filename);
   console.log(mainFilename);
-  // TODO mainFilename から、ch1,ch2等の情報を得る
-  let chNum = 1;
+  // "ch1" -> 0, "ch2" -> 1
+  const chNum = extractNumberFromStr(mainFilename);
+  console.log(chNum);
   return chNum;
+
+  function extractNumberFromStr(str) {
+    const match = str.match(/\d+/);
+    if (match) {
+      return parseInt(match[0], 10) - 1;
+    } else {
+      return 0;
+    }
+  }
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
