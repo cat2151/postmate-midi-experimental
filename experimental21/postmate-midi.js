@@ -441,12 +441,9 @@ async function afterWavFileUploadAsync(fileContent, filename) {
 }
 
 function getChNum(filename) {
-  const removeExtension = filename => filename.replace(/\.[^.]*$/, '');
-  const mainFilename = removeExtension(filename);
-  console.log(mainFilename);
   // "ch1" -> 0, "ch2" -> 1
-  const chNum = extractNumberFromStr(mainFilename);
-  console.log(chNum);
+  const chNum = extractNumberFromStr(filename);
+  console.log(`wav import to ch${chNum + 1}`);
   return chNum;
 
   function extractNumberFromStr(str) {
