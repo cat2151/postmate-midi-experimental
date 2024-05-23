@@ -443,7 +443,7 @@ async function afterWavFileUploadAsync(fileContent, filename) {
 function getChNum(filename) {
   // "ch1" -> 0, "ch2" -> 1
   const chNum = extractNumberFromStr(filename);
-  console.log(`wav import to ch${chNum + 1}`);
+  console.log(`wav import [${filename}] to ch${chNum + 1}`);
   return chNum;
 
   function extractNumberFromStr(str) {
