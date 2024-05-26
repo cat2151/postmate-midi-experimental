@@ -444,7 +444,7 @@ function getChNum(filename) {
   // "ch1" -> 0, "ch2" -> 1
   const chNum = extractNumberFromStr(filename);
   console.log(`${getParentOrChild()} : wav import [${filename}] to ch${chNum + 1}`);
-  // TODO errorになっているので調査する
+  // TODO WAV IMPORT後、ERRORになっている。console logを読む
   return chNum;
 
   function extractNumberFromStr(str) {
