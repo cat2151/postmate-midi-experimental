@@ -444,7 +444,6 @@ function getChNum(filename) {
   // "ch1" -> 0, "ch2" -> 1
   const chNum = extractNumberFromStr(filename);
   console.log(`${getParentOrChild()} : wav import [${filename}] to ch${chNum + 1}`);
-  // TODO WAV IMPORT後、ERRORになっている。console logを読む
   return chNum;
 
   function extractNumberFromStr(str) {
@@ -1040,6 +1039,9 @@ function updateGnWavs(gn, wavs) {
 function samplerAddWavs(wavs) {
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
+    if (!data) {
+      continue;
+    }
     const noteNum = data[0];
     const wav = data[1];
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
