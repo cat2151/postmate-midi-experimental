@@ -1,5 +1,5 @@
 import { postmateMidi } from "../postmate-midi.js";
-import { prerender } from "../prerender.js";
+import { preRenderer } from "../prerenderer.js";
 import { initSynth } from "../synth/synth-poly.js";
 if (!new URL(window.location.href).searchParams.get('query')) window.location.href = "../"; // dir階層直叩きした場合の混乱防止用
 const urlParams = rison2.parse(new URL(window.location.href).searchParams.get('query'));
@@ -14,6 +14,8 @@ postmateMidi.tonejs.registerSynth((ch) => {
 postmateMidi.ui.registerPrerenderButton('#prerender');
 postmateMidi.isSampler = true;
 postmateMidi.ui.registerWavImportButton('#wavimport');
+
+postmateMidi.preRenderer.registerPrerenderer(preRenderer);
 
 postmateMidi.ui.visualizeCurrentSound();
 console.log(`postmate-midi child:`, postmateMidi);

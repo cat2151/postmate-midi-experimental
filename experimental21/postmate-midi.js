@@ -11,6 +11,7 @@ const postmateMidi = {
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
+  preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -1069,6 +1070,11 @@ function checkWavOk(wav) {
   }
   console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
   return false;
+}
+/////////////////////////
+function registerPrerenderer(preRenderer) {
+  // preRendererの仕組みは広い用途と複雑な仕様を取りうるため、できるだけpostmate-midiと疎結合の方向に進むことにした
+  postmateMidi.preRenderer = preRenderer;
 }
 
 /////////////////////////
