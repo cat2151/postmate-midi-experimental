@@ -427,7 +427,8 @@ async function readFileContentAsync(file) {
 
 async function afterWavFileUploadAsync(fileContent, filename) {
   console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
-  const chNum = getChNum(filename);
+  if (!postmateMidi.preRenderer.getChNum) console.log(`${getParentOrChild()} : ERROR : postmateMidi.preRenderer.getChNum not Found`);
+  const chNum = postmateMidi.preRenderer.getChNum(filename);
   const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
@@ -439,22 +440,6 @@ async function afterWavFileUploadAsync(fileContent, filename) {
   // add to sampler
   const context = Tone.getContext();
   setContextInitSynthAddWav(context);
-}
-
-function getChNum(filename) {
-  // "ch1" -> 0, "ch2" -> 1
-  const chNum = extractNumberFromStr(filename);
-  console.log(`${getParentOrChild()} : wav import [${filename}] to ch${chNum + 1}`);
-  return chNum;
-
-  function extractNumberFromStr(str) {
-    const match = str.match(/\d+/);
-    if (match) {
-      return parseInt(match[0], 10) - 1;
-    } else {
-      return 0;
-    }
-  }
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
