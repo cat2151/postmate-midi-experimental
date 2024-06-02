@@ -393,11 +393,11 @@ function registerWavImportButton(buttonSelector) {
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
     console.log(`${getParentOrChild()} : onclick wavImportButton`);
-    handleFileUpload(afterWavFileUploadAsync);
+    openDialogForFileUpload(afterWavFileUploadAsync);
   };
 }
 
-function handleFileUpload(afterFileUploadFnc) {
+function openDialogForFileUpload(afterFileUploadFnc) {
   const inputElement = document.createElement('input');
   inputElement.type = 'file';
   inputElement.addEventListener('change', async (event) => {
