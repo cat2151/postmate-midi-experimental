@@ -426,6 +426,9 @@ async function readFileContentAsync(file) {
 }
 
 async function afterWavFileUploadAsync(fileContent, filename) {
+  // TODO prerenderer.jsに切り出していく
+  // 課題、postmateMidi objや、各種関数と結合している。やりかたを考える。
+  //  例、結合している関数は、postmateMidi objのメンバとし、公開APIとして、prerendererから呼び出す、を試す
   console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
   if (!postmateMidi.preRenderer.getChNum) console.log(`${getParentOrChild()} : ERROR : postmateMidi.preRenderer.getChNum not Found`);
   const chNum = postmateMidi.preRenderer.getChNum(filename);
