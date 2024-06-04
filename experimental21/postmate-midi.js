@@ -12,6 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -426,23 +427,23 @@ async function readFileContentAsync(file) {
 }
 
 async function afterWavFileUploadAsync(fileContent, filename) {
-  // TODO prerenderer.jsに切り出していく
+  // TODO 中身を部分的に、prerenderer.jsに切り出していく -> ひとまずこのfncそのものをprerenderer.jsに切り出し、prerenderer.afterWavFileUploadAsync として呼び出してみる
   // 課題、postmateMidi objや、各種関数と結合している。やりかたを考える。
   //  例、結合している関数は、postmateMidi objのメンバとし、公開APIとして、prerendererから呼び出す、を試す
   console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
   if (!postmateMidi.preRenderer.getChNum) console.log(`${getParentOrChild()} : ERROR : postmateMidi.preRenderer.getChNum not Found`);
   const chNum = postmateMidi.preRenderer.getChNum(filename);
-  const wav = await getFloat32ArrayFromWavFileAsync(fileContent);
+  const wav = await postmateMidi.getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
   const wavs = new Array(16).fill(null);
   wavs[chNum] = [60, wav];
   const gn = postmateMidi.tonejs.generator;
-  gn.wavs = updateGnWavs(gn, wavs);
+  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
 
   // add to sampler
   const context = Tone.getContext();
-  setContextInitSynthAddWav(context);
+  postmateMidi.setContextInitSynthAddWav(context);
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
@@ -927,7 +928,7 @@ function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
   const audioCh = 2/*STEREO*/;
   const bufferSec = 7;
-  setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
+  postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
   for (let i = 0; i < preRenderMidi.length; i++) {
     onmidimessage(preRenderMidi[i]);
@@ -938,7 +939,7 @@ async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
   let wav = await context.render();
-  setContextInitSynthAddWav(orgContext);
+  postmateMidi.setContextInitSynthAddWav(orgContext);
   wav = wav.toArray();
   if (!isIpad()) console.log(`${getParentOrChild()} : rendered wav : `, wav);
   checkWavOk(wav);
@@ -1007,7 +1008,7 @@ function sendToSamplerFromDevice(data, deviceId) {
 function sendToSampler(wavs) {
   if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
-  gn.wavs = updateGnWavs(gn, wavs);
+  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
   samplerAddWavs(gn.wavs);
 }
 
