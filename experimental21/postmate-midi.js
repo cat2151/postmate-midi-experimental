@@ -394,18 +394,22 @@ function registerWavImportButton(buttonSelector) {
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
     console.log(`${getParentOrChild()} : onclick wavImportButton`);
-    openDialogForFileUpload(afterWavFileUploadAsync);
+    openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
   };
 }
 
 function openDialogForFileUpload(afterFileUploadFnc) {
+  if (!afterFileUploadFnc) {
+    console.log(`${getParentOrChild()} : ERROR : openDialogForFileUpload : `, afterFileUploadFnc);
+    return;
+  }
   const inputElement = document.createElement('input');
   inputElement.type = 'file';
   inputElement.addEventListener('change', async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const fileContent = await readFileContentAsync(selectedFile);
-      afterFileUploadFnc(fileContent, selectedFile.name);
+      afterFileUploadFnc(fileContent, selectedFile.name, postmateMidi);
     } else {
       alert('ファイルが選択されていません。'); // 到達しない想定。キャンセル時は到達しなかった。
     }
@@ -424,26 +428,6 @@ async function readFileContentAsync(file) {
     };
     reader.readAsArrayBuffer(file);
   });
-}
-
-async function afterWavFileUploadAsync(fileContent, filename) {
-  // TODO 中身を部分的に、prerenderer.jsに切り出していく -> ひとまずこのfncそのものをprerenderer.jsに切り出し、prerenderer.afterWavFileUploadAsync として呼び出してみる
-  // 課題、postmateMidi objや、各種関数と結合している。やりかたを考える。
-  //  例、結合している関数は、postmateMidi objのメンバとし、公開APIとして、prerendererから呼び出す、を試す
-  console.log(`${getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
-  if (!postmateMidi.preRenderer.getChNum) console.log(`${getParentOrChild()} : ERROR : postmateMidi.preRenderer.getChNum not Found`);
-  const chNum = postmateMidi.preRenderer.getChNum(filename);
-  const wav = await postmateMidi.getFloat32ArrayFromWavFileAsync(fileContent);
-
-  // update gn wavs
-  const wavs = new Array(16).fill(null);
-  wavs[chNum] = [60, wav];
-  const gn = postmateMidi.tonejs.generator;
-  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
-
-  // add to sampler
-  const context = Tone.getContext();
-  postmateMidi.setContextInitSynthAddWav(context);
 }
 
 async function getFloat32ArrayFromWavFileAsync(fileContent) {
