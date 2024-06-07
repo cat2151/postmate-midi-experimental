@@ -839,6 +839,8 @@ function initCh(ch) {
 // Tone Generator
 //  wav format : Float32Array
 
+// TODO prerender処理を、部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+
 // child用
 function sendWavAfterHandshakeAllChildren() {
   const gn = postmateMidi.tonejs.generator;
@@ -864,6 +866,7 @@ function isPreRenderSynth() {
   return postmateMidi.isPreRenderSynth;
 }
 
+// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function onStartPreRender(data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
@@ -890,6 +893,7 @@ function isPreRenderSeq() {
   return postmateMidi.seq.getPreRenderMidiData;
 }
 
+// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function onCompletePreRenderSeq(data) {
   console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
   doPreRenderAsync(data);
@@ -908,6 +912,7 @@ async function doPreRenderAsync(songs) {
   sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
+// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
   const audioCh = 2/*STEREO*/;
@@ -919,6 +924,7 @@ function schedulingPreRender(gn, preRenderMidi) {
   }
 }
 
+// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
@@ -938,6 +944,7 @@ function setContextInitSynthAddWav(context) {
   if (postmateMidi.isSampler) samplerAddWavs(gn.wavs); // samplerにてprerenderする用
 }
 
+// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.parent) return;
   if (!isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
@@ -953,6 +960,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   }
 }
 
+// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function saveWavByDialog(wavFloat32) {
   const toWav=w=>(( // https://qiita.com/McbeEringi/items/14b05233e8288bac5bea
     {numberOfChannels:c,sampleRate:r},l4=x=>[x,x>>>8,x>>>16,x>>>24],l2=x=>[x,x>>>8],
@@ -989,6 +997,7 @@ function sendToSamplerFromDevice(data, deviceId) {
   }
 }
 
+// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 function sendToSampler(wavs) {
   if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
@@ -996,6 +1005,7 @@ function sendToSampler(wavs) {
   samplerAddWavs(gn.wavs);
 }
 
+// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
 function updateGnWavs(gn, wavs) {
   if (!gn.wavs) gn.wavs = [];
@@ -1010,6 +1020,7 @@ function updateGnWavs(gn, wavs) {
   return gn.wavs;
 }
 
+// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
 function samplerAddWavs(wavs) {
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
