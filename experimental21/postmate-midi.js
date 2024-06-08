@@ -839,13 +839,15 @@ function initCh(ch) {
 // Tone Generator
 //  wav format : Float32Array
 
-// TODO prerender処理を、部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 
 // child用
 function sendWavAfterHandshakeAllChildren() {
   const gn = postmateMidi.tonejs.generator;
   if (gn.isSent) return;
 
+  // webpage起動完了後、
+  // 自動でprerenderを開始する
+  // TODO 「自動でprerenderを開始するか？」の判断は、外部のprerendererに切り出す。 postmateMidi.prerenderer.isAutoStartPrerender() を想定。
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
