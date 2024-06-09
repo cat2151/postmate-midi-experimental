@@ -869,6 +869,8 @@ function isPreRenderSynth() {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+// prerenderにはpostmateMidiをわたせることを動作確認済み。なので、sqにはアクセスできる想定。
+// emit呼び出しも、postmateMidiのコア部分ではあるが、まず外部prerendererでやれるか試してみる想定。つまり関数全体を切り出しを試す想定。
 function onStartPreRender(data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
