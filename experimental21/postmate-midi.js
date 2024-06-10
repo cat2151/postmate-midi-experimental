@@ -898,6 +898,7 @@ function isPreRenderSeq() {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+// 前提、onCompletePreRenderSeq そのものはpostmateMidiの枠組みなので固定。そこから呼び出す doPreRenderAsync を、外部prerenderに切り出す想定。
 function onCompletePreRenderSeq(data) {
   console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
   doPreRenderAsync(data);
