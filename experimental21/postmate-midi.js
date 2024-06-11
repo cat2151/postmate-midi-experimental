@@ -918,6 +918,7 @@ async function doPreRenderAsync(songs) {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+// ここはまるごとprerender側に切り出す想定。その際、onmidimessageは、postmateMidiの公開API、にひとまずする想定。
 function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
   const audioCh = 2/*STEREO*/;
