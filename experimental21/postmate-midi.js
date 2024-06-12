@@ -931,6 +931,7 @@ function schedulingPreRender(gn, preRenderMidi) {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+// ここはまるごとprerender側に切り出す想定。その際、checkWavOkは、postmateMidiの公開API、にひとまずする想定。
 async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
