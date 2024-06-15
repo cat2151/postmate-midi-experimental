@@ -970,6 +970,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
+// まず、toWavを公開API wavFloat32toWavFileFormat に切り出す考え。
 function saveWavByDialog(wavFloat32) {
   const toWav=w=>(( // https://qiita.com/McbeEringi/items/14b05233e8288bac5bea
     {numberOfChannels:c,sampleRate:r},l4=x=>[x,x>>>8,x>>>16,x>>>24],l2=x=>[x,x>>>8],
