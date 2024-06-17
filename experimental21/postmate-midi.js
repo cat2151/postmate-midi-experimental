@@ -984,6 +984,7 @@ function saveWavByDialog(wavFloat32) {
   openDownloadDialog(blob, 'prerendered.wav');
 }
 
+// TODO 公開APIとする想定
 function openDownloadDialog(blob, defaultFilename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
