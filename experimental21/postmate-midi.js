@@ -984,7 +984,7 @@ function saveWavByDialog(wavFloat32) {
   openDownloadDialog(blob, 'prerendered.wav');
 }
 
-// TODO 公開APIとする想定
+// TODO 公開APIとする想定。なぜなら、外部のprerenderer.jsから呼べるよう。
 function openDownloadDialog(blob, defaultFilename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
