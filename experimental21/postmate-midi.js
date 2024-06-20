@@ -995,7 +995,7 @@ function openDownloadDialog(blob, defaultFilename) {
 }
 
 // parent用
-// 備忘、非公開関数のままとする想定、なぜなら現状呼び出し元がpostmateMidi内部のみのため。
+// 備忘、非公開関数のままとする想定、なぜなら現状呼び出し元がpostmateMidi内部のみのため。そのあたりは今後検証して判断していく想定
 function sendToSamplerFromDevice(data, deviceId) {
   if (!postmateMidi.sendToSamplerIds[deviceId].length) console.log(`${getParentOrChild()} : sendToSamplerFromDevice : 接続先を定義してください`);
   for (let i = 0; i < postmateMidi.sendToSamplerIds[deviceId].length; i++) {
