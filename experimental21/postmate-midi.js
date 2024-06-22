@@ -1071,6 +1071,7 @@ function checkWavOk(wav) {
 /////////////////////////
 function registerPrerenderer(preRenderer) {
   // preRendererの仕組みは広い用途と複雑な仕様を取りうるため、できるだけpostmate-midiと疎結合の方向に進むことにした
+  // ↑ TODO 書いてある意図をさらにパッと見で読みやすくするよう、噛み砕く。
   postmateMidi.preRenderer = preRenderer;
 }
 
