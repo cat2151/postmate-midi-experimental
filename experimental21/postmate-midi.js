@@ -1053,7 +1053,7 @@ function samplerAddWavs(wavs) {
   }
 }
 
-// TODO prerederに切り出すか検討する、呼び出し元をみて位置づけを整理して検討する、結果をここに書く
+// TODO ひとまず公開APIにする予定。呼び出し元は renderContextAsync と samplerAddWavs である。呼び出し元のコメントも参照のこと。
 // TODO stereo時は、[Float32Array(336000), Float32Array(336000)] なのでそれを識別し、両方とも無音のときには無音、とする
 function checkWavOk(wav) {
   const startTime = Date.now();
