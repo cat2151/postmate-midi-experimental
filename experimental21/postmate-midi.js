@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -939,7 +939,7 @@ async function renderContextAsync(gn, context, orgContext, songId) {
   postmateMidi.setContextInitSynthAddWav(orgContext);
   wav = wav.toArray();
   if (!isIpad()) console.log(`${getParentOrChild()} : rendered wav : `, wav);
-  checkWavOk(wav);
+  postmateMidi.checkWavOk(wav);
   console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
 }
@@ -1042,7 +1042,7 @@ function samplerAddWavs(wavs) {
     const noteNum = data[0];
     const wav = data[1];
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
-    checkWavOk(wav);
+    postmateMidi.checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
       if (!isIpad()) console.log(`${getParentOrChild()} : wav add to sampler wav : `, wav);
       const toneBuffer = Tone.Buffer.fromArray(wav);
@@ -1053,7 +1053,7 @@ function samplerAddWavs(wavs) {
   }
 }
 
-// TODO ひとまず公開APIにする予定。呼び出し元は renderContextAsync と samplerAddWavs である。呼び出し元のコメントも参照のこと。
+// 備忘、公開APIとした。外部prerenderer.jsから呼び出せるよう。
 // TODO stereo時は、[Float32Array(336000), Float32Array(336000)] なのでそれを識別し、両方とも無音のときには無音、とする
 function checkWavOk(wav) {
   const startTime = Date.now();
