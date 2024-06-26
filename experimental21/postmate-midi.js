@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -981,10 +981,10 @@ function saveWavByDialog(wavFloat32) {
   const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
   const wavFile = toWav(toneAudioBuffer);
   const blob = new Blob([wavFile], { type: 'audio/wav' });
-  openDownloadDialog(blob, 'prerendered.wav');
+  postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
 }
 
-// TODO 公開APIとする想定。なぜなら、外部のprerenderer.jsから呼べるよう。
+// 公開APIとした。外部のprerenderer.jsから呼べるよう。
 function openDownloadDialog(blob, defaultFilename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
