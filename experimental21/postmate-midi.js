@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, getWavFileFromFloat32, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -970,18 +970,22 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// まず、toWavを公開API wavFloat32toWavFileFormat に切り出す考え。行数は少なくても、処理の単位としては切り出すのが適切であると判断する。
 function saveWavByDialog(wavFloat32) {
+  if (!isIpad()) console.log('wav : ', wavFloat32);
+  const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
+  const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
+  const blob = new Blob([wavFile], { type: 'audio/wav' });
+  postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
+}
+
+function getWavFileFromFloat32(w) {
+
   const toWav=w=>(( // https://qiita.com/McbeEringi/items/14b05233e8288bac5bea
     {numberOfChannels:c,sampleRate:r},l4=x=>[x,x>>>8,x>>>16,x>>>24],l2=x=>[x,x>>>8],
     x=(x=>[...Array(x[0].length)].flatMap((_,i)=>x.flatMap(y=>l2(y[i]*0x7fff))))([...Array(c)].map((_,i)=>w.getChannelData(i)))
   )=>new Uint8Array([82,73,70,70,l4(36+x.length),87,65,86,69,102,109,116,32,16,0,0,0,1,0,l2(c),l4(r),l4(r*(c*=2)),l2(c),16,0,100,97,116,97,l4(x.length),x].flat()).buffer)(w);
 
-  if (!isIpad()) console.log('wav : ', wavFloat32);
-  const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
-  const wavFile = toWav(toneAudioBuffer);
-  const blob = new Blob([wavFile], { type: 'audio/wav' });
-  postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
+  return toWav(w);
 }
 
 // 公開APIとした。外部のprerenderer.jsから呼べるよう。
