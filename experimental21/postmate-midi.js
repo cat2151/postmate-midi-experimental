@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, getWavFileFromFloat32, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
@@ -627,7 +627,7 @@ function sendMidiMessageFromDevice(events, playTime, deviceId) {
   for (let i = 0; i < postmateMidi.midiOutputIds[deviceId].length; i++) {
     const outputId = postmateMidi.midiOutputIds[deviceId][i];
     if (!outputId) {
-      onmidimessage([events, playTime]);
+      postmateMidi.onmidimessage([events, playTime]);
     } else {
       const childId = outputId - 1;
       // console.log(`${getParentOrChild()} : onmidimessage : to child${outputId} : ${[events, playTime]}`);
@@ -637,6 +637,7 @@ function sendMidiMessageFromDevice(events, playTime, deviceId) {
 }
 
 const ofsMsec = 50; // seq側の送信タイミングのジッタを、synth側の発音時刻指定で吸収する用。timestampが過去にならない程度の値とした。過去になると発音やenvelopeが異常となる想定。手元では50msecがそこそこ安定した感触。今後は環境ごとに指定可能にする想定。その場合は「レイテンシなし（ジッタがある）」も選べる想定。
+// 備忘、公開APIとした。外部prerenderer.jsから呼び出す予定のため。
 function onmidimessage(data) {
   if (postmateMidi.midiFilter) {
     data = postmateMidi.midiFilter(data);
@@ -918,7 +919,7 @@ async function doPreRenderAsync(songs) {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// ここはまるごとprerender側に切り出す想定。その際、onmidimessageは、postmateMidiの公開API、にひとまずする想定。
+// ここはまるごとprerender側に切り出す想定
 function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
   const audioCh = 2/*STEREO*/;
@@ -926,7 +927,7 @@ function schedulingPreRender(gn, preRenderMidi) {
   postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
   for (let i = 0; i < preRenderMidi.length; i++) {
-    onmidimessage(preRenderMidi[i]);
+    postmateMidi.onmidimessage(preRenderMidi[i]);
   }
 }
 
