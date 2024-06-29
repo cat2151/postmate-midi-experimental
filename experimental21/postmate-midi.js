@@ -979,6 +979,7 @@ function saveWavByDialog(wavFloat32) {
   postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
 }
 
+// 公開APIとした。外部のprerenderer.jsから呼べるよう。
 function getWavFileFromFloat32(w) {
 
   const toWav=w=>(( // https://qiita.com/McbeEringi/items/14b05233e8288bac5bea
