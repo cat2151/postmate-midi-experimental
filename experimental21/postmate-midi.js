@@ -16,6 +16,7 @@ const postmateMidi = {
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
+// TODO isChildを、postmateMidi.isChild にして公開メンバにする。prerenderから参照が必要になったので。isChildでgrepして一通り置き換えていく。isParentは後回しにする、切り分ける。
 let isParent = false; // ひとまず非公開、postmateMidiをシンプルにする優先
 let isChild  = false;
 
