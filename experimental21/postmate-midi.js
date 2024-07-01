@@ -13,15 +13,12 @@ const postmateMidi = {
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
   getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
 
-// TODO isChildを、postmateMidi.isChild にして公開メンバにする。prerenderから参照が必要になったので。isChildでgrepして一通り置き換えていく。isParentは後回しにする、切り分ける。
-let isParent = false; // ひとまず非公開、postmateMidiをシンプルにする優先
-let isChild  = false;
-
 function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTemplateDropDownListSelector, textareaTemplatesFnc, setupSeqByTextareaFnc) {
-  isParent = true;
+  postmateMidi.isParent = true;
   console.log(`${getParentOrChild()} : registerParent start : time : ${Date.now() % 10000}`)
   const ui = postmateMidi.ui;
   const urls = urlParams.urls;
@@ -217,7 +214,7 @@ function registerParent(urlParams, textareaSelector, textareaSeqFnc, textareaTem
 }
 
 function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemplateDropDownListSelector, textareaTemplatesFnc, setupSeqByTextareaFnc) {
-  isChild = true;
+  postmateMidi.isChild = true;
   const ui = postmateMidi.ui;
   const childId = urlParams.childId;
 
@@ -291,8 +288,8 @@ function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemp
 }
 
 function getParentOrChild() { // for debug
-  if (isParent) return 'parent';
-  if (isChild)  return `child${postmateMidi.childId + 1}`;
+  if (postmateMidi.isParent) return 'parent';
+  if (postmateMidi.isChild)  return `child${postmateMidi.childId + 1}`;
 }
 
 ////////
@@ -322,7 +319,7 @@ function removeButton(buttonSelector) {
 
 // すべてのparentやchildのplayボタンを、postMessage経由で同時に押したことにする用
 function linkPlayButton() {
-  if (isParent) {
+  if (postmateMidi.isParent) {
     // childすべてをcallする
     for (let i = 0; i < postmateMidi.children.length; i++) {
       postmateMidi.children[i].call('onClickPlayButton');
@@ -590,14 +587,14 @@ function initOnStartPlaying() {
   onStartPlaying(); // seq and synth のときは不要だったが、keyboard and synthのときiPad対策で、parent and child all synthの初期化が必要となったので
 
   // seqから呼ばれ、synth側のbaseTimeStampを更新する用
-  if (isParent) {
+  if (postmateMidi.isParent) {
     // parentがseqだった場合、すべてのchildのbaseTimeStampを更新する用
     for (let childId = 0; childId < postmateMidi.children.length; childId++) {
       console.log(`${getParentOrChild()} : to child${childId + 1} : call onStartPlaying`);
       postmateMidi.children[childId].call('onStartPlaying');
     }
   }
-  if (isChild) {
+  if (postmateMidi.isChild) {
     // childがseqだった場合、以下のemitされたparentにて、parentと自分以外のすべてのchildのbaseTimeStampを更新する用
     console.log(`${getParentOrChild()} : emit onStartPlaying`);
     postmateMidi.parent.emit('onStartPlaying' + (postmateMidi.childId + 1));
@@ -613,11 +610,11 @@ function onStartPlaying(data) {
 
 function sendMidiMessage(events, playTime) {
   // 外部sqやkbから直接呼ばれる
-  if (isParent) {
+  if (postmateMidi.isParent) {
     sendMidiMessageFromDevice(events, playTime, /*deviceId=*/0);
     return;
   }
-  if (isChild) {
+  if (postmateMidi.isChild) {
     // childからは、必ずparentにsendする。parentのon onmidimessage1～ にて、改めてsendMidiMessageする
     postmateMidi.parent.emit('onmidimessage' + (postmateMidi.childId + 1), [events, playTime]);
     return;
@@ -735,11 +732,11 @@ function afterTonejsStart() {
   }
 
   postmateMidi.tonejs.isStartTone = true; // 名前が紛らわしいが、postmateMidi.isStartTone[] とは別で、parentとchildがそれぞれtonejs配下に保持する。外部sqなどからアクセスする用。
-  if (isParent) {
+  if (postmateMidi.isParent) {
     postmateMidi.isStartTone[0] = true; // 名前が紛らわしいが、postmateMidi.tonejs.isStartTone とは別で、parentがparentと全てのchildのぶんを知っておく用。
     checkAllSynthReady();
   }
-  if (isChild) {
+  if (postmateMidi.isChild) {
     // parentに情報を集約する
     postmateMidi.parent.emit('onSynthReady' + (postmateMidi.childId + 1));
   }
@@ -767,7 +764,7 @@ function checkAllSynthReady() {
 }
 function checkAllSynthReadyParent() {
   console.log(`${getParentOrChild()} : isStartTone : `, postmateMidi.isStartTone);
-  if (!isParent) return false;
+  if (!postmateMidi.isParent) return false;
   if (!postmateMidi.isStartTone.length) return false;
   if (!postmateMidi.isStartTone.every(val => val === true)) return false;
   postmateMidi.isAllSynthReady = true;
@@ -957,10 +954,10 @@ function setContextInitSynthAddWav(context) {
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // まるごと切り出す想定。呼び出しているfncは公開APIにひとまずする想定。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
-  if (!postmateMidi.parent) return;
-  if (!isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
+  if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
   // to sampler
+  if (!postmateMidi.parent) return;
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
   // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
   if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
