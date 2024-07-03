@@ -846,8 +846,7 @@ function sendWavAfterHandshakeAllChildren() {
 
   // webpage起動完了後、
   // 自動でprerenderを開始する
-  // TODO 「自動でprerenderを開始するか？」の判断は、外部のprerendererに切り出す。 postmateMidi.prerenderer.isAutoStartPrerender() を想定。
-  //  TODO 上記を噛み砕いてここに書く
+  // TODO if (postmateMidi.prerenderer.isAutoStartPrerender()) のときに実行、とする。「自動でprerenderを開始するか？」の判断用の関数である。外部のprerenderer.jsに切り出す。
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
