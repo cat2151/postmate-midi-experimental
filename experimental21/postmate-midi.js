@@ -855,6 +855,7 @@ function sendWavAfterHandshakeAllChildren() {
     return;
   }
   // TODO 過去に使っていた。今はprerenderに置き換えて一元化する考え。コミットコメントに意図を残して削除する考え。
+  //  保留。ほかを削除してから削除する想定。現状、gnの位置付けが曖昧なので。
   if (gn.createWav) {
     if (!gn.wav) {
       gn.noteNum = 60;
