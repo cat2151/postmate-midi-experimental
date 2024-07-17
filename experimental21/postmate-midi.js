@@ -954,6 +954,7 @@ async function renderContextAsync(gn, context, orgContext, songId) {
 }
 
 // TODO ここもセットで、prerender側に切り出す想定。もしどのアプリでも共通になりそう、なのが後から検証でわかったらここに戻して共通APIにする、くらいの考え。
+// TODO テストケースを書く
 function setContextInitSynthAddWav(context) {
   const gn = postmateMidi.tonejs.generator;
   Tone.setContext(context);
