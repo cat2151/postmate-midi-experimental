@@ -964,6 +964,7 @@ function setContextInitSynthAddWav(context) {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // まるごと切り出す想定。呼び出しているfncは公開APIにひとまずする想定。
+// TODO テストケースを書く
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
