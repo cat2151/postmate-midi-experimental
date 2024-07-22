@@ -981,7 +981,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// TODO テストケースを書く
+// TODO テストケースを書く。例、prerender側に移動して、呼び出し元から呼び出して、wav保存ダイアログが出ること。
 function saveWavByDialog(wavFloat32) {
   if (!isIpad()) console.log('wav : ', wavFloat32);
   const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
