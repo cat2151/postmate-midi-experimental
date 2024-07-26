@@ -1037,7 +1037,7 @@ function sendToSampler(wavs) {
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
-// TODO テストケースを書く。
+// TODO テストケースを書く。例、prerender側に移動して、logを追加で書いて、logが出ること。そして、gn.wavsは、samplerAddWavsにそのまま使われるので、音が想定通り鳴ればOKとする。
 function updateGnWavs(gn, wavs) {
   if (!gn.wavs) gn.wavs = [];
   for (let i = 0; i < wavs.length; i++) {
