@@ -1052,7 +1052,7 @@ function updateGnWavs(gn, wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
-// TODO テストケースを書く。
+// TODO テストケースを書く。例、prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
 function samplerAddWavs(wavs) {
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
