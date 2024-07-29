@@ -849,6 +849,7 @@ function sendWavAfterHandshakeAllChildren() {
   // TODO if (postmateMidi.prerenderer.isAutoStartPrerender()) のときに実行、とする。「自動でprerenderを開始するか？」の判断用の関数である。外部のprerenderer.jsに切り出す。
   //  問題、この時点では、まだ preRenderer がregisterされていない。
   //   対策、調査する。処理の流れを整理する。
+  //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
   console.log('postmateMidi.preRenderer : ', postmateMidi.preRenderer);
   // if postmateMidi.preRenderer.isAutoStartPrerender()
   if ( isPreRenderSynth()) {
