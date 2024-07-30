@@ -850,9 +850,12 @@ function sendWavAfterHandshakeAllChildren() {
   //  問題、この時点では、まだ preRenderer がregisterされていない。
   //   対策、調査する。処理の流れを整理する。
   //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
-  console.log('postmateMidi.preRenderer : ', postmateMidi.preRenderer);
-  // if postmateMidi.preRenderer.isAutoStartPrerender()
-  if ( isPreRenderSynth()) {
+  //     > parent : handshake complete all children
+  //     > postmateMidi.preRenderer :
+  //     作業中
+  console.log(`${getParentOrChild()} : postmateMidi.preRenderer : `, postmateMidi.preRenderer);
+  // if (postmateMidi.preRenderer.isAutoStartPrerender()) {
+  if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
@@ -1093,6 +1096,7 @@ function checkWavOk(wav) {
 function registerPrerenderer(preRenderer) {
   // registerするpreRendererとは、外部ライブラリである。
   //  用途 : preRendererの仕組みは広い用途と複雑な仕様を取りうるので、postmate-midi側はシンプルにし、prerendererはそれと疎結合の外部ライブラリに切り出す、とした。
+  console.log(`${getParentOrChild()} : registerPrerenderer : `, preRenderer);
   postmateMidi.preRenderer = preRenderer;
 }
 
