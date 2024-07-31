@@ -850,10 +850,11 @@ function sendWavAfterHandshakeAllChildren() {
   //  問題、この時点では、まだ preRenderer がregisterされていない。
   //   対策、調査する。処理の流れを整理する。
   //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
-  //     > parent : handshake complete all children
-  //     > postmateMidi.preRenderer :
-  //     作業中
-  console.log(`${getParentOrChild()} : postmateMidi.preRenderer : `, postmateMidi.preRenderer);
+  //     適宜loggerを書いて可視化していく
+  //     prerendererをregistしているのが、parentか、child1～4のどれか、を可視化していく
+  if (postmateMidi.preRenderer.registerPrerenderer) {
+    console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`);
+  }
   // if (postmateMidi.preRenderer.isAutoStartPrerender()) {
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
