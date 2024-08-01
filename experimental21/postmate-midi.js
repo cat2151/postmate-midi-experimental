@@ -852,6 +852,12 @@ function sendWavAfterHandshakeAllChildren() {
   //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
   //     適宜loggerを書いて可視化していく
   //     prerendererをregistしているのが、parentか、child1～4のどれか、を可視化していく
+  //      parentは、registしてない
+  //      samplerは、registしてる
+  //      seq1は、registしてない、ただしprerender用のseqを持っている
+  //      seq2は、registしてない。prerender用のseqも持っていない
+  //      synthは、registしてる
+  //      次は、child1～4がsamplerなどどれに紐付くかを可視化する
   if (postmateMidi.preRenderer.registerPrerenderer) {
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`);
   }
