@@ -858,7 +858,12 @@ function sendWavAfterHandshakeAllChildren() {
   //      seq2は、registしてない。prerender用のseqも持っていない
   //      synthは、registしてる
   //      次は、child1～4がsamplerなどどれに紐付くかを可視化する。以下を分解する
-  //       >setupButton('#button1', './parent/index.html', rison2.stringify({ urls: ['../seq1/index.html', '../synth/index.html', '../seq2/index.html', '../sampler/index.html'], midiOutput: { parent: [], child1: ['child2'], child2: [], child3: ['child4'], child4: [] }, sendToSampler: { parent: [], child1: [], child2: ['child4'], child3: [], child4: ['child4'] } })); // risonの用途は、URLを常時読みやすくして開発効率化する用
+  //       >setupButton('#button1', './parent/index.html',
+  //        > rison2.stringify({ urls: [
+  //        >'../seq1/index.html', '../synth/index.html',
+  //        >'../seq2/index.html', '../sampler/index.html'],
+  //        > midiOutput: { parent: [], child1: ['child2'], child2: [], child3: ['child4'], child4: [] },
+  //        > sendToSampler: { parent: [], child1: [], child2: ['child4'], child3: [], child4: ['child4'] } })); // risonの用途は、URLを常時読みやすくして開発効率化する用
   if (postmateMidi.preRenderer.registerPrerenderer) {
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`);
   }
