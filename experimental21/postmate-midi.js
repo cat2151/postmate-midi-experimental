@@ -860,8 +860,8 @@ function sendWavAfterHandshakeAllChildren() {
   //      次は、child1～4がsamplerなどどれに紐付くかを可視化する。以下を分解する
   //       >setupButton('#button1', './parent/index.html',
   //        > rison2.stringify({ urls: [
-  //        >'../seq1/index.html', '../synth/index.html',
-  //        >'../seq2/index.html', '../sampler/index.html'],
+  //        >'../seq1/index.html', '../synth/index.html', '../seq2/index.html', '../sampler/index.html'],
+  //          ↑ これがchild1～child4であるので整理する
   //        > midiOutput: { parent: [], child1: ['child2'], child2: [], child3: ['child4'], child4: [] },
   //        > sendToSampler: { parent: [], child1: [], child2: ['child4'], child3: [], child4: ['child4'] } })); // risonの用途は、URLを常時読みやすくして開発効率化する用
   if (postmateMidi.preRenderer.registerPrerenderer) {
