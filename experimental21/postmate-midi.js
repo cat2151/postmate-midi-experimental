@@ -851,8 +851,8 @@ function sendWavAfterHandshakeAllChildren() {
   //   対策、調査する。処理の流れを整理する。
   //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
   //     適宜loggerを書いて可視化していく
-  //     prerendererをregistしているのが、parentか、child1～4のどれか、を可視化していく
-  //      parentは、registしてない
+  //     prerendererをregisterしているのが、parentか、child1～4のどれか、を可視化していく
+  //      parentは、registerしてない
   //      child1 : seq1は、registerしてない、ただしprerender用のseqを持っている
   //      child2 : synthは、registerしてる
   //      child3 : seq2は、registerしてない。prerender用のseqも持っていない
