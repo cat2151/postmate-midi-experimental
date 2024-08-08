@@ -859,7 +859,9 @@ function sendWavAfterHandshakeAllChildren() {
   //      child4 : samplerは、registerしてる ◆ログで確認する
   // 備忘、現在判定に使っている isPreRenderSynth は、registerPrerenderButton でもtrueになるし、直接childからtrueにもしている。今回どちらでtrueになっているかログ確認すべし。
   if (postmateMidi.preRenderer.registerPrerenderer) {
-    console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`);
+    console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`); // これが出力されるケースは基本的に、そもそもseq-childなのでprerenderをregisterしていないケースである
+  } else {
+    console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer登録済`);
   }
   // if (postmateMidi.preRenderer.isAutoStartPrerender()) {
   if (isPreRenderSynth()) {
