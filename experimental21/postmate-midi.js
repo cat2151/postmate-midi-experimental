@@ -863,7 +863,7 @@ function sendWavAfterHandshakeAllChildren() {
   } else {
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer登録済`);
   }
-  // if (postmateMidi.preRenderer.isAutoStartPrerender()) {
+  // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // TODO エラー。調査すること。おそらくこっちだとsampler側もtrueになるから。isPreRenderSynth ならsynth側のみtrue、かも。それもログで可視化すること。
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
