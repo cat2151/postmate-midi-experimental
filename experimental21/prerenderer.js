@@ -1,11 +1,11 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { isAutoStartPrerender, afterWavFileUploadAsync, getChNum };
+const preRenderer = { afterWavFileUploadAsync, getChNum };
 
-function isAutoStartPrerender() {
-  console.log('isAutoStartPrerender');
-  return true;
-}
+// function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
+//   console.log('isAutoStartPrerender');
+//   return true;
+// }
 
 // wav import用
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。

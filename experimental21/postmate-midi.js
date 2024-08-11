@@ -846,28 +846,14 @@ function sendWavAfterHandshakeAllChildren() {
 
   // webpage起動完了後、
   // 自動でprerenderを開始する
-  // TODO if (postmateMidi.prerenderer.isAutoStartPrerender()) のときに実行、とする。「自動でprerenderを開始するか？」の判断用の関数である。外部のprerenderer.jsに切り出す。
-  //   と思ったがそれだとミスかも。現状の、childに、isPreRenderSynth を明示する、が適切かも。現在、整理している。まとまったあとで判断する。
-  //  問題、この時点では、まだ preRenderer がregisterされていない。
-  //   対策、調査する。処理の流れを整理する。
-  //    方法、ここに処理の流れをざっくりコメントで書いていく。起動してlogの流れをみる。一時的にざっくりここに大量コメントを貼り付けてしまって構わない。
-  //     適宜loggerを書いて可視化していく
-  //     prerendererをregisterしているのが、parentか、child1～4のどれか、を可視化していく
-  //      parentは、registerしてない
-  //      child1 : seq1は、registerしてない、ただしprerender用のseqを持っている
-  //      child2 : synthは、registerしてる ◆ログで確認する
-  //      child3 : seq2は、registerしてない。prerender用のseqも持っていない
-  //      child4 : samplerは、registerしてる ◆ログで確認する
-  // 備忘、現在判定に使っている isPreRenderSynth は、registerPrerenderButton でもtrueになるし、直接childからtrueにもしている。今回どちらでtrueになっているかログ確認すべし。
+  // ※備忘、現在判定に使っている isPreRenderSynth は、まずsynth-childにてtrueにすることで、synthのみtrueにしている。samplerはこの時点ではまだprerenderできない。wavないので。そして、のち、samplerにwavが届いたあとは、registerPrerenderButton でsamplerもtrueにしている。
   if (postmateMidi.preRenderer.registerPrerenderer) {
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`); // これが出力されるケースは基本的に、そもそもseq-childなのでprerenderをregisterしていないケースである
   } else {
     console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer登録済`);
   }
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : isPreRenderSynth() : `, isPreRenderSynth()); // 備忘、これで可視化した結果、sampler側はこれはfalse。つまりprerenderer登録済、でisPreRenderSynthがfalse。意図通り。開始時にauto prerenderしたいのは、synth側のみなので。sampler側はそもそもまだsynthがprerender終わってない状態ではauto prerenderはできないので。
-  // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // TODO エラー。調査すること。おそらくこっちだとsampler側もtrueになるから。isPreRenderSynth ならsynth側のみtrue、かも。それもログで可視化すること。
-  // ↑ TODO これでエラーのときに、sampler側がエラーになるのを、exception直前の情報をもっとわかりやすくするよう可視化する。ログに、わかりやすいエラーメッセージを出すようにする。
-  //   sampler側にエラーメッセージを実装する想定。test caseは、上記でエラーのとき、わかりやすいエラーメッセージがconsole logに出ること。
+  // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // ボツ。ボツ理由、これだとエラー。こっちだとsampler側もtrueになってしまい、起動時のsamplerにwavがない状態でautoprerenderしようとしてバグる。isPreRenderSynth ならsynth側のみtrueである。
   if (isPreRenderSynth()) {
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
@@ -976,7 +962,10 @@ function setContextInitSynthAddWav(context) {
   const gn = postmateMidi.tonejs.generator;
   Tone.setContext(context);
   if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
-  if (postmateMidi.isSampler) samplerAddWavs(gn.wavs); // samplerにてprerenderする用
+  if (postmateMidi.isSampler) {
+    if (!gn.wavs) console.error(`${getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
+    samplerAddWavs(gn.wavs); // samplerにてprerenderする用
+  }
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
@@ -1071,6 +1060,7 @@ function updateGnWavs(gn, wavs) {
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
 // TODO テストケースを書く。例、prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
 function samplerAddWavs(wavs) {
+  if (!wavs) console.error(`${getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     if (!data) {
