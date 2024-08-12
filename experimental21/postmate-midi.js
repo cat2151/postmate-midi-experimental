@@ -840,6 +840,10 @@ function initCh(ch) {
 
 
 // child用
+// 注意、位置づけと名前がズレている。TODO 整理したら名前を見直す。例、sendWavのかわりに、startAutoPrerender 。
+//  位置づけ：
+//   now : startAutoPrerender。prerender の仕組みを使って、seq + synth がwav生成を開始…するための非同期処理を開始、する用。非同期処理。
+//   old : sendWav。           createWav があるとき、synthがwav生成し、send wav to samplerする用。今はほとんど使わない想定。ボツにして、prerenderに一元管理する想定。同期処理。
 function sendWavAfterHandshakeAllChildren() {
   const gn = postmateMidi.tonejs.generator;
   if (gn.isSent) return;
