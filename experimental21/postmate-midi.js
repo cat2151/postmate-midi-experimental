@@ -840,7 +840,7 @@ function initCh(ch) {
 
 
 // child用
-// 注意、位置づけと名前がズレている。TODO 整理したら名前を見直す。例、sendWavのかわりに、startAutoPrerender 。
+// 注意、位置づけと名前がズレている。今後、末尾のcreateWavを削除したら、名前を、sendWavのかわりに、startAutoPrerender にする想定。
 //  位置づけ：
 //   now : startAutoPrerender。prerender の仕組みを使って、seq + synth がwav生成を開始…するための非同期処理を開始、する用。非同期処理。
 //   old : sendWav。           createWav があるとき、synthがwav生成し、send wav to samplerする用。今はほとんど使わない想定。ボツにして、prerenderに一元管理する想定。同期処理。
@@ -865,7 +865,7 @@ function sendWavAfterHandshakeAllChildren() {
     // 以降は非同期で後続処理へ
     return;
   }
-  // TODO 過去に使っていた。今はprerenderに置き換えて一元化する考え。コミットコメントに意図を残して削除する考え。
+  // 備忘、過去に使っていた。今はprerenderに置き換えて一元化する考え。コミットコメントに意図を残して削除する考え。
   //  保留。ほかを削除してから削除する想定。現状、gnの位置付けが曖昧なので。
   if (gn.createWav) {
     if (!gn.wav) {
