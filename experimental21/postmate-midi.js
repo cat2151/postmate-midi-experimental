@@ -1086,6 +1086,7 @@ function samplerAddWavs(wavs) {
 
 // 備忘、公開APIとした。外部prerenderer.jsから呼び出せるよう。
 // TODO stereo時は、[Float32Array(336000), Float32Array(336000)] なのでそれを識別し、両方とも無音のときには無音、とする
+//  課題、引数 wav がstereoかどうかを得る方法は？引数wav のformatは？renderContextAsync でtoArray()したもの？整理して可視化する。まずlogで可視化すべし。
 function checkWavOk(wav) {
   const startTime = Date.now();
   for (let i = 0; i < wav.length; i++) {
