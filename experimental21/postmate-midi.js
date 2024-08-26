@@ -884,6 +884,10 @@ function isPreRenderSynth() {
 // prerenderにはpostmateMidiをわたせることを動作確認済み。なので、sqにはアクセスできる想定。
 // emit呼び出しも、postmateMidiのコア部分ではあるが、まず外部prerendererでやれるか試す想定。つまり関数全体を切り出しを試す想定。
 // テストケース : prerenderされたwavがplayボタンで鳴ること。これが実行された結果、これのlogが出ること。
+// 方法 : onStartPreRender はガワとしてここに配置する。でないとpostmate call/emitできない。
+//  そして、prerender.js側に、onStartPreRender の中身を配置し、その引数は、dataと、postmateMidi とする想定。
+//   また、isPreRenderSeq を postmateMidiのメンバとして関数呼び出し可能にしておく想定。
+//    TODO それを先にやる
 function onStartPreRender(data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
