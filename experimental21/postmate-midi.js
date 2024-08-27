@@ -916,6 +916,10 @@ function isPreRenderSeq() {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // 前提、onCompletePreRenderSeq そのものはpostmateMidiの枠組みなので固定。そこから呼び出す doPreRenderAsync を、外部prerenderに切り出す想定。
+// 方法 : 前述のとおり、doPreRenderAsync を外部prerenderに切り出す。onCompletePreRenderSeq から、 preRenderer.doPreRenderAsync を呼び出す。
+//  TODO 先に、schedulingPreRender を外部prerenderに切り出す。なぜなら doPreRenderAsync からの schedulingPreRender 呼び出しがあるので。
+//   同様に、順番としては、最内周の関数から外部prerenderに切り出していく想定。
+//    あわせて、postmateMidiの公開APIにする部分も実施していく想定。
 // テストケース : 外部prerenderされた結果、wavが鳴ること。当該ログが出ること
 function onCompletePreRenderSeq(data) {
   console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
