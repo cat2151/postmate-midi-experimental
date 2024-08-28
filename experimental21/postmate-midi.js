@@ -941,6 +941,7 @@ async function doPreRenderAsync(songs) {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // ここはまるごとprerender側に切り出す想定
+// 方法、まず schedulingPreRender のガワ部分をここに残した上で、中身を preRenderer.schedulingPreRender に移動する。そして中身を呼び出す。そしてtestと検証のち、ガワをprerender側に移動するかを検討する。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、buffersecを1にして、1秒になること
 function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
