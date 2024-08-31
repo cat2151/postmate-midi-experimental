@@ -985,7 +985,8 @@ function setContextInitSynthAddWav(context) {
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// まるごと切り出す想定。呼び出しているfncは公開APIにひとまずする想定。
+// 方法、ガワを残して中身を preRenderer.sendWavAfterHandshakeAllChildrenSub に移動する。
+// TODO 先に、呼び出している saveWavByDialog を公開APIにする。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、sendToSamplerの結果として音が鳴ること。wav保存ダイアログが出ること。logが出力されること。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
