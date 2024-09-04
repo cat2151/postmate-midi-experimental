@@ -1079,6 +1079,7 @@ function updateGnWavs(gn, wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
+// TODO 公開APIにする。のち中身を、prerenderer.samplerAddWavs に移動し、それを呼び出すようにする。
 // テストケース : prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
 function samplerAddWavs(wavs) {
   if (!wavs) console.error(`${getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
