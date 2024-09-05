@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, openDownloadDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -980,7 +980,7 @@ function setContextInitSynthAddWav(context) {
   if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
   if (postmateMidi.isSampler) {
     if (!gn.wavs) console.error(`${getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
-    samplerAddWavs(gn.wavs); // samplerにてprerenderする用
+    postmateMidi.samplerAddWavs(gn.wavs); // samplerにてprerenderする用
   }
 }
 
@@ -1057,7 +1057,7 @@ function sendToSampler(wavs) {
   if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
-  samplerAddWavs(gn.wavs);
+  postmateMidi.samplerAddWavs(gn.wavs);
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
@@ -1079,7 +1079,8 @@ function updateGnWavs(gn, wavs) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
-// TODO 公開APIにする。のち中身を、prerenderer.samplerAddWavs に移動し、それを呼び出すようにする。
+// TODO 中身を、prerenderer.samplerAddWavs に移動し、それを呼び出すようにする。
+// 備忘、公開APIである。
 // テストケース : prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
 function samplerAddWavs(wavs) {
   if (!wavs) console.error(`${getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
