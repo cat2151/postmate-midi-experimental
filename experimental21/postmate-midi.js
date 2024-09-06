@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -986,7 +986,6 @@ function setContextInitSynthAddWav(context) {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // 方法、ガワを残して中身を preRenderer.sendWavAfterHandshakeAllChildrenSub に移動する。
-// TODO 先に、呼び出している saveWavByDialog を公開APIにする。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、sendToSamplerの結果として音が鳴ること。wav保存ダイアログが出ること。logが出力されること。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
@@ -999,12 +998,13 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
 
   for (let i = 0; i < wavs.length; i++) {
     const wav = wavs[i][1]; // 備忘、wavsには、notenumとwavが入っている
-    saveWavByDialog(wav);
+    postmateMidi.saveWavByDialog(wav);
   }
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// TODO まず公開APIにする。のち、中身を preRenderer.saveWavByDialog に移動する。
+// 方法、中身を preRenderer.saveWavByDialog に移動する。
+// 公開APIである。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、wav保存ダイアログが出ること。
 function saveWavByDialog(wavFloat32) {
   if (!isIpad()) console.log('wav : ', wavFloat32);
