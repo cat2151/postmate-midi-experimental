@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  schedulingPreRender, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -917,8 +917,7 @@ function isPreRenderSeq() {
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // 前提、onCompletePreRenderSeq そのものはpostmateMidiの枠組みなので固定。そこから呼び出す doPreRenderAsync を、外部prerenderに切り出す想定。
 // 方法 : 前述のとおり、doPreRenderAsync を外部prerenderに切り出す。onCompletePreRenderSeq から、 preRenderer.doPreRenderAsync を呼び出す。
-//  TODO 先に、schedulingPreRender を外部prerenderに切り出す。なぜなら doPreRenderAsync からの schedulingPreRender 呼び出しがあるので。
-//   同様に、順番としては、最内周の関数から外部prerenderに切り出していく想定。
+//  TODO 順番としては、最内周の関数から外部prerenderに切り出していく想定。
 //    あわせて、postmateMidiの公開APIにする部分も実施していく想定。
 // テストケース : 外部prerenderされた結果、wavが鳴ること。当該ログが出ること
 function onCompletePreRenderSeq(data) {
@@ -932,7 +931,7 @@ async function doPreRenderAsync(songs) {
   for (let songId = 0; songId < songs.length; songId++) {
     const preRenderMidi = songs[songId];
     console.log(`${getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
-    schedulingPreRender(gn, preRenderMidi);
+    postmateMidi.schedulingPreRender(gn, preRenderMidi);
     gn.wav = await renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
   }
@@ -942,6 +941,7 @@ async function doPreRenderAsync(songs) {
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // ここはまるごとprerender側に切り出す想定
 // 方法、まず schedulingPreRender のガワ部分をここに残した上で、中身を preRenderer.schedulingPreRender に移動する。そして中身を呼び出す。そしてtestと検証のち、ガワをprerender側に移動するかを検討する。そうすれば呼び出し元そのままでtestができる。
+// 公開APIである。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、buffersecを1にして、1秒になること
 function schedulingPreRender(gn, preRenderMidi) {
   // const audioCh = 1/*MONO*/;
