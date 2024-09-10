@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  schedulingPreRender, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -872,7 +872,7 @@ function sendWavAfterHandshakeAllChildren() {
       gn.noteNum = 60;
       gn.wav = gn.createWav(gn.noteNum);
     }
-    sendWavAfterHandshakeAllChildrenSub(gn);
+    postmateMidi.sendWavAfterHandshakeAllChildrenSub(gn);
     return;
   }
 }
@@ -935,7 +935,7 @@ async function doPreRenderAsync(songs) {
     gn.wav = await renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
   }
-  sendWavAfterHandshakeAllChildrenSub(wavs);
+  postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
@@ -987,7 +987,7 @@ function setContextInitSynthAddWav(context) {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // 方法、ガワを残して中身を preRenderer.sendWavAfterHandshakeAllChildrenSub に移動する。
-// TODO 公開APIにする。doPreRenderAsync から呼び出しているため。まず公開APIにして構成を検証する。
+// 公開APIである
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、sendToSamplerの結果として音が鳴ること。wav保存ダイアログが出ること。logが出力されること。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
