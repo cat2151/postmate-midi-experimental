@@ -1053,7 +1053,8 @@ function sendToSamplerFromDevice(data, deviceId) {
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// 方法、関数ガワはそのまま（非公開関数から呼び出しているので）。中身を prerenderer.sendToSampler に移動し、それを呼び出すようにする。
+// 方法、関数ガワはそのまま。中身を prerenderer.sendToSampler に移動し、それを呼び出すようにする。
+// 備忘、非公開関数である。非公開関数から呼び出している。postmateMidiのchildから呼び出している。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、add wavされた結果、音が鳴ること。logが出ること。
 function sendToSampler(wavs) {
   if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
