@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -932,7 +932,7 @@ async function doPreRenderAsync(songs) {
     const preRenderMidi = songs[songId];
     console.log(`${getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
     postmateMidi.schedulingPreRender(gn, preRenderMidi);
-    gn.wav = await renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
+    gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
   }
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
@@ -957,7 +957,7 @@ function schedulingPreRender(gn, preRenderMidi) {
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // ここはまるごとprerender側に切り出す想定
 // 方法、renderContextAsync の側をここに残して、中身を preRenderer.renderContextAsync に移動する。そうすれば呼び出し元そのままでtestができる。
-// TODO 公開APIにする
+// 公開APIである
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、logコメントを書き換えて、logが変化すること
 async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
