@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -886,8 +886,6 @@ function isPreRenderSynth() {
 // テストケース : prerenderされたwavがplayボタンで鳴ること。これが実行された結果、これのlogが出ること。
 // 方法 : onStartPreRender はガワとしてここに配置する。でないとpostmate call/emitできない。
 //  そして、prerender.js側に、onStartPreRender の中身を配置し、その引数は、dataと、postmateMidi とする想定。
-//   また、isPreRenderSeq を postmateMidiのメンバとして関数呼び出し可能にしておく想定。
-//    TODO それを先にやる
 function onStartPreRender(data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
@@ -897,7 +895,7 @@ function onStartPreRender(data) {
 
   const templates = sq.getTemplates();
   console.log(`${getParentOrChild()} : t : `, templates);
-  if (!isPreRenderSeq()) {
+  if (!postmateMidi.isPreRenderSeq()) {
     console.error(`${getParentOrChild()} : seqに getPreRenderMidiData を実装してください`);
     return;
   }
@@ -910,6 +908,7 @@ function onStartPreRender(data) {
   console.log(`${getParentOrChild()} : songs : `, songs);
   postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), songs);
 }
+// 公開APIである
 function isPreRenderSeq() {
   return postmateMidi.seq.getPreRenderMidiData;
 }
