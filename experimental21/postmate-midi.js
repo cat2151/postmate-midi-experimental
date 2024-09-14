@@ -287,7 +287,8 @@ function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemp
   }
 }
 
-function getParentOrChild() { // for debug
+// 公開API。debug log用。
+function getParentOrChild() {
   if (postmateMidi.isParent) return 'parent';
   if (postmateMidi.isChild)  return `child${postmateMidi.childId + 1}`;
 }
