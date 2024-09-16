@@ -883,8 +883,8 @@ function isPreRenderSynth() {
 
 // TODO 関数ガワそのままで、中身を、prerederer.onStartPreRender(postmateMidi, data) として prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // emit呼び出しも、postmateMidiのコア部分ではあるが、まず外部prerendererでやれるか試す考え。
-// 備忘、ガワはここに配置する。でないとpostmate call/emitできない。
 // テストケース : prerenderされたwavがplayボタンで鳴ること。これが実行された結果、これのlogが出ること。
+// 備忘、postmate parent/child の call/emit 対象関数である
 function onStartPreRender(data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
