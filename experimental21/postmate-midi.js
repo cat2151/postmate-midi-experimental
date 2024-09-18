@@ -936,6 +936,7 @@ async function doPreRenderAsync(songs) {
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
 // ここはまるごとprerender側に切り出す想定
+// TODO prerenderに切り出す関数の中身、から呼び出しているAPIについて、すべて公開APIとして postmateMidi.～ で呼び出すように書き換えていく（でないとprerenderに切り出しても動作しないハズ）
 // 方法、まず schedulingPreRender のガワ部分をここに残した上で、中身を preRenderer.schedulingPreRender に移動する。そして中身を呼び出す。そしてtestと検証のち、ガワをprerender側に移動するかを検討する。そうすれば呼び出し元そのままでtestができる。
 // 公開APIである。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、buffersecを1にして、1秒になること
