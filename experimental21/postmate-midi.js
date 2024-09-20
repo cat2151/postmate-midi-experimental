@@ -917,7 +917,7 @@ function isPreRenderSeq() {
 // 方法 : 前述のとおり、doPreRenderAsync を関数まるごと外部prerenderに切り出す。onCompletePreRenderSeq から、 preRenderer.doPreRenderAsync を呼び出す。
 // テストケース : 外部prerenderされた結果、wavが鳴ること。当該ログが出ること
 function onCompletePreRenderSeq(data) {
-  console.log(`${getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
+  console.log(`${postmateMidi.getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
   doPreRenderAsync(data);
 }
 async function doPreRenderAsync(songs) {
