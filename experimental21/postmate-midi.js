@@ -945,7 +945,7 @@ function schedulingPreRender(gn, preRenderMidi) {
   const audioCh = 2/*STEREO*/;
   const bufferSec = 7;
   postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
-  console.log(`${getParentOrChild()} : schedulingPreRender : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
+  console.log(`${postmateMidi.getParentOrChild()} : schedulingPreRender : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
   for (let i = 0; i < preRenderMidi.length; i++) {
     postmateMidi.onmidimessage(preRenderMidi[i]);
   }
