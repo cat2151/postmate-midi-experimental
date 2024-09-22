@@ -958,13 +958,13 @@ function schedulingPreRender(gn, preRenderMidi) {
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、logコメントを書き換えて、logが変化すること
 async function renderContextAsync(gn, context, orgContext, songId) {
   const startTime = Date.now();
-  console.log(`${getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
+  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
   let wav = await context.render();
   postmateMidi.setContextInitSynthAddWav(orgContext);
   wav = wav.toArray();
-  if (!isIpad()) console.log(`${getParentOrChild()} : rendered wav : `, wav);
+  if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : rendered wav : `, wav);
   postmateMidi.checkWavOk(wav);
-  console.log(`${getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
+  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
 }
 
