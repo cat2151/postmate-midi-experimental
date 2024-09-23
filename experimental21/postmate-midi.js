@@ -977,7 +977,7 @@ function setContextInitSynthAddWav(context) {
   Tone.setContext(context);
   if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
   if (postmateMidi.isSampler) {
-    if (!gn.wavs) console.error(`${getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
+    if (!gn.wavs) console.error(`${postmateMidi.getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
     postmateMidi.samplerAddWavs(gn.wavs); // samplerにてprerenderする用
   }
 }
