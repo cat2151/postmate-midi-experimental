@@ -988,7 +988,7 @@ function setContextInitSynthAddWav(context) {
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、sendToSamplerの結果として音が鳴ること。wav保存ダイアログが出ること。logが出力されること。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
   if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
-  console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
+  console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
   // to sampler
   if (!postmateMidi.parent) return;
   postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
