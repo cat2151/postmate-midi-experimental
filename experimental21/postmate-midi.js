@@ -1054,7 +1054,7 @@ function sendToSamplerFromDevice(data, deviceId) {
 // 備忘、非公開関数である。非公開関数から呼び出している。postmateMidiのchildから呼び出している。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、add wavされた結果、音が鳴ること。logが出ること。
 function sendToSampler(wavs) {
-  if (!isIpad()) console.log(`${getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
   postmateMidi.samplerAddWavs(gn.wavs);
