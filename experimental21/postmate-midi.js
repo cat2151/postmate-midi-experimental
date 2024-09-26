@@ -1083,7 +1083,7 @@ function updateGnWavs(gn, wavs) {
 // 備忘、公開APIである。
 // テストケース : prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
 function samplerAddWavs(wavs) {
-  if (!wavs) console.error(`${getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
+  if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
     if (!data) {
@@ -1094,11 +1094,11 @@ function samplerAddWavs(wavs) {
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
     postmateMidi.checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
-      if (!isIpad()) console.log(`${getParentOrChild()} : wav add to sampler wav : `, wav);
+      if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav add to sampler wav : `, wav);
       const toneBuffer = Tone.Buffer.fromArray(wav);
-      console.log(`${getParentOrChild()} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
+      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
       postmateMidi.ch[ch].synth.add(noteNum, toneBuffer);
-      console.log(`${getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
+      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
   }
 }
