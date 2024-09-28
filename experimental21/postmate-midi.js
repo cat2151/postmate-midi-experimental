@@ -881,31 +881,9 @@ function isPreRenderSynth() {
   return postmateMidi.isPreRenderSynth;
 }
 
-// TODO 関数ガワそのままで、中身を、prerederer.onStartPreRender(postmateMidi, data) として prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// emit呼び出しも、postmateMidiのコア部分ではあるが、まず外部prerendererでやれるか試す考え。
-// テストケース : prerenderされたwavがplayボタンで鳴ること。これが実行された結果、これのlogが出ること。
-// 備忘、postmate parent/child の call/emit 対象関数である
+// postmate parent/child の call/emit 対象関数である
 function onStartPreRender(data) {
-  // sq
-  if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
-  console.log(`${postmateMidi.getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
-  const sq = postmateMidi.seq;
-  console.log(`${postmateMidi.getParentOrChild()} : sq : `, sq);
-
-  const templates = sq.getTemplates();
-  console.log(`${postmateMidi.getParentOrChild()} : t : `, templates);
-  if (!postmateMidi.isPreRenderSeq()) {
-    console.error(`${postmateMidi.getParentOrChild()} : seqに getPreRenderMidiData を実装してください`);
-    return;
-  }
-
-  const songs = [];
-  for (let templateId = 1; templateId < templates.length; templateId++) {
-    const midiJson = templates[templateId][1/*body*/];
-    songs.push(sq.getPreRenderMidiData(midiJson));
-  }
-  console.log(`${postmateMidi.getParentOrChild()} : songs : `, songs);
-  postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), songs);
+  if (postmateMidi.preRenderer.onStartPreRender) postmateMidi.preRenderer.onStartPreRender(postmateMidi, data);
 }
 // 公開APIである
 function isPreRenderSeq() {
