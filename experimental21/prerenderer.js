@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -11,6 +11,21 @@ const preRenderer = { onStartPreRender, afterWavFileUploadAsync, getChNum };
 function onStartPreRender(postmateMidi, data) {
   const songs = createPreRenderSeqData(postmateMidi, data);
   postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), songs);
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+async function doPreRenderAsync(postmateMidi, songs) {
+  const gn = postmateMidi.tonejs.generator;
+  const wavs = [];
+  gn.noteNum = 60;
+  for (let songId = 0; songId < songs.length; songId++) {
+    const preRenderMidi = songs[songId];
+    console.log(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
+    postmateMidi.schedulingPreRender(gn, preRenderMidi);
+    gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
+    wavs.push([gn.noteNum, gn.wav]);
+  }
+  postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
 function createPreRenderSeqData(postmateMidi, data) {
