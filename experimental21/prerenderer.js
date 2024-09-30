@@ -13,21 +13,6 @@ function onStartPreRender(postmateMidi, data) {
   postmateMidi.parent.emit('onCompletePreRenderSeq' + (postmateMidi.childId + 1), songs);
 }
 
-// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
-async function doPreRenderAsync(postmateMidi, songs) {
-  const gn = postmateMidi.tonejs.generator;
-  const wavs = [];
-  gn.noteNum = 60;
-  for (let songId = 0; songId < songs.length; songId++) {
-    const preRenderMidi = songs[songId];
-    console.log(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
-    postmateMidi.schedulingPreRender(gn, preRenderMidi);
-    gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
-    wavs.push([gn.noteNum, gn.wav]);
-  }
-  postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
-}
-
 function createPreRenderSeqData(postmateMidi, data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
@@ -49,6 +34,21 @@ function createPreRenderSeqData(postmateMidi, data) {
   }
   console.log(`${postmateMidi.getParentOrChild()} : songs : `, songs);
   return songs;
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+async function doPreRenderAsync(postmateMidi, songs) {
+  const gn = postmateMidi.tonejs.generator;
+  const wavs = [];
+  gn.noteNum = 60;
+  for (let songId = 0; songId < songs.length; songId++) {
+    const preRenderMidi = songs[songId];
+    console.log(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
+    postmateMidi.schedulingPreRender(gn, preRenderMidi);
+    gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
+    wavs.push([gn.noteNum, gn.wav]);
+  }
+  postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
 // wav import用
