@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, schedulingPreRender, doPreRenderAsync, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -49,6 +49,18 @@ async function doPreRenderAsync(postmateMidi, songs) {
     wavs.push([gn.noteNum, gn.wav]);
   }
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function schedulingPreRender(postmateMidi, gn, preRenderMidi) {
+  // const audioCh = 1/*MONO*/;
+  const audioCh = 2/*STEREO*/;
+  const bufferSec = 7;
+  postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
+  console.log(`${postmateMidi.getParentOrChild()} : schedulingPreRender : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
+  for (let i = 0; i < preRenderMidi.length; i++) {
+    postmateMidi.onmidimessage(preRenderMidi[i]);
+  }
 }
 
 // wav import用

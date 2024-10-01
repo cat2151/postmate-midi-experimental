@@ -890,25 +890,15 @@ function isPreRenderSeq() {
   return postmateMidi.seq.getPreRenderMidiData;
 }
 
+// postmate parent/child の call/emit 対象関数である
 function onCompletePreRenderSeq(data) {
   console.log(`${postmateMidi.getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
   postmateMidi.preRenderer.doPreRenderAsync(postmateMidi, data);
 }
 
-// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// ここはまるごとprerender側に切り出す想定
-// 方法、まず schedulingPreRender のガワ部分をここに残した上で、中身を preRenderer.schedulingPreRender に移動する。そして中身を呼び出す。そしてtestと検証のち、ガワをprerender側に移動するかを検討する。そうすれば呼び出し元そのままでtestができる。
-// 公開APIである。
-// テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、buffersecを1にして、1秒になること
+// 公開APIである
 function schedulingPreRender(gn, preRenderMidi) {
-  // const audioCh = 1/*MONO*/;
-  const audioCh = 2/*STEREO*/;
-  const bufferSec = 7;
-  postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
-  console.log(`${postmateMidi.getParentOrChild()} : schedulingPreRender : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
-  for (let i = 0; i < preRenderMidi.length; i++) {
-    postmateMidi.onmidimessage(preRenderMidi[i]);
-  }
+  postmateMidi.preRenderer.schedulingPreRender(postmateMidi, gn, preRenderMidi);
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
