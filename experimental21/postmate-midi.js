@@ -901,21 +901,9 @@ function schedulingPreRender(gn, preRenderMidi) {
   postmateMidi.preRenderer.schedulingPreRender(postmateMidi, gn, preRenderMidi);
 }
 
-// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// ここはまるごとprerender側に切り出す想定
-// 方法、renderContextAsync の側をここに残して、中身を preRenderer.renderContextAsync に移動する。そうすれば呼び出し元そのままでtestができる。
 // 公開APIである
-// テストケース : prerender側に移動して、呼び出し元から呼び出して、prerenderしたwavが鳴ること。また、logコメントを書き換えて、logが変化すること
 async function renderContextAsync(gn, context, orgContext, songId) {
-  const startTime = Date.now();
-  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
-  let wav = await context.render();
-  postmateMidi.setContextInitSynthAddWav(orgContext);
-  wav = wav.toArray();
-  if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : rendered wav : `, wav);
-  postmateMidi.checkWavOk(wav);
-  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
-  return wav;
+  return postmateMidi.preRenderer.renderContextAsync(postmateMidi, gn, context, orgContext, songId);
 }
 
 // TODO ここもセットで、prerender側に切り出す想定。もしどのアプリでも共通になりそう、なのが後から検証でわかったらここに戻して共通APIにする、くらいの考え。
@@ -956,7 +944,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
 // 公開APIである。
 // テストケース : prerender側に移動して、呼び出し元から呼び出して、wav保存ダイアログが出ること。
 function saveWavByDialog(wavFloat32) {
-  if (!isIpad()) console.log('wav : ', wavFloat32);
+  if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav : `, wavFloat32);
   const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
   const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
   const blob = new Blob([wavFile], { type: 'audio/wav' });
