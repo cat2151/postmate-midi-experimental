@@ -906,18 +906,9 @@ async function renderContextAsync(gn, context, orgContext, songId) {
   return postmateMidi.preRenderer.renderContextAsync(postmateMidi, gn, context, orgContext, songId);
 }
 
-// TODO ここもセットで、prerender側に切り出す想定。もしどのアプリでも共通になりそう、なのが後から検証でわかったらここに戻して共通APIにする、くらいの考え。
-// 方法、中身を preRenderer.setContextInitSynthAddWav に移動する。
-// テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、setContextの結果として音が鳴ること。また、logを追加して、logが出力されること
-// 備忘、公開APIである
+// 公開APIである
 function setContextInitSynthAddWav(context) {
-  const gn = postmateMidi.tonejs.generator;
-  Tone.setContext(context);
-  if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
-  if (postmateMidi.isSampler) {
-    if (!gn.wavs) console.error(`${postmateMidi.getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
-    postmateMidi.samplerAddWavs(gn.wavs); // samplerにてprerenderする用
-  }
+  postmateMidi.preRenderer.setContextInitSynthAddWav(postmateMidi, context);
 }
 
 // TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。

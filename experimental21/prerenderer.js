@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -74,6 +74,17 @@ async function renderContextAsync(postmateMidi, gn, context, orgContext, songId)
   postmateMidi.checkWavOk(wav);
   console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function setContextInitSynthAddWav(postmateMidi, context) {
+  const gn = postmateMidi.tonejs.generator;
+  Tone.setContext(context);
+  if (postmateMidi.tonejs.initSynthFnc) postmateMidi.tonejs.initSynthFnc(postmateMidi.ch); // setContext後にsynthが鳴らなくなるのを防止する用
+  if (postmateMidi.isSampler) {
+    if (!gn.wavs) console.error(`${postmateMidi.getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
+    postmateMidi.samplerAddWavs(gn.wavs); // samplerにてprerenderする用
+  }
 }
 
 // wav import用
