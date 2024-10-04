@@ -911,23 +911,9 @@ function setContextInitSynthAddWav(context) {
   postmateMidi.preRenderer.setContextInitSynthAddWav(postmateMidi, context);
 }
 
-// TODO 部分的に、prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// 方法、ガワを残して中身を preRenderer.sendWavAfterHandshakeAllChildrenSub に移動する。
 // 公開APIである
-// テストケース : prerender側に移動して、呼び出し元から呼び出して、prerender後に、sendToSamplerの結果として音が鳴ること。wav保存ダイアログが出ること。logが出力されること。
 function sendWavAfterHandshakeAllChildrenSub(wavs) {
-  if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
-  console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
-  // to sampler
-  if (!postmateMidi.parent) return;
-  postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
-  // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
-  if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
-
-  for (let i = 0; i < wavs.length; i++) {
-    const wav = wavs[i][1]; // 備忘、wavsには、notenumとwavが入っている
-    postmateMidi.saveWavByDialog(wav);
-  }
+  postmateMidi.preRenderer.sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs);
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。

@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -84,6 +84,22 @@ function setContextInitSynthAddWav(postmateMidi, context) {
   if (postmateMidi.isSampler) {
     if (!gn.wavs) console.error(`${postmateMidi.getParentOrChild()} : setContextInitSynthAddWav : ERROR : gn.wavs : `, gn.wavs);
     postmateMidi.samplerAddWavs(gn.wavs); // samplerにてprerenderする用
+  }
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs) {
+  if (!postmateMidi.isChild) return; // 備忘、parentは送受信の対象外にしておく、シンプル優先
+  console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildrenSub : time : ${Date.now() % 10000}`);
+  // to sampler
+  if (!postmateMidi.parent) return;
+  postmateMidi.parent.emit('sendToSampler' + (postmateMidi.childId + 1), wavs);
+  // samplerのprerenderボタンを押したあと、seqのplayボタンで演奏できるようにする用
+  if (postmateMidi.hasPreRenderButton) postmateMidi.isPreRenderSynth = false;
+
+  for (let i = 0; i < wavs.length; i++) {
+    const wav = wavs[i][1]; // 備忘、wavsには、notenumとwavが入っている
+    postmateMidi.saveWavByDialog(wav);
   }
 }
 
