@@ -916,16 +916,9 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   postmateMidi.preRenderer.sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs);
 }
 
-// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// 方法、中身を preRenderer.saveWavByDialog に移動する。
 // 公開APIである。
-// テストケース : prerender側に移動して、呼び出し元から呼び出して、wav保存ダイアログが出ること。
 function saveWavByDialog(wavFloat32) {
-  if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav : `, wavFloat32);
-  const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
-  const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
-  const blob = new Blob([wavFile], { type: 'audio/wav' });
-  postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
+  postmateMidi.preRenderer.saveWavByDialog(postmateMidi, wavFloat32);
 }
 
 // 公開APIとした。外部のprerenderer.jsから呼べるよう。

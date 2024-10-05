@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -101,6 +101,15 @@ function sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs) {
     const wav = wavs[i][1]; // 備忘、wavsには、notenumとwavが入っている
     postmateMidi.saveWavByDialog(wav);
   }
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function saveWavByDialog(postmateMidi, wavFloat32) {
+  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav : `, wavFloat32);
+  const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
+  const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
+  const blob = new Blob([wavFile], { type: 'audio/wav' });
+  postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
 }
 
 // wav import用
