@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -110,6 +110,14 @@ function saveWavByDialog(postmateMidi, wavFloat32) {
   const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
   const blob = new Blob([wavFile], { type: 'audio/wav' });
   postmateMidi.openDownloadDialog(blob, 'prerendered.wav');
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function sendToSampler(postmateMidi, wavs) {
+  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
+  const gn = postmateMidi.tonejs.generator;
+  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
+  postmateMidi.samplerAddWavs(gn.wavs);
 }
 
 // wav import用
