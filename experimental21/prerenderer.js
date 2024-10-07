@@ -1,6 +1,6 @@
 // TODO postmate-midi.js から、prerender 部分を切り出す
 
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -118,6 +118,22 @@ function sendToSampler(postmateMidi, wavs) {
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
   postmateMidi.samplerAddWavs(gn.wavs);
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+// 用途、prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
+// 備忘、引数 postmateMidi は他の関数同様につけておく、仕様変更時に引数そのままにできる用
+function updateGnWavs(postmateMidi, gn, wavs) {
+  if (!gn.wavs) gn.wavs = [];
+  for (let i = 0; i < wavs.length; i++) {
+    if (i < gn.wavs.length) {
+      if (!wavs[i]) continue; // 例えばch02用のwavs[1]だけを上書きし、ch01用はgn.wavs[0]のままとする用
+      gn.wavs[i] = wavs[i];
+    } else {
+      gn.wavs.push(wavs[i]);
+    }
+  }
+  return gn.wavs;
 }
 
 // wav import用

@@ -916,7 +916,7 @@ function sendWavAfterHandshakeAllChildrenSub(wavs) {
   postmateMidi.preRenderer.sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs);
 }
 
-// 公開APIである。
+// 公開APIである
 function saveWavByDialog(wavFloat32) {
   postmateMidi.preRenderer.saveWavByDialog(postmateMidi, wavFloat32);
 }
@@ -962,22 +962,9 @@ function sendToSampler(wavs) {
   postmateMidi.preRenderer.sendToSampler(postmateMidi, wavs);
 }
 
-// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうる想定。
-// 方法、中身をprerenderer.updateGnWavs に移動し、それを呼び出すようにする。
-// テストケース : prerender側に移動して、logを追加で書いて、logが出ること。そして、gn.wavsは、samplerAddWavsにそのまま使われるので、音が想定通り鳴ればOKとする。
-// 公開APIである。
-// 用途、prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
+// 公開APIである
 function updateGnWavs(gn, wavs) {
-  if (!gn.wavs) gn.wavs = [];
-  for (let i = 0; i < wavs.length; i++) {
-    if (i < gn.wavs.length) {
-      if (!wavs[i]) continue; // 例えばch02用のwavs[1]だけを上書きし、ch01用はgn.wavs[0]のままとする用
-      gn.wavs[i] = wavs[i];
-    } else {
-      gn.wavs.push(wavs[i]);
-    }
-  }
-  return gn.wavs;
+  return postmateMidi.preRenderer.updateGnWavs(postmateMidi, gn, wavs);
 }
 
 // TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
