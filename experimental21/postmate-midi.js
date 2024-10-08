@@ -967,29 +967,9 @@ function updateGnWavs(gn, wavs) {
   return postmateMidi.preRenderer.updateGnWavs(postmateMidi, gn, wavs);
 }
 
-// TODO prerender側に切り出す。ここの業務ロジックは、用途に応じていくらでも変化しうるので。例えばwavsとchの関係。
-// TODO 中身を、prerenderer.samplerAddWavs に移動し、それを呼び出すようにする。
-// 備忘、公開APIである。
-// テストケース : prerender側に移動して、samplerにwav addされた結果、音が鳴ること。logが出ること。
+// 公開APIである
 function samplerAddWavs(wavs) {
-  if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
-  for (let i = 0; i < wavs.length; i++) {
-    const data = wavs[i];
-    if (!data) {
-      continue;
-    }
-    const noteNum = data[0];
-    const wav = data[1];
-    const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
-    postmateMidi.checkWavOk(wav);
-    if (postmateMidi.ch[ch].synth) {
-      if (!isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav add to sampler wav : `, wav);
-      const toneBuffer = Tone.Buffer.fromArray(wav);
-      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
-      postmateMidi.ch[ch].synth.add(noteNum, toneBuffer);
-      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
-    }
-  }
+  postmateMidi.preRenderer.samplerAddWavs(postmateMidi, wavs);
 }
 
 // 備忘、公開APIとした。外部prerenderer.jsから呼び出せるよう。
