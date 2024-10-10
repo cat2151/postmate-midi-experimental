@@ -840,6 +840,7 @@ function initCh(ch) {
 //  wav format : Float32Array
 
 
+// TODO auto exec prerender という名前をつけてわかりやすくする
 // child用
 // 注意、位置づけと名前がズレている。今後、末尾のcreateWavを削除したら、名前を、sendWavのかわりに、startAutoPrerender にする想定。
 //  位置づけ：
@@ -860,6 +861,7 @@ function sendWavAfterHandshakeAllChildren() {
   console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : isPreRenderSynth() : `, isPreRenderSynth()); // 備忘、これで可視化した結果、sampler側はこれはfalse。つまりprerenderer登録済、でisPreRenderSynthがfalse。意図通り。開始時にauto prerenderしたいのは、synth側のみなので。sampler側はそもそもまだsynthがprerender終わってない状態ではauto prerenderはできないので。
   // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // ボツ。ボツ理由、これだとエラー。こっちだとsampler側もtrueになってしまい、起動時のsamplerにwavがない状態でautoprerenderしようとしてバグる。isPreRenderSynth ならsynth側のみtrueである。
   if (isPreRenderSynth()) {
+    console.info(`%c${getParentOrChild()} : I am preRenderSynth. 自動prerenderをstartします.`, 'color:black; background-color:lightblue')
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
