@@ -648,7 +648,7 @@ function onmidimessage(data) {
   const baseMsec = postmateMidi.tonejs.baseTimeStampAudioContext * 1000;
   let timestamp = (baseMsec + playTimeMsec + ofsMsec) / 1000;
   if (isNaN(timestamp)) timestamp = undefined; // NaNのときnoteOnされないのを防止する用
-  if (isPreRenderSynth()) {
+  if (postmateMidi.isPreRenderSynth) {
     timestamp = Tone.now() + (playTimeMsec / 1000);
     console.log(`${getParentOrChild()} : preRendering scheduling... : Tone.now() = ${Tone.now()} : events = ${data[0]} : timestamp = ${timestamp}`);
   }
@@ -864,9 +864,9 @@ function sendWavAfterHandshakeAllChildren() {
   // webpage起動完了後、
   // 自動でprerenderを開始する
   // ※備忘、現在判定に使っている isPreRenderSynth は、まずsynth-childにてtrueにすることで、synthのみtrueにしている。samplerはこの時点ではまだprerenderできない。wavないので。そして、のち、samplerにwavが届いたあとは、registerPrerenderButton でsamplerもtrueにしている。
-  console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : isPreRenderSynth() : `, isPreRenderSynth()); // 備忘、これで可視化した結果、sampler側はこれはfalse。つまりprerenderer登録済、でisPreRenderSynthがfalse。意図通り。開始時にauto prerenderしたいのは、synth側のみなので。sampler側はそもそもまだsynthがprerender終わってない状態ではauto prerenderはできないので。
+  console.log(`${getParentOrChild()} : sendWavAfterHandshakeAllChildren : isPreRenderSynth : `, postmateMidi.isPreRenderSynth); // 備忘、これで可視化した結果、sampler側はこれはfalse。つまりprerenderer登録済、でisPreRenderSynthがfalse。意図通り。開始時にauto prerenderしたいのは、synth側のみなので。sampler側はそもそもまだsynthがprerender終わってない状態ではauto prerenderはできないので。
   // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // ボツ。ボツ理由、これだとエラー。こっちだとsampler側もtrueになってしまい、起動時のsamplerにwavがない状態でautoprerenderしようとしてバグる。isPreRenderSynth ならsynth側のみtrueである。
-  if (isPreRenderSynth()) {
+  if (postmateMidi.isPreRenderSynth) {
     console.info(`%c${getParentOrChild()} : I am preRenderSynth. 自動prerenderをstartします.`, 'color:black; background-color:lightblue')
     gn.orgContext = Tone.getContext();
     console.log(`${getParentOrChild()} : emit onStartPreRender`);
@@ -884,9 +884,6 @@ function sendWavAfterHandshakeAllChildren() {
     postmateMidi.sendWavAfterHandshakeAllChildrenSub(gn);
     return;
   }
-}
-function isPreRenderSynth() {
-  return postmateMidi.isPreRenderSynth;
 }
 
 // postmate parent/child の call/emit 対象関数である
