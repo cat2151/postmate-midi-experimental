@@ -1,9 +1,56 @@
-const preRenderer = { onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum };
+const preRenderer = { sendWavAfterHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
 //   return true;
 // }
+
+// TODO 切り分けた上で、auto exec prerender という名前をつけてわかりやすくする
+//  auto exec をするかどうかも含めて、外部のprerenderに仕様も含めて切り出す。
+//    ここの責務は「 sendWavAfterHandshakeAllChildren というタイミングで、prerender側の sendWavAfterHandshakeAllChildren を呼ぶ」のみに切り分ける。
+//      なぜならauto start prerenderするかどうかは、prerenderの用途で都度変化するので。なので、postmateMidi側でなくprerenderに持たせるのがよい、と考える。
+//  同様に、まだprerenderとして切り出すものがありそう。位置付けとして、postmateMidiのシンプルな機能、とズレてるものがあったら、まずcommentにして切り出す。
+// child用
+// 注意、位置づけと名前がズレている。今後、末尾のcreateWavを削除したら、名前を、sendWavのかわりに、startAutoPrerender にする想定。
+//  位置づけ：
+//   now : startAutoPrerender。prerender の仕組みを使って、seq + synth がwav生成を開始…するための非同期処理を開始、する用。非同期処理。
+//   old : sendWav。           createWav があるとき、synthがwav生成し、send wav to samplerする用。今はほとんど使わない想定。ボツにして、prerenderに一元管理する想定。同期処理。
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function sendWavAfterHandshakeAllChildren(postmateMidi) {
+  // 開発用 log
+  if (postmateMidi.preRenderer.registerPrerenderer) {
+    console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`); // これが出力されるケースは基本的に、そもそもseq-childなのでprerenderをregisterしていないケースである
+  } else {
+    console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer登録済`);
+  }
+
+  const gn = postmateMidi.tonejs.generator;
+  if (gn.isSent) return; // 備忘、現在は未使用。project内部でほかにhitなし。過去に使っていた可能性あり。
+
+  // webpage起動完了後、
+  // 自動でprerenderを開始する
+  // ※備忘、現在判定に使っている isPreRenderSynth は、まずsynth-childにてtrueにすることで、synthのみtrueにしている。samplerはこの時点ではまだprerenderできない。wavないので。そして、のち、samplerにwavが届いたあとは、registerPrerenderButton でsamplerもtrueにしている。
+  console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildren : isPreRenderSynth : `, postmateMidi.isPreRenderSynth); // 備忘、これで可視化した結果、sampler側はこれはfalse。つまりprerenderer登録済、でisPreRenderSynthがfalse。意図通り。開始時にauto prerenderしたいのは、synth側のみなので。sampler側はそもそもまだsynthがprerender終わってない状態ではauto prerenderはできないので。
+  // if (postmateMidi.preRenderer.isAutoStartPrerender && postmateMidi.preRenderer.isAutoStartPrerender()) { // ボツ。ボツ理由、これだとエラー。こっちだとsampler側もtrueになってしまい、起動時のsamplerにwavがない状態でautoprerenderしようとしてバグる。isPreRenderSynth ならsynth側のみtrueである。
+  if (postmateMidi.isPreRenderSynth) {
+    console.info(`%c${postmateMidi.getParentOrChild()} : I am preRenderSynth. 自動prerenderをstartします.`, 'color:black; background-color:lightblue')
+    gn.orgContext = Tone.getContext();
+    console.log(`${postmateMidi.getParentOrChild()} : emit onStartPreRender`);
+    postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
+    // 以降は非同期で後続処理へ
+    return;
+  }
+  // 備忘、過去に使っていた。今はprerenderに置き換えて一元化する考え。コミットコメントに意図を残して削除する考え。
+  //  保留。ほかを削除してから削除する想定。現状、gnの位置付けが曖昧なので。
+  if (gn.createWav) {
+    if (!gn.wav) {
+      gn.noteNum = 60;
+      gn.wav = gn.createWav(gn.noteNum);
+    }
+    postmateMidi.sendWavAfterHandshakeAllChildrenSub(gn);
+    return;
+  }
+}
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function onStartPreRender(postmateMidi, data) {
