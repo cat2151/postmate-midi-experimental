@@ -17,6 +17,9 @@ const preRenderer = { sendWavAfterHandshakeAllChildren, onStartPreRender, doPreR
 //   old : sendWav。           createWav があるとき、synthがwav生成し、send wav to samplerする用。今はほとんど使わない想定。ボツにして、prerenderに一元管理する想定。同期処理。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function sendWavAfterHandshakeAllChildren(postmateMidi) {
+  autoExecPrerender(postmateMidi);
+}
+function autoExecPrerender(postmateMidi) {
   // 開発用 log
   if (postmateMidi.preRenderer.registerPrerenderer) {
     console.log(`${postmateMidi.getParentOrChild()} : sendWavAfterHandshakeAllChildren : preRenderer未登録`); // これが出力されるケースは基本的に、そもそもseq-childなのでprerenderをregisterしていないケースである
