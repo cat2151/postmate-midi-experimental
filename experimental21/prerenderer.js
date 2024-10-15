@@ -1,24 +1,16 @@
-const preRenderer = { sendWavAfterHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
 //   return true;
 // }
 
-// TODO 切り分けた上で、auto exec prerender という名前をつけてわかりやすくする
-//  auto exec をするかどうかも含めて、外部のprerenderに仕様も含めて切り出す。
-//    ここの責務は「 sendWavAfterHandshakeAllChildren というタイミングで、prerender側の sendWavAfterHandshakeAllChildren を呼ぶ」のみに切り分ける。
-//      なぜならauto start prerenderするかどうかは、prerenderの用途で都度変化するので。なので、postmateMidi側でなくprerenderに持たせるのがよい、と考える。
-//  同様に、まだprerenderとして切り出すものがありそう。位置付けとして、postmateMidiのシンプルな機能、とズレてるものがあったら、まずcommentにして切り出す。
-// child用
-// 注意、位置づけと名前がズレている。今後、末尾のcreateWavを削除したら、名前を、sendWavのかわりに、startAutoPrerender にする想定。
-//  位置づけ：
-//   now : startAutoPrerender。prerender の仕組みを使って、seq + synth がwav生成を開始…するための非同期処理を開始、する用。非同期処理。
-//   old : sendWav。           createWav があるとき、synthがwav生成し、send wav to samplerする用。今はほとんど使わない想定。ボツにして、prerenderに一元管理する想定。同期処理。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
-function sendWavAfterHandshakeAllChildren(postmateMidi) {
+function onCompleteHandshakeAllChildren(postmateMidi, data) {
   autoExecPrerender(postmateMidi);
 }
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function autoExecPrerender(postmateMidi) {
   // 開発用 log
   if (postmateMidi.preRenderer.registerPrerenderer) {

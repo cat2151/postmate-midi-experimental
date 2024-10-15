@@ -270,8 +270,8 @@ function registerChild(urlParams, textareaSelector, textareaSeqFnc, textareaTemp
   function onCompleteHandshakeAllChildren(data) {
     console.log(`child${childId + 1} : onCompleteHandshakeAllChildren : received data : [${data}] : time : ${Date.now() % 10000}`);
 
-    // generator用
-    sendWavAfterHandshakeAllChildren();
+    // prerenderer
+    if (postmateMidi.preRenderer.onCompleteHandshakeAllChildren) postmateMidi.preRenderer.onCompleteHandshakeAllChildren(postmateMidi, data);
   }
   function onAllSynthReady() {
     console.log(`child${childId + 1} : onAllSynthReady`);
@@ -369,6 +369,9 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
   }
 }
 
+// TODO まだprerenderとして切り出すものがありそう。位置付けとして、postmateMidiのシンプルな機能、とズレてるものがあったら、まずcommentにして切り出す。
+
+// prerender側に切り出す考え。
 function registerPrerenderButton(buttonSelector) {
   postmateMidi.hasPreRenderButton = true;
   const ui = postmateMidi.ui;
@@ -387,6 +390,7 @@ function registerPrerenderButton(buttonSelector) {
   };
 }
 
+// prerender側に切り出す考え。
 function registerWavImportButton(buttonSelector) {
   postmateMidi.hasWavImportButton = true;
   const ui = postmateMidi.ui;
@@ -501,6 +505,7 @@ function visualizeCurrentSound() {
   }
 }
 
+// TODO prerender側に切り出す考え
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 function visualizeGeneratedSound() {
   const canvas = document.createElement("canvas");
@@ -838,10 +843,6 @@ function initCh(ch) {
 ////////
 // Tone Generator
 //  wav format : Float32Array
-
-function sendWavAfterHandshakeAllChildren() {
-  if (postmateMidi.preRenderer.sendWavAfterHandshakeAllChildren) postmateMidi.preRenderer.sendWavAfterHandshakeAllChildren(postmateMidi);
-}
 
 // postmate parent/child の call/emit 対象関数である
 function onStartPreRender(data) {
