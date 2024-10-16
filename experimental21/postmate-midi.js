@@ -371,7 +371,7 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
 
 // TODO まだprerenderとして切り出すものがありそう。位置付けとして、postmateMidiのシンプルな機能、とズレてるものがあったら、まずcommentにして切り出す。
 
-// prerender側に切り出す考え。
+// TODO prerender側に切り出す考え。
 function registerPrerenderButton(buttonSelector) {
   postmateMidi.hasPreRenderButton = true;
   const ui = postmateMidi.ui;
@@ -390,7 +390,8 @@ function registerPrerenderButton(buttonSelector) {
   };
 }
 
-// prerender側に切り出す考え。
+// TODO prerender側に切り出す考え。
+// TODO 呼び出している関数を共通APIにする
 function registerWavImportButton(buttonSelector) {
   postmateMidi.hasWavImportButton = true;
   const ui = postmateMidi.ui;
@@ -506,6 +507,7 @@ function visualizeCurrentSound() {
 }
 
 // TODO prerender側に切り出す考え
+// TODO getPeakAbs を共通APIにしてpostmateMidi経由で呼ぶようにする
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 function visualizeGeneratedSound() {
   const canvas = document.createElement("canvas");
@@ -568,6 +570,7 @@ function visualizeGeneratedSound() {
   Tone.Transport.start();
 }
 
+// TODO 公開APIにする。別の公開APIから呼ばれている
 function getPeakAbs(wav) {
   let maxAbs = 0;
   for (let i = 0; i < wav.length; i++) {
