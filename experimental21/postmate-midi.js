@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, getPeakAbs, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -506,71 +506,11 @@ function visualizeCurrentSound() {
   }
 }
 
-// TODO prerender側に切り出す考え
-// TODO getPeakAbs を共通APIにしてpostmateMidi経由で呼ぶようにする
-// 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 function visualizeGeneratedSound() {
-  const canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth;
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
-
-  // 波形全体を表示
-  let eventId = Tone.Transport.scheduleRepeat(() => {
-    const gn = postmateMidi.tonejs.generator;
-    if (!gn.wav) return; // wavが生成されるまでは、描画しない
-    const startTime = Date.now(); // かかった時間計測用
-    const waveform = getWaveform(gn.wav, canvas.width);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
-    for (let i = 0; i < waveform.length; i++) {
-      const x = (i / waveform.length) * canvas.width;
-      const y = (0.5 * canvas.height) - (waveform[i] * canvas.height);
-      ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // 一度描画したら描画をとめる
-    // console.log(`${getParentOrChild()} : visualizeGeneratedSound : stopped`)
-    Tone.Transport.clear(eventId);
-
-    // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
-    console.log(`${getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
-
-    function getWaveform(wav, xSize) {
-      let waveform = getPeakWav(wav, xSize);
-      waveform = normalizeWav(waveform);
-      return waveform;
-
-      // もしより厳密に音量を描画したいなら1sampleごとに前後一定sampleのエネルギーの大きさを上下幅として描画したほうがよさげ。
-      // とはいえ、そこに手間かけるよりほかを優先する。ひとまず絶対値の最大のpointを、1sampleごとに交互に上下に描画する。なお交互上下にしない場合は意図しない周期性が出て、確認したい音量と乖離したものになった。
-      function getPeakWav(wav, xSize) {
-        const chunkSize = wav.length / xSize;
-        const peakWav = new Float32Array(xSize);
-        for (let i = 0; i < xSize; i++) {
-          peakWav[i] = getPeakAbs(wav.slice(chunkSize * i, chunkSize * (i + 1)));
-          if (i % 2) peakWav[i] *= -1;
-        }
-        return peakWav;
-      }
-
-      function normalizeWav(wav) {
-        const maxAbs = getPeakAbs(wav);
-        for (let i = 0; i < wav.length; i++) {
-          wav[i] /= maxAbs * 2;
-        }
-        return wav;
-      }
-
-    }
-  }, "60hz"); // let eventId = Tone.Transport.scheduleRepeat(() => {
-
-  // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-  Tone.Transport.start();
+  if (postmateMidi.preRenderer.visualizeGeneratedSound) postmateMidi.preRenderer.visualizeGeneratedSound(postmateMidi);
 }
 
-// TODO 公開APIにする。別の公開APIから呼ばれている
+// 公開APIである
 function getPeakAbs(wav) {
   let maxAbs = 0;
   for (let i = 0; i < wav.length; i++) {

@@ -1,4 +1,4 @@
-const preRenderer = { onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum };
+const preRenderer = { onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -233,6 +233,71 @@ function getChNum(filename) {
       return 0;
     }
   }
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+// 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
+//  ※開発当初はgeneratorという名前だったが、現在はprerender に名前を統一する方向で検討中
+function visualizeGeneratedSound(postmateMidi) {
+  const canvas = document.createElement("canvas");
+  canvas.width = window.innerWidth;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+
+  // 波形全体を表示
+  let eventId = Tone.Transport.scheduleRepeat(() => {
+    const gn = postmateMidi.tonejs.generator;
+    if (!gn.wav) return; // wavが生成されるまでは、描画しない
+    console.log(`${postmateMidi.getParentOrChild()} : gn.wav : `, gn.wav);
+    const startTime = Date.now(); // かかった時間計測用
+    const waveform = getWaveform(gn.wav, canvas.width);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
+    for (let i = 0; i < waveform.length; i++) {
+      const x = (i / waveform.length) * canvas.width;
+      const y = (0.5 * canvas.height) - (waveform[i] * canvas.height);
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 一度描画したら描画をとめる
+    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : stopped`)
+    Tone.Transport.clear(eventId);
+
+    // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
+    console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
+
+    function getWaveform(wav, xSize) {
+      let waveform = getPeakWav(wav, xSize);
+      waveform = normalizeWav(waveform);
+      return waveform;
+
+      // もし、より厳密に音量を描画したいなら1sampleごとに前後一定sampleのエネルギーの大きさを上下幅として描画したほうがよさげ。
+      // とはいえ、そこに手間かけるよりほかを優先する。ひとまず絶対値の最大のpointを、1sampleごとに交互に上下に描画する。なお交互上下にしない場合は意図しない周期性が出て、確認したい音量と乖離したものになった。
+      function getPeakWav(wav, xSize) {
+        const chunkSize = wav.length / xSize;
+        const peakWav = new Float32Array(xSize);
+        for (let i = 0; i < xSize; i++) {
+          peakWav[i] = postmateMidi.getPeakAbs(wav.slice(chunkSize * i, chunkSize * (i + 1)));
+          if (i % 2) peakWav[i] *= -1;
+        }
+        return peakWav;
+      }
+
+      function normalizeWav(wav) {
+        const maxAbs = postmateMidi.getPeakAbs(wav);
+        for (let i = 0; i < wav.length; i++) {
+          wav[i] /= maxAbs * 2;
+        }
+        return wav;
+      }
+
+    }
+  }, "60hz"); // let eventId = Tone.Transport.scheduleRepeat(() => {
+
+  // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
+  Tone.Transport.start();
 }
 
 export { preRenderer };
