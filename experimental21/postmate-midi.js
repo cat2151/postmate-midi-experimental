@@ -377,14 +377,14 @@ function registerPrerenderButton(buttonSelector) {
   const ui = postmateMidi.ui;
   ui.button = document.querySelector(buttonSelector);
   ui.button.onclick = function() {
-    console.log(`${getParentOrChild()} : onclick prerenderButton`);
+    console.log(`${postmateMidi.getParentOrChild()} : onclick prerenderButton`);
     const gn = postmateMidi.tonejs.generator;
 
     postmateMidi.isPreRenderSynth = true; // noteOn時にprerender用のtimestamp制御をする用
 
     // prerender ※この3行は、ひとまずsendWavAfterHandshakeAllChildrenのコピー。あとでfncにして共通化するかも
     gn.orgContext = Tone.getContext();
-    console.log(`${getParentOrChild()} : emit onStartPreRender`);
+    console.log(`${postmateMidi.getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
     // 以降は非同期で後続処理へ
   };
