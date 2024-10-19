@@ -1,9 +1,28 @@
-const preRenderer = { onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
+const preRenderer = { registerPrerenderButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
 //   return true;
 // }
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function registerPrerenderButton(postmateMidi, buttonSelector) {
+  postmateMidi.hasPreRenderButton = true;
+  const ui = postmateMidi.ui;
+  ui.button = document.querySelector(buttonSelector);
+  ui.button.onclick = function() {
+    console.log(`${postmateMidi.getParentOrChild()} : onclick prerenderButton`);
+    const gn = postmateMidi.tonejs.generator;
+
+    postmateMidi.isPreRenderSynth = true; // noteOn時にprerender用のtimestamp制御をする用
+
+    // prerender ※この3行は、ひとまずsendWavAfterHandshakeAllChildrenのコピー。あとでfncにして共通化するかも
+    gn.orgContext = Tone.getContext();
+    console.log(`${postmateMidi.getParentOrChild()} : emit onStartPreRender`);
+    postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
+    // 以降は非同期で後続処理へ
+  };
+}
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function onCompleteHandshakeAllChildren(postmateMidi, data) {
