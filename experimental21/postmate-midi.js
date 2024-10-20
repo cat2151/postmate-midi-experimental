@@ -376,13 +376,12 @@ function registerPrerenderButton(buttonSelector) {
 }
 
 // TODO prerender側に切り出す考え。
-// TODO 呼び出している関数を共通APIにする
 function registerWavImportButton(buttonSelector) {
   postmateMidi.hasWavImportButton = true;
   const ui = postmateMidi.ui;
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
-    console.log(`${getParentOrChild()} : onclick wavImportButton`);
+    console.log(`${postmateMidi.getParentOrChild()} : onclick wavImportButton`);
     openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
   };
 }
