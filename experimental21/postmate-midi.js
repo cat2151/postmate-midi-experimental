@@ -375,15 +375,8 @@ function registerPrerenderButton(buttonSelector) {
   if (postmateMidi.preRenderer.registerPrerenderButton) postmateMidi.preRenderer.registerPrerenderButton(postmateMidi, buttonSelector);
 }
 
-// TODO prerender側に切り出す考え。
 function registerWavImportButton(buttonSelector) {
-  postmateMidi.hasWavImportButton = true;
-  const ui = postmateMidi.ui;
-  ui.wavImportButton = document.querySelector(buttonSelector);
-  ui.wavImportButton.onclick = function() {
-    console.log(`${postmateMidi.getParentOrChild()} : onclick wavImportButton`);
-    openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
-  };
+  if (postmateMidi.preRenderer.registerWavImportButton) postmateMidi.preRenderer.registerWavImportButton(postmateMidi, buttonSelector);
 }
 
 function openDialogForFileUpload(afterFileUploadFnc) {

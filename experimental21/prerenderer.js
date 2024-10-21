@@ -1,4 +1,4 @@
-const preRenderer = { registerPrerenderButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
+const preRenderer = { registerPrerenderButton, registerWavImportButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
 
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
@@ -21,6 +21,17 @@ function registerPrerenderButton(postmateMidi, buttonSelector) {
     console.log(`${postmateMidi.getParentOrChild()} : emit onStartPreRender`);
     postmateMidi.parent.emit('onStartPreRender' + (postmateMidi.childId + 1));
     // 以降は非同期で後続処理へ
+  };
+}
+
+// Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
+function registerWavImportButton(postmateMidi, buttonSelector) {
+  postmateMidi.hasWavImportButton = true;
+  const ui = postmateMidi.ui;
+  ui.wavImportButton = document.querySelector(buttonSelector);
+  ui.wavImportButton.onclick = function() {
+    console.log(`${postmateMidi.getParentOrChild()} : onclick wavImportButton`);
+    openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
   };
 }
 
