@@ -12,7 +12,7 @@ const postmateMidi = {
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
             registerSynth, initSynthFnc: null, generator: {} },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
-  isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, getPeakAbs, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
+  isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, getPeakAbs, openDialogForFileUpload, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,
   isSampler: false, isPreRenderSynth: false, hasPreRenderButton: false, hasWavImportButton: false, isLinkPlay: false
 };
@@ -376,7 +376,12 @@ function registerPrerenderButton(buttonSelector) {
 }
 
 function registerWavImportButton(buttonSelector) {
-  if (postmateMidi.preRenderer.registerWavImportButton) postmateMidi.preRenderer.registerWavImportButton(postmateMidi, buttonSelector);
+  if (postmateMidi.preRenderer.registerWavImportButton) {
+    console.log(`${getParentOrChild()} : registerWavImportButton`);
+    postmateMidi.preRenderer.registerWavImportButton(postmateMidi, buttonSelector);
+  } else {
+    console.error(`${getParentOrChild()} : preRenderer に registerWavImportButton がありません。registerPrerenderer のあとに registerWavImportButton を呼び出してください。`);
+  }
 }
 
 function openDialogForFileUpload(afterFileUploadFnc) {

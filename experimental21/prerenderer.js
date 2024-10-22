@@ -31,7 +31,7 @@ function registerWavImportButton(postmateMidi, buttonSelector) {
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
     console.log(`${postmateMidi.getParentOrChild()} : onclick wavImportButton`);
-    openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
+    postmateMidi.openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
   };
 }
 

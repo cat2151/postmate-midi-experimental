@@ -13,9 +13,9 @@ postmateMidi.tonejs.registerSynth((ch) => {
 
 postmateMidi.ui.registerPrerenderButton('#prerender');
 postmateMidi.isSampler = true;
-postmateMidi.ui.registerWavImportButton('#wavimport');
 
 postmateMidi.preRenderer.registerPrerenderer(preRenderer);
+postmateMidi.ui.registerWavImportButton('#wavimport'); // registerPrerendererのあとに呼び出すこと
 
 postmateMidi.ui.visualizeCurrentSound();
 console.log(`postmate-midi child:`, postmateMidi);
