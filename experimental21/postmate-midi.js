@@ -766,8 +766,19 @@ function initCh(ch) {
 }
 
 ////////
-// Tone Generator
+// Tone Generator / Prerenderer
 //  wav format : Float32Array
+
+function registerPrerenderer(preRenderer) {
+  // registerするpreRendererとは、外部ライブラリ prerenderer.js 等である。
+  //  用途 : preRendererの仕組みは広い用途と複雑な仕様を取りうるので、postmate-midi側はシンプルにし、prerendererはそれと疎結合の外部ライブラリに切り出す、とした。
+  console.log(`${getParentOrChild()} : registerPrerenderer : `, preRenderer);
+  postmateMidi.preRenderer = preRenderer;
+}
+
+// see also:
+//  onCompleteHandshakeAllChildren
+//   prerenderer
 
 // postmate parent/child の call/emit 対象関数である
 function onStartPreRender(data) {
@@ -877,14 +888,6 @@ function checkWavOk(wav) {
   }
   console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
   return false;
-}
-
-/////////////////////////
-function registerPrerenderer(preRenderer) {
-  // registerするpreRendererとは、外部ライブラリである。
-  //  用途 : preRendererの仕組みは広い用途と複雑な仕様を取りうるので、postmate-midi側はシンプルにし、prerendererはそれと疎結合の外部ライブラリに切り出す、とした。
-  console.log(`${getParentOrChild()} : registerPrerenderer : `, preRenderer);
-  postmateMidi.preRenderer = preRenderer;
 }
 
 /////////////////////////
