@@ -369,8 +369,6 @@ function setupDropDownListForTextareaTemplate(textareaTemplateDropDownListSelect
   }
 }
 
-// TODO まだprerenderとして切り出すものがありそう。位置付けとして、postmateMidiのシンプルな機能、とズレてるものがあったら、まずcommentにして切り出す。
-
 function registerPrerenderButton(buttonSelector) {
   if (postmateMidi.preRenderer.registerPrerenderButton) postmateMidi.preRenderer.registerPrerenderButton(postmateMidi, buttonSelector);
 }
