@@ -860,7 +860,7 @@ function sendToSampler(wavs) {
 }
 
 // 公開APIである
-function updateGnWavs(gn, wavs) {
+function updateGnWavs(postmateMidi, gn, wavs) {
   return postmateMidi.preRenderer.updateGnWavs(postmateMidi, gn, wavs);
 }
 

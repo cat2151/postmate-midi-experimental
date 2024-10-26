@@ -118,6 +118,7 @@ async function doPreRenderAsync(postmateMidi, songs) {
     gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
   }
+  gn.wavs = wavs; // generator側のvisualizerでwavsを表示する用
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
@@ -175,7 +176,7 @@ function sendWavAfterHandshakeAllChildrenSub(postmateMidi, wavs) {
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function saveWavByDialog(postmateMidi, wavFloat32) {
-  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav : `, wavFloat32);
+  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : saveWavByDialog : wav : `, wavFloat32);
   const toneAudioBuffer = Tone.ToneAudioBuffer.fromArray(wavFloat32);
   const wavFile = postmateMidi.getWavFileFromFloat32(toneAudioBuffer);
   const blob = new Blob([wavFile], { type: 'audio/wav' });
@@ -186,7 +187,8 @@ function saveWavByDialog(postmateMidi, wavFloat32) {
 function sendToSampler(postmateMidi, wavs) {
   if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
-  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
+  gn.wavs = postmateMidi.updateGnWavs(postmateMidi, gn, wavs);
+  console.log(`${postmateMidi.getParentOrChild()} : sendToSampler : gn.wavs : `, gn.wavs);
   postmateMidi.samplerAddWavs(gn.wavs);
 }
 
@@ -194,7 +196,11 @@ function sendToSampler(postmateMidi, wavs) {
 // 用途、prerenderボタンで使う用 & prerenderボタンでのsamplerのprerender後に既存ch1に上書きしてch2は残す用（wavsをそのまま上書きするとch2が消えてしまうのでそれを防止する用）
 // 備忘、引数 postmateMidi は他の関数同様につけておく、仕様変更時に引数そのままにできる用
 function updateGnWavs(postmateMidi, gn, wavs) {
-  if (!gn.wavs) gn.wavs = [];
+  // console.log(`${postmateMidi.getParentOrChild()} : updateGnWavs : gn : `, gn, `wavs : `, wavs);
+  if (!gn.wavs) {
+    gn.wavs = [];
+    // console.log(`${postmateMidi.getParentOrChild()} : updateGnWavs : gn.wavs を初期化しました`);
+  }
   for (let i = 0; i < wavs.length; i++) {
     if (i < gn.wavs.length) {
       if (!wavs[i]) continue; // 例えばch02用のwavs[1]だけを上書きし、ch01用はgn.wavs[0]のままとする用
@@ -203,6 +209,7 @@ function updateGnWavs(postmateMidi, gn, wavs) {
       gn.wavs.push(wavs[i]);
     }
   }
+  // console.log(`${postmateMidi.getParentOrChild()} : updateGnWavs : gn.wavs : `, gn.wavs);
   return gn.wavs;
 }
 
@@ -240,7 +247,7 @@ async function afterWavFileUploadAsync(fileContent, filename, postmateMidi) {
   const wavs = new Array(16).fill(null);
   wavs[chNum] = [60, wav];
   const gn = postmateMidi.tonejs.generator;
-  gn.wavs = postmateMidi.updateGnWavs(gn, wavs);
+  gn.wavs = postmateMidi.updateGnWavs(postmateMidi, gn, wavs);
 
   // add to sampler
   const context = Tone.getContext();
@@ -277,10 +284,12 @@ function visualizeGeneratedSound(postmateMidi) {
   // 波形全体を表示
   let eventId = Tone.Transport.scheduleRepeat(() => {
     const gn = postmateMidi.tonejs.generator;
-    if (!gn.wav) return; // wavが生成されるまでは、描画しない
-    console.log(`${postmateMidi.getParentOrChild()} : gn.wav : `, gn.wav);
+    if (!gn.wavs) {
+      // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
+      return;
+    }
     const startTime = Date.now(); // かかった時間計測用
-    const waveform = getWaveform(gn.wav, canvas.width);
+    const waveform = getWaveform(gn.wavs, canvas.width);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
@@ -298,25 +307,56 @@ function visualizeGeneratedSound(postmateMidi) {
     // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
     console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
 
-    function getWaveform(wav, xSize) {
-      let waveform = getPeakWav(wav, xSize);
+    function getWaveform(gnWavs, xSize) {
+      let waveform = getPeakOfWavs(gnWavs, xSize);
       waveform = normalizeWav(waveform);
+      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `, waveform);
       return waveform;
 
-      // もし、より厳密に音量を描画したいなら1sampleごとに前後一定sampleのエネルギーの大きさを上下幅として描画したほうがよさげ。
-      // とはいえ、そこに手間かけるよりほかを優先する。ひとまず絶対値の最大のpointを、1sampleごとに交互に上下に描画する。なお交互上下にしない場合は意図しない周期性が出て、確認したい音量と乖離したものになった。
-      function getPeakWav(wav, xSize) {
-        const chunkSize = wav.length / xSize;
-        const peakWav = new Float32Array(xSize);
-        for (let i = 0; i < xSize; i++) {
-          peakWav[i] = postmateMidi.getPeakAbs(wav.slice(chunkSize * i, chunkSize * (i + 1)));
-          if (i % 2) peakWav[i] *= -1;
+      // 音量は仮、正確さより実装の楽さを優先する
+      function getPeakOfWavs(gnWavs, xSize) {
+        console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getPeakOfWavs : gnWavs : `, gnWavs);
+        let peakWav = new Float32Array(0);
+        for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
+          const wav = gnWavs[wavIndex][1]; // gnWavsの構造に依存している
+          let pw = getPeakOf1wav(wav, xSize / gnWavs.length);
+          peakWav = combineFloat32Array(peakWav, pw);
         }
         return peakWav;
       }
 
+      function getPeakOf1wav(wav, xSize) {
+        const peakWav = new Float32Array(xSize);
+        for (let i = 0; i < xSize; i++) {
+          peakWav[i] = getPeakOfSliced(i, wav, xSize);
+        }
+        return peakWav;
+      }
+
+      function combineFloat32Array(array1, array2) {
+        const combinedArray = new Float32Array(array1.length + array2.length);
+        combinedArray.set(array1);
+        combinedArray.set(array2, array1.length);
+        return combinedArray;
+      }
+
+      function getPeakOfSliced(i, wav, xSize) {
+        const numOfCh = wav.length;
+        const chIndex = i % numOfCh;
+        const wav1ch = wav[chIndex];
+        const chunkSize = wav1ch.length / xSize;
+        const sliced = wav1ch.slice(chunkSize * i, chunkSize * (i + 1));
+        const peakAbs = postmateMidi.getPeakAbs(sliced);
+        if (chIndex) return - peakAbs;
+        return peakAbs;
+      }
+
       function normalizeWav(wav) {
         const maxAbs = postmateMidi.getPeakAbs(wav);
+        if (!maxAbs) {
+          console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : ERROR : maxAbsが0`);
+          return wav;
+        }
         for (let i = 0; i < wav.length; i++) {
           wav[i] /= maxAbs * 2;
         }
@@ -324,7 +364,7 @@ function visualizeGeneratedSound(postmateMidi) {
       }
 
     }
-  }, "60hz"); // let eventId = Tone.Transport.scheduleRepeat(() => {
+  }, "1sec"); // let eventId = Tone.Transport.scheduleRepeat(() => {
 
   // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
   Tone.Transport.start();
