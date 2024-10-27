@@ -272,6 +272,8 @@ function getChNum(filename) {
   }
 }
 
+// TODO wav import後にも呼び出して、描画する。
+// TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 //  ※開発当初はgeneratorという名前だったが、現在はprerender に名前を統一する方向で検討中
