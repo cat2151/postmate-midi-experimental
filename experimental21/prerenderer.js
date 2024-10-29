@@ -273,9 +273,11 @@ function getChNum(filename) {
 }
 
 // TODO wav import後にも呼び出して、描画する。
-//  test case : 異なるwavをimportするごとにそれに応じた波形になること
+//  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 : まずリファクタリングから
 //   現在のfncを分解し、event登録fncと、eventで呼ばれる描画関数本体とに分解する
+//    >let eventId = Tone.Transport.scheduleRepeat(() => {
+//     の中身を、本体の関数、として切り出す、ということ
 //    本体は、wav import後にも呼び出すし、prerender後にも呼び出す
 //     それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
