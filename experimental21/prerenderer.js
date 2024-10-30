@@ -291,7 +291,9 @@ function visualizeGeneratedSound(postmateMidi) {
   const ctx = canvas.getContext("2d");
 
   // 波形全体を表示
-  let eventId = Tone.Transport.scheduleRepeat(() => {
+  let eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
+
+  function dispWavs() {
     const gn = postmateMidi.tonejs.generator;
     if (!gn.wavs) {
       // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
@@ -371,9 +373,8 @@ function visualizeGeneratedSound(postmateMidi) {
         }
         return wav;
       }
-
     }
-  }, "1sec"); // let eventId = Tone.Transport.scheduleRepeat(() => {
+  }
 
   // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
   Tone.Transport.start();
