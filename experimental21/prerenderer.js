@@ -1,5 +1,9 @@
 const preRenderer = { registerPrerenderButton, registerWavImportButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
 
+// 用途の例：
+//  generatorにて、プリレンダで音色wavを生成する用。生成されたwavはsamplerに送信され、演奏に利用できる。
+//  samplerにて、プリレンダでmixdown wavを生成する用。生成されたwavはローカルにダウンロードされる。
+
 // function isAutoStartPrerender() { // ボツ。ボツ理由は、これでは用途を満たさないため。prerendererをimportするchildにおいても、autostartしたいsynthと、autostartしないsamplerとで用途が違う。このfncだとsampler側がautostartしようとしてバグってしまった。
 //   console.log('isAutoStartPrerender');
 //   return true;
@@ -283,7 +287,6 @@ function getChNum(filename) {
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
-//  ※開発当初はgeneratorという名前だったが、現在はprerender に名前を統一する方向で検討中
 function visualizeGeneratedSound(postmateMidi) {
   const canvas = document.createElement("canvas");
   canvas.width = window.innerWidth;
