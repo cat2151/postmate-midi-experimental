@@ -288,15 +288,31 @@ function getChNum(filename) {
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 function visualizeGeneratedSound(postmateMidi) {
-  const canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth;
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
+  let canvas;
+  let eventId;
+  init();
 
-  // 波形全体を表示
-  let eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
+  function init() {
+    canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    document.body.appendChild(canvas);
+
+    // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
+    eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
+    Tone.Transport.start();
+  }
 
   function dispWavs() {
+    const gn = postmateMidi.tonejs.generator;
+    if (!gn.wavs) {
+      // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
+      return;
+    }
+    dispWavsSub();
+  }
+
+  function dispWavsSub() {
+    const ctx = canvas.getContext("2d");
     const gn = postmateMidi.tonejs.generator;
     if (!gn.wavs) {
       // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
@@ -378,9 +394,6 @@ function visualizeGeneratedSound(postmateMidi) {
       }
     }
   }
-
-  // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-  Tone.Transport.start();
 }
 
 export { preRenderer };
