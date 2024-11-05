@@ -10,7 +10,7 @@ const postmateMidi = {
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
-            registerSynth, initSynthFnc: null, generator: {} },
+            registerSynth, initSynthFnc: null, generator: { visualizer: null } },
   preRenderer: { registerPrerenderer }, // register時、preRendererそのものが外部preRendererに上書きされる
   isPreRenderSeq, sendWavAfterHandshakeAllChildrenSub, schedulingPreRender, renderContextAsync, getFloat32ArrayFromWavFileAsync, updateGnWavs, setContextInitSynthAddWav, checkWavOk, samplerAddWavs, openDownloadDialog, saveWavByDialog, getWavFileFromFloat32, getPeakAbs, openDialogForFileUpload, onmidimessage, // prerenerer.jsから呼び出す用に公開APIにするのを試す用。ひとまずここ。なにかのobjに入れるかは、リファクタリングしてから決める
   isParent: false, isChild: false, getParentOrChild,

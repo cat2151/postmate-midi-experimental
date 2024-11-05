@@ -277,7 +277,8 @@ function getChNum(filename) {
 }
 
 // 課題、どうリファクタリングをするか？canvasとeventIdをクロージャに入れる？まず、initを最初に呼び出すのは動かせない。canvasに影響するので。
-//  案、gnのメンバにvisualizerを入れて、そのメンバにcanvasとeventIdを入れる。これがよさげ。
+//  案、gnのメンバにvisualizerを入れて、そのメンバにcanvasとeventIdを入れる。
+//   処理タイミングは、visualizeGeneratedSound が呼び出されたときに。init()にて。initに引数 postmateMidi を与える。
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 : まずリファクタリングから
