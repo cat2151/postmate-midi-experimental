@@ -293,121 +293,120 @@ function getChNum(filename) {
 function visualizeGeneratedSound(postmateMidi) {
   const gn = postmateMidi.tonejs.generator;
   const visualizer = gn.visualizer;
-  visualizer.init = init;
-  visualizer.dispWavs = dispWavs;
-  visualizer.dispWavsSub = dispWavsSub;
+  visualizer.init = visualizeGeneratedSound_init;
+  visualizer.dispWavsSub = visualizeGeneratedSound_dispWavsSub;
 
   visualizer.init(postmateMidi);
+}
 
-  function init(postmateMidi) {
-    const gn = postmateMidi.tonejs.generator;
-    const visualizer = gn.visualizer;
+function visualizeGeneratedSound_init(postmateMidi) {
+  const gn = postmateMidi.tonejs.generator;
+  const visualizer = gn.visualizer;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = window.innerWidth;
-    document.body.appendChild(canvas);
+  const canvas = document.createElement("canvas");
+  canvas.width = window.innerWidth;
+  document.body.appendChild(canvas);
 
-    visualizer.canvas = canvas;
+  visualizer.canvas = canvas;
 
-    // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-    visualizer.eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
-    Tone.Transport.start();
-  }
+  // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
+  visualizer.eventId = Tone.Transport.scheduleRepeat(visualizeGeneratedSound_dispWavs, "1sec");
+  Tone.Transport.start();
 
-  function dispWavs() {
+  function visualizeGeneratedSound_dispWavs() {
     const gn = postmateMidi.tonejs.generator;
     if (!gn.wavs) {
       // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
       return;
     }
-    dispWavsSub(postmateMidi);
+    visualizeGeneratedSound_dispWavsSub(postmateMidi);
   }
+}
 
-  function dispWavsSub(postmateMidi) {
-    const gn = postmateMidi.tonejs.generator;
-    const visualizer = gn.visualizer;
-    const canvas = visualizer.canvas;
-    const eventId = visualizer.eventId;
+function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
+  const gn = postmateMidi.tonejs.generator;
+  const visualizer = gn.visualizer;
+  const canvas = visualizer.canvas;
+  const eventId = visualizer.eventId;
 
-    const ctx = canvas.getContext("2d");
-    if (!gn.wavs) {
-      // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
-      return;
+  const ctx = canvas.getContext("2d");
+  if (!gn.wavs) {
+    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
+    return;
+  }
+  const startTime = Date.now(); // かかった時間計測用
+  const waveform = getWaveform(gn.wavs, canvas.width);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
+  ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
+  for (let i = 0; i < waveform.length; i++) {
+    const x = (i / waveform.length) * canvas.width;
+    const y = (0.5 * canvas.height) - (waveform[i] * canvas.height);
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // 一度描画したら描画をとめる
+  // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : stopped`)
+  Tone.Transport.clear(eventId);
+
+  // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
+  console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
+
+  function getWaveform(gnWavs, xSize) {
+    let waveform = getPeakOfWavs(gnWavs, xSize);
+    waveform = normalizeWav(waveform);
+    console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `, waveform);
+    return waveform;
+
+    // 音量は仮、正確さより実装の楽さを優先する
+    function getPeakOfWavs(gnWavs, xSize) {
+      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getPeakOfWavs : gnWavs : `, gnWavs);
+      let peakWav = new Float32Array(0);
+      for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
+        const wav = gnWavs[wavIndex][1]; // gnWavsの構造に依存している
+        let pw = getPeakOf1wav(wav, xSize / gnWavs.length);
+        peakWav = combineFloat32Array(peakWav, pw);
+      }
+      return peakWav;
     }
-    const startTime = Date.now(); // かかった時間計測用
-    const waveform = getWaveform(gn.wavs, canvas.width);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.strokeStyle = "#0f0"; // dark mode / light 両対応を想定
-    for (let i = 0; i < waveform.length; i++) {
-      const x = (i / waveform.length) * canvas.width;
-      const y = (0.5 * canvas.height) - (waveform[i] * canvas.height);
-      ctx.lineTo(x, y);
+
+    function getPeakOf1wav(wav, xSize) {
+      const peakWav = new Float32Array(xSize);
+      for (let i = 0; i < xSize; i++) {
+        peakWav[i] = getPeakOfSliced(i, wav, xSize);
+      }
+      return peakWav;
     }
-    ctx.stroke();
 
-    // 一度描画したら描画をとめる
-    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : stopped`)
-    Tone.Transport.clear(eventId);
+    function combineFloat32Array(array1, array2) {
+      const combinedArray = new Float32Array(array1.length + array2.length);
+      combinedArray.set(array1);
+      combinedArray.set(array2, array1.length);
+      return combinedArray;
+    }
 
-    // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
-    console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
+    function getPeakOfSliced(i, wav, xSize) {
+      const numOfCh = wav.length;
+      const chIndex = i % numOfCh;
+      const wav1ch = wav[chIndex];
+      const chunkSize = wav1ch.length / xSize;
+      const sliced = wav1ch.slice(chunkSize * i, chunkSize * (i + 1));
+      const peakAbs = postmateMidi.getPeakAbs(sliced);
+      if (chIndex) return - peakAbs;
+      return peakAbs;
+    }
 
-    function getWaveform(gnWavs, xSize) {
-      let waveform = getPeakOfWavs(gnWavs, xSize);
-      waveform = normalizeWav(waveform);
-      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `, waveform);
-      return waveform;
-
-      // 音量は仮、正確さより実装の楽さを優先する
-      function getPeakOfWavs(gnWavs, xSize) {
-        console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getPeakOfWavs : gnWavs : `, gnWavs);
-        let peakWav = new Float32Array(0);
-        for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
-          const wav = gnWavs[wavIndex][1]; // gnWavsの構造に依存している
-          let pw = getPeakOf1wav(wav, xSize / gnWavs.length);
-          peakWav = combineFloat32Array(peakWav, pw);
-        }
-        return peakWav;
-      }
-
-      function getPeakOf1wav(wav, xSize) {
-        const peakWav = new Float32Array(xSize);
-        for (let i = 0; i < xSize; i++) {
-          peakWav[i] = getPeakOfSliced(i, wav, xSize);
-        }
-        return peakWav;
-      }
-
-      function combineFloat32Array(array1, array2) {
-        const combinedArray = new Float32Array(array1.length + array2.length);
-        combinedArray.set(array1);
-        combinedArray.set(array2, array1.length);
-        return combinedArray;
-      }
-
-      function getPeakOfSliced(i, wav, xSize) {
-        const numOfCh = wav.length;
-        const chIndex = i % numOfCh;
-        const wav1ch = wav[chIndex];
-        const chunkSize = wav1ch.length / xSize;
-        const sliced = wav1ch.slice(chunkSize * i, chunkSize * (i + 1));
-        const peakAbs = postmateMidi.getPeakAbs(sliced);
-        if (chIndex) return - peakAbs;
-        return peakAbs;
-      }
-
-      function normalizeWav(wav) {
-        const maxAbs = postmateMidi.getPeakAbs(wav);
-        if (!maxAbs) {
-          console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : ERROR : maxAbsが0`);
-          return wav;
-        }
-        for (let i = 0; i < wav.length; i++) {
-          wav[i] /= maxAbs * 2;
-        }
+    function normalizeWav(wav) {
+      const maxAbs = postmateMidi.getPeakAbs(wav);
+      if (!maxAbs) {
+        console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : ERROR : maxAbsが0`);
         return wav;
       }
+      for (let i = 0; i < wav.length; i++) {
+        wav[i] /= maxAbs * 2;
+      }
+      return wav;
     }
   }
 }
