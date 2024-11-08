@@ -276,16 +276,10 @@ function getChNum(filename) {
   }
 }
 
-// 課題、どうリファクタリングをするか？canvasとeventIdをクロージャに入れる？まず、initを最初に呼び出すのは動かせない。canvasに影響するので。
-//  案、gnのメンバにvisualizerを入れて、そのメンバにcanvasとeventIdを入れる。
-//   処理タイミングは、visualizeGeneratedSound が呼び出されたときに。init()にて。initに引数 postmateMidi を与える。
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
-//  実装方式 : まずリファクタリングから
-//   現在のfncを分解し、event登録fncと、eventで呼ばれる描画関数本体とに分解する
-//    >let eventId = Tone.Transport.scheduleRepeat(() => {
-//     の中身を、本体の関数、として切り出す、ということ
-//    本体は、wav import後にも呼び出すし、prerender後にも呼び出す
+//  実装方式 : visualizeGeneratedSound_dispWavsSub を、
+//    wav import後にも呼び出すし、prerender後にも呼び出す
 //     それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
