@@ -278,9 +278,12 @@ function getChNum(filename) {
 
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
-//  実装方式 : visualizeGeneratedSound_dispWavsSub を、
-//    wav import後にも呼び出すし、prerender後にも呼び出す
-//     それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
+//  実装方式 :
+//    visualizeGeneratedSound_dispWavsSub を、
+//      wav import後にも呼び出すし、prerender後にも呼び出す
+//      具体的にはどこから？
+//       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
+//    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
