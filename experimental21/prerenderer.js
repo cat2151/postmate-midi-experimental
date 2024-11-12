@@ -285,7 +285,7 @@ function getChNum(filename) {
 //       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」なので、実装してから検証が必要そう。
 //        prerender 後 :
-//         generator側 :
+//         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 :
 //    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
