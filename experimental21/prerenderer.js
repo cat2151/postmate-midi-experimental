@@ -310,11 +310,15 @@ function visualizeGeneratedSound_init(postmateMidi) {
 
   visualizer.canvas = canvas;
 
-  // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-  visualizer.eventId = Tone.Transport.scheduleRepeat(visualizeGeneratedSound_dispWavs, "1sec");
-  Tone.Transport.start();
+  registerEvent();
 
-  function visualizeGeneratedSound_dispWavs() {
+  function registerEvent() {
+    // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
+    visualizer.eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
+    Tone.Transport.start();
+  }
+
+  function dispWavs() {
     const gn = postmateMidi.tonejs.generator;
     if (!gn.wavs) {
       // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
