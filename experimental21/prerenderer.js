@@ -276,6 +276,9 @@ function getChNum(filename) {
   }
 }
 
+// TODO 次どうする？
+//  案、まず起動時にsend to samplerしたとき、sampler側にも波形を表示する。そのためsampler側のjsでもinitつまり visualizeGeneratedSound を呼び出す。test case は「落ちないこと」
+//   まずinitで落ちない確認だけをするので、sampler側に「generatorからsend toされた波形」があっても表示されない、となっても、まずはOK。そのあと切り分けて実装する。
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
@@ -283,7 +286,10 @@ function getChNum(filename) {
 //      wav import後にも呼び出すし、prerender後にも呼び出す
 //      具体的にはどこから？
 //       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
-//        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」なので、実装してから検証が必要そう。
+//        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
+//         仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
+//         仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
+//         仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
 //        prerender 後 :
 //         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
