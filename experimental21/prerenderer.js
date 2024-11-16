@@ -277,8 +277,9 @@ function getChNum(filename) {
 }
 
 // TODO 次どうする？
-//  案、まず起動時にsend to samplerしたとき、sampler側にも波形を表示する。そのためsampler側のjsでもinitつまり visualizeGeneratedSound を呼び出す。test case は「落ちないこと」
-//   まずinitで落ちない確認だけをするので、sampler側に「generatorからsend toされた波形」があっても表示されない、となっても、まずはOK。そのあと切り分けて実装する。
+//  案、まず起動時にsend to samplerしたとき、sampler側にも波形を表示する。test case は「落ちないこと」。sampler側でinitは呼び出し済み。
+//   実装は、samplerAddWavs 末尾にて、const gn = postmateMidi.tonejs.generator; gn.visualizer.dispWavsSub(postmateMidi); を呼び出して検証する。
+//  検討、現状、samplerは、visualizerを「今の1秒付近の波形」の用途で実装している。だが、samplerは今後「1秒」「samplerの持つ波形全体」の両方をvisualizeする考え。仕様と方法を検討する。ざっくり、2つ表示領域をhtmlで用意して、initでそれぞれ個別に紐つける想定。
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
