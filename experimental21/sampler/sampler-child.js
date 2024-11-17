@@ -17,5 +17,6 @@ postmateMidi.isSampler = true;
 postmateMidi.preRenderer.registerPrerenderer(preRenderer);
 postmateMidi.ui.registerWavImportButton('#wavimport'); // registerPrerendererのあとに呼び出すこと
 
+postmateMidi.ui.visualizeGeneratedSound();
 postmateMidi.ui.visualizeCurrentSound();
 console.log(`postmate-midi child:`, postmateMidi);

@@ -237,6 +237,9 @@ function samplerAddWavs(postmateMidi, wavs) {
       console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
   }
+
+  const gn = postmateMidi.tonejs.generator;
+  if (gn.visualizer && gn.visualizer.dispWavsSub) gn.visualizer.dispWavsSub(postmateMidi);
 }
 
 // wav import用
