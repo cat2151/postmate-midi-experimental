@@ -285,7 +285,7 @@ function getChNum(filename) {
 //   sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。 ※現在は更新されていない認識
 //   sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。 ※現在はprerenderボタンが動作しないのでそれを修正するのが先
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
-//   TODO list upする
+//   TOOD これやる > ※現在はprerenderボタンが動作しないのでそれを修正するのが先
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
