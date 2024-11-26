@@ -11,10 +11,10 @@ postmateMidi.tonejs.registerSynth((ch) => {
                   {ch: 2-1, instrument: 'Sampler', samples: null, volume: -6, isUsingPan: false} ]);
 });
 
-postmateMidi.ui.registerPrerenderButton('#prerender');
 postmateMidi.isSampler = true;
 
 postmateMidi.preRenderer.registerPrerenderer(preRenderer);
+postmateMidi.ui.registerPrerenderButton('#prerender'); // registerPrerendererのあとに呼び出すこと
 postmateMidi.ui.registerWavImportButton('#wavimport'); // registerPrerendererのあとに呼び出すこと
 
 postmateMidi.ui.visualizeGeneratedSound();
