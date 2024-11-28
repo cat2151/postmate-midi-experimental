@@ -287,7 +287,13 @@ function getChNum(filename) {
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 //   TODO これやる > ※現在はprerenderボタンが動作しないのでそれを修正するのが先
 //    状況、samplerにて、prerenderボタンを押すと、ログ反応はあるが、prerender結果は得られない、ように見受けられる
-//     確認すべし : ボタンを押したあと、samplerのログがどうなっているか。期待値も可視化する。
+//     確認すべし : ボタンを押したあと、samplerのログがどうなっているか。
+//      結果：
+//        child4 : onclick prerenderButton
+//        prerenderer.js:25 child4 : emit onStartPreRender
+//        postmate-midi.js:127 parent : onStartPreRender : from child4(../sampler/index.html) : received data : [ undefined ]
+//        postmate-midi.js:132 parent : midiOutput : child3 to child4
+//      TODO 期待値も可視化する。
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
