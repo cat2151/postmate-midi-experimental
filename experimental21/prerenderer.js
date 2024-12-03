@@ -296,33 +296,33 @@ function getChNum(filename) {
 //      TODO 期待値も可視化する。 → わからん。seq2のseqでwavをprerenderし、つまりセルフサンプリングし、wavを生成する、のはず。それがどうログになるかはわからん。
 //             課題、期待値が曖昧。対策、セルフサンプリング時はsamplerにおけるprerenderがどう動作するはずか整理し、ログ期待値に可視化してゆく。
 //         : ボタン押下 → emit onStartPreRender → createPreRenderSeqData → ？
-//      TODO 自動起動prerender時、onStartPreRender からのログがどうなっているか、可視化すべし
-// 結果：LOG：TODO 読みやすくすべし
-// child2 : I am preRenderSynth. 自動prerenderをstartします.
-// prerenderer.js:67 child2 : emit onStartPreRender
-// postmate-midi.js:127 parent : onStartPreRender : from child2(../synth/index.html) : received data : [ undefined ]
-// postmate-midi.js:132 parent : midiOutput : child1 to child2
-// prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]
-// prerenderer.js:95 child1 : sq :  {BPM: 120, TICKS_PER_MEASURE: 192, isPreRender: false, getTemplates: ƒ, togglePlay: ƒ, …}
-// prerenderer.js:98 child1 : t :  (3) [Array(2), Array(2), Array(2)]
-// seq.js:43 seq : getPreRenderMidiData (/seq1/index.html)
-// seq.js:74 seq : init : isPreRender : true
-// seq.js:43 seq : getPreRenderMidiData (/seq1/index.html)
-// seq.js:74 seq : init : isPreRender : true
-// prerenderer.js:109 child1 : songs :  (2) [Array(8), Array(8)]
-// postmate-midi.js:138 parent : onCompletePreRenderSeq : from child1(../seq1/index.html) : received data : [ (2) [Array(8), Array(8)] ]
-// postmate-midi.js:792 child2 : recv : onCompletePreRenderSeq : [176,74,90,0,略
-// prerenderer.js:120 child2 : Tone.js preRender scheduling start... : songId 0 : time : 5101
-// prerenderer.js:135 child2 : schedulingPreRender : Tone.getContext().sampleRate : 48000
-// postmate-midi.js:581 child2 : preRendering scheduling... : Tone.now() = 0 : events = 176,74,90 : timestamp = 0
-// 略
-// postmate-midi.js:581 child2 : preRendering scheduling... : Tone.now() = 0 : events = 128,67,127 : timestamp = 4.979166666666666
-// prerenderer.js:144 child2 : Tone.js wav preRendering : start... : songId 0 : time : 5147
-// prerenderer.js:148 child2 : rendered wav :  (2) [Float32Array(336000), Float32Array(336000)]
-// postmate-midi.js:878 child2 : checkWav : stereo
-// postmate-midi.js:882 child2 : checkWav : wav[0] Float32Array(336000) [-7.944649852009864e-30, 略
-// postmate-midi.js:883 child2 : checkWav : peak = 0 : checkにかかった時間 = 119msec
-// prerenderer.js:150 child2 : Tone.js wav preRendering : completed : songId 0 : 529msec
+//      自動起動prerender時、onStartPreRender からのログ：
+  // TODO 要約して分析し、次の手の候補を洗い出すべし
+            // child2 : I am preRenderSynth. 自動prerenderをstartします.
+            // prerenderer.js:67 child2 : emit onStartPreRender
+            // postmate-midi.js:127 parent : onStartPreRender : from child2(../synth/index.html) : received data : [ undefined ]
+            // postmate-midi.js:132 parent : midiOutput : child1 to child2
+            // prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]
+            // prerenderer.js:95 child1 : sq :  {BPM: 120, TICKS_PER_MEASURE: 192, isPreRender: false, getTemplates: ƒ, togglePlay: ƒ, …}
+            // prerenderer.js:98 child1 : t :  (3) [Array(2), Array(2), Array(2)]
+            // seq.js:43 seq : getPreRenderMidiData (/seq1/index.html)
+            // seq.js:74 seq : init : isPreRender : true
+            // seq.js:43 seq : getPreRenderMidiData (/seq1/index.html)
+            // seq.js:74 seq : init : isPreRender : true
+            // prerenderer.js:109 child1 : songs :  (2) [Array(8), Array(8)]
+            // postmate-midi.js:138 parent : onCompletePreRenderSeq : from child1(../seq1/index.html) : received data : [ (2) [Array(8), Array(8)] ]
+            // postmate-midi.js:792 child2 : recv : onCompletePreRenderSeq : [176,74,90,0,略
+            // prerenderer.js:120 child2 : Tone.js preRender scheduling start... : songId 0 : time : 5101
+            // prerenderer.js:135 child2 : schedulingPreRender : Tone.getContext().sampleRate : 48000
+            // postmate-midi.js:581 child2 : preRendering scheduling... : Tone.now() = 0 : events = 176,74,90 : timestamp = 0
+            // 略
+            // postmate-midi.js:581 child2 : preRendering scheduling... : Tone.now() = 0 : events = 128,67,127 : timestamp = 4.979166666666666
+            // prerenderer.js:144 child2 : Tone.js wav preRendering : start... : songId 0 : time : 5147
+            // prerenderer.js:148 child2 : rendered wav :  (2) [Float32Array(336000), Float32Array(336000)]
+            // postmate-midi.js:878 child2 : checkWav : stereo
+            // postmate-midi.js:882 child2 : checkWav : wav[0] Float32Array(336000) [-7.944649852009864e-30, 略
+            // postmate-midi.js:883 child2 : checkWav : peak = 0 : checkにかかった時間 = 119msec
+            // prerenderer.js:150 child2 : Tone.js wav preRendering : completed : songId 0 : 529msec
 
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
