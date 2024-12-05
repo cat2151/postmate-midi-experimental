@@ -299,6 +299,7 @@ function getChNum(filename) {
 //      自動起動prerender時、onStartPreRender からのログ：
   // TODO 要約して分析し、次の手の候補を洗い出すべし
     // 要約：「parent : midiOutput」 のち、childがログを出せている。これがsamplerの場合との違い。
+    // 分析：「prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
             // child2 : I am preRenderSynth. 自動prerenderをstartします.
             // prerenderer.js:67 child2 : emit onStartPreRender
             // postmate-midi.js:127 parent : onStartPreRender : from child2(../synth/index.html) : received data : [ undefined ]
