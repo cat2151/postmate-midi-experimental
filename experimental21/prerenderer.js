@@ -297,7 +297,6 @@ function getChNum(filename) {
 //             課題、期待値が曖昧。対策、セルフサンプリング時はsamplerにおけるprerenderがどう動作するはずか整理し、ログ期待値に可視化してゆく。
 //         : ボタン押下 → emit onStartPreRender → createPreRenderSeqData → ？
 //      自動起動prerender時、onStartPreRender からのログ：
-  // TODO 要約して分析し、次の手の候補を洗い出すべし
     // 要約：「parent : midiOutput」 のち、childがログを出せている。これがsamplerの場合との違い。
     // 分析：「prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
             // child2 : I am preRenderSynth. 自動prerenderをstartします.
