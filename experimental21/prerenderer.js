@@ -90,12 +90,12 @@ function onStartPreRender(postmateMidi, data) {
 function createPreRenderSeqData(postmateMidi, data) {
   // sq
   if (postmateMidi.ui.checkRemovePlayButton) postmateMidi.ui.checkRemovePlayButton(); // playボタンを消す用。混乱防止用。playボタンがあると混乱する。
-  console.log(`${postmateMidi.getParentOrChild()} : recv : onStartPreRender : data [${data}]`);
+  console.log(`${postmateMidi.getParentOrChild()} : createPreRenderSeqData : recv data [${data}]`);
   const sq = postmateMidi.seq;
-  console.log(`${postmateMidi.getParentOrChild()} : sq : `, sq);
+  console.log(`${postmateMidi.getParentOrChild()} : createPreRenderSeqData : sq : `, sq);
 
   const templates = sq.getTemplates();
-  console.log(`${postmateMidi.getParentOrChild()} : t : `, templates);
+  console.log(`${postmateMidi.getParentOrChild()} : createPreRenderSeqData : templates : `, templates);
   if (!postmateMidi.isPreRenderSeq()) {
     console.error(`${postmateMidi.getParentOrChild()} : seqに getPreRenderMidiData を実装してください`);
     return;
@@ -106,7 +106,7 @@ function createPreRenderSeqData(postmateMidi, data) {
     const midiJson = templates[templateId][1/*body*/];
     songs.push(sq.getPreRenderMidiData(midiJson));
   }
-  console.log(`${postmateMidi.getParentOrChild()} : songs : `, songs);
+  console.log(`${postmateMidi.getParentOrChild()} : createPreRenderSeqData : songs : `, songs);
   return songs;
 }
 
@@ -299,6 +299,7 @@ function getChNum(filename) {
 //      自動起動prerender時、onStartPreRender からのログ：
     // 要約：「parent : midiOutput」 のち、childがログを出せている。これがsamplerの場合との違い。
     // 分析：「prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
+    // TODO logを見やすくしたのでそれを以下のログに反映する
             // child2 : I am preRenderSynth. 自動prerenderをstartします.
             // prerenderer.js:67 child2 : emit onStartPreRender
             // postmate-midi.js:127 parent : onStartPreRender : from child2(../synth/index.html) : received data : [ undefined ]
