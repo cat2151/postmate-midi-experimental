@@ -289,16 +289,16 @@ function getChNum(filename) {
 //    状況、samplerにて、prerenderボタンを押すと、ログ反応はあるが、prerender結果は得られない、ように見受けられる
 //     確認すべし : ボタンを押したあと、samplerのログがどうなっているか。
 //      結果：
-//        child4 : onclick prerenderButton
+//        prerenderer.js:18 child4 : onclick prerenderButton
 //        prerenderer.js:25 child4 : emit onStartPreRender
 //        postmate-midi.js:127 parent : onStartPreRender : from child4(../sampler/index.html) : received data : [ undefined ]
 //        postmate-midi.js:132 parent : midiOutput : child3 to child4
-//      TODO 期待値も可視化する。 → わからん。seq2のseqでwavをprerenderし、つまりセルフサンプリングし、wavを生成する、のはず。それがどうログになるかはわからん。
-//             課題、期待値が曖昧。対策、セルフサンプリング時はsamplerにおけるprerenderがどう動作するはずか整理し、ログ期待値に可視化してゆく。
-//         : ボタン押下 → emit onStartPreRender → createPreRenderSeqData → ？
-//      自動起動prerender時、onStartPreRender からのログ：
-    // 要約：「parent : midiOutput」 のち、childがログを出せている。これがsamplerの場合との違い。
-    // 分析：「prerenderer.js:93 child1 : recv : onStartPreRender : data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
+// TODO 期待値も可視化する。 → わからん。seq2のseqでwavをprerenderし、つまりセルフサンプリングし、wavを生成する、のはず。それがどうログになるかはわからん。
+//      課題、期待値が曖昧。対策、セルフサンプリング時はsamplerにおけるprerenderがどう動作するはずか整理し、ログ期待値に可視化してゆく。
+//                               : ボタン押下 → emit onStartPreRender → createPreRenderSeqData → ？
+// 自動起動prerender時、onStartPreRender からのログ：
+    // 要約：「parent : midiOutput 」 のち、childがログを出せている。これがsamplerの場合との違い。
+    // 分析：「prerenderer.js:93 child1 : createPreRenderSeqData : recv data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
       // child2 : I am preRenderSynth. 自動prerenderをstartします.
       // prerenderer.js:67 child2 : emit onStartPreRender
       // postmate-midi.js:271 child3 : onCompleteHandshakeAllChildren : received data : [undefined] : time : 593
