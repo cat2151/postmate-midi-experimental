@@ -293,10 +293,8 @@ function getChNum(filename) {
 //        prerenderer.js:25 child4 : emit onStartPreRender
 //        postmate-midi.js:127 parent : onStartPreRender : from child4(../sampler/index.html) : received data : [ undefined ]
 //        postmate-midi.js:132 parent : midiOutput : child3 to child4
-// TODO 期待値も可視化する。 → わからん。seq2のseqでwavをprerenderし、つまりセルフサンプリングし、wavを生成する、のはず。それがどうログになるかはわからん。
-//      課題、期待値が曖昧。対策、セルフサンプリング時はsamplerにおけるprerenderがどう動作するはずか整理し、ログ期待値に可視化してゆく。
-//                               : ボタン押下 → emit onStartPreRender → createPreRenderSeqData → ？
-// 自動起動prerender時、onStartPreRender からのログ：
+// 期待値 : ボタン押下 → ログ emit onStartPreRender → createPreRenderSeqData : まずここまで目指す。根拠は：
+  // 自動起動prerender時、onStartPreRender からのログ：
     // 要約：「parent : midiOutput 」 のち、childがログを出せている。これがsamplerの場合との違い。
     // 分析：「prerenderer.js:93 child1 : createPreRenderSeqData : recv data [undefined]」がログに出ること、をtest caseとして実装を進めるとよさげ。
       // child2 : I am preRenderSynth. 自動prerenderをstartします.
