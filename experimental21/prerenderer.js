@@ -285,14 +285,14 @@ function getChNum(filename) {
 //   sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。 ※現在は更新されていない認識
 //   sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。 ※現在はprerenderボタンが動作しないのでそれを修正するのが先
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
+
 //   TODO これやる > ※現在はprerenderボタンが動作しないのでそれを修正するのが先
-//    状況、samplerにて、prerenderボタンを押すと、ログ反応はあるが、prerender結果は得られない、ように見受けられる
-//     確認すべし : ボタンを押したあと、samplerのログがどうなっているか。
-//      結果：
+//    状況、samplerにて、prerenderボタンを押すと、以下のログとなる。wavが得られない：
 //        prerenderer.js:18 child4 : onclick prerenderButton
 //        prerenderer.js:25 child4 : emit onStartPreRender
 //        postmate-midi.js:127 parent : onStartPreRender : from child4(../sampler/index.html) : received data : [ undefined ]
 //        postmate-midi.js:132 parent : midiOutput : child3 to child4
+
 // 期待値 : ボタン押下 → ログ emit onStartPreRender → createPreRenderSeqData : まずここまで目指す。根拠は：
   // 自動起動prerender時、onStartPreRender からのログ：
     // 要約：「parent : midiOutput 」 のち、childがログを出せている。これがsamplerの場合との違い。
