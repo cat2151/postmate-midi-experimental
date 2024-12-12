@@ -328,7 +328,8 @@ function getChNum(filename) {
       // postmate-midi.js:882 child2 : checkWav : wav[0] Float32Array(336000) [-7.944649852009864e-30, 略
       // postmate-midi.js:883 child2 : checkWav : peak = 0 : checkにかかった時間 = 120msec
       // prerenderer.js:150 child2 : Tone.js wav preRendering : completed : songId 0 : 511msec
-// TODO wav import後にも呼び出して、描画する。
+
+      // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
 //    visualizeGeneratedSound_dispWavsSub を、
