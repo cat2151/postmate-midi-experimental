@@ -292,6 +292,7 @@ function getChNum(filename) {
 //        prerenderer.js:25 child4 : emit onStartPreRender
 //        postmate-midi.js:127 parent : onStartPreRender : from child4(../sampler/index.html) : received data : [ undefined ]
 //        postmate-midi.js:132 parent : midiOutput : child3 to child4
+//        child3 : onStartPreRender : postmateMidi.preRenderer.onStartPreRender が未実装です。適宜実装してください
 
 // 期待値 : ボタン押下 → ログ emit onStartPreRender → createPreRenderSeqData : まずここまで目指す。根拠は：
   // 自動起動prerender時、onStartPreRender からのログ：

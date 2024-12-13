@@ -780,7 +780,11 @@ function registerPrerenderer(preRenderer) {
 
 // postmate parent/child の call/emit 対象関数である
 function onStartPreRender(data) {
-  if (postmateMidi.preRenderer.onStartPreRender) postmateMidi.preRenderer.onStartPreRender(postmateMidi, data);
+  if (postmateMidi.preRenderer.onStartPreRender) {
+    postmateMidi.preRenderer.onStartPreRender(postmateMidi, data);
+  } else {
+    console.log(`${postmateMidi.getParentOrChild()} : onStartPreRender : postmateMidi.preRenderer.onStartPreRender が未実装です。適宜実装してください`);
+  }
 }
 // 公開APIである
 function isPreRenderSeq() {
