@@ -30,5 +30,4 @@ postmateMidi.registerChild(urlParams, '#textarea', null/*sq.startPlayJson*/, 'se
 postmateMidi.seq.registerSeq(sq);
 postmateMidi.ui.removeButton('button');
 postmateMidi.preRenderer.registerPrerenderer(preRenderer);
-
 console.log(`postmate-midi child:`, postmateMidi);
