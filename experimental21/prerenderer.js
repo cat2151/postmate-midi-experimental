@@ -286,6 +286,30 @@ function getChNum(filename) {
 //   済 sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
+// TODO 検討する：self samplingすると、それがそのままsamplerの波形に反映されているのが現状である。それでよいのか？READMEに整理を書く。
+// TODO 不具合整理する：self sampling2回目がエラーになる。
+  // TODO まず期待値を洗い出して整理する。期待値は「さらにprerenderされる」。2つのwavを前提としたseq2で、2つめのwavは既存そのままが使われる。
+  //  仮説は、2つめのwavが適切に用意されていない可能性。
+  // TODO まずprerender時に、seq2が要求する対象wavがch1,ch2にあるか？の可視化を実装する、ログで。運用においてもトラブル防止の観点から重要である想定。
+  //  一歩ずつ。まず可視化。次に汎用性。
+  // ログ：
+    // child4 : schedulingPreRender : Tone.getContext().sampleRate : 48000
+    // postmate-midi.js:581 child4 : preRendering scheduling... : Tone.now() = 0 : events = 177,74,127 : timestamp = 0
+    // synth-poly.js:81 cutoff : v:127 -> Hz:7290
+    // postmate-midi.js:581 child4 : preRendering scheduling... : Tone.now() = 0 : events = 145,60,127 : timestamp = 0
+    // Sampler.ts:165 Uncaught (in promise) Error: No available buffers for note: 60
+    //     at aa._findClosest (Sampler.ts:165:9)
+    //     at Sampler.ts:183:28
+    //     at Array.forEach (<anonymous>)
+    //     at aa.triggerAttack (Sampler.ts:178:9)
+    //     at Object.noteOn (synth-poly.js:71:11)
+    //     at Object.onmidimessage (postmate-midi.js:590:19)
+    //     at Object.schedulingPreRender (prerenderer.js:137:18)
+    //     at Object.schedulingPreRender (postmate-midi.js:802:28)
+    //     at Object.doPreRenderAsync (prerenderer.js:121:18)
+    //     at Object.onCompletePreRenderSeq (postmate-midi.js:797:28)
+
+
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
