@@ -292,7 +292,7 @@ function getChNum(filename) {
   //  仮説は、2つめのwavが適切に用意されていない可能性。
   // TODO schedulingPreRender時に、seq2が要求する対象wavがch1,ch2にあるか？の可視化を実装する、ログで。運用においてもトラブル防止の観点から重要である想定。
   //  一歩ずつ。まず可視化。次に汎用性。
-  //   ■方法、schedulingPreRender を確認する
+  //   ■方法、 schedulingPreRender を確認する
   // ログ：
     // child4 : schedulingPreRender : Tone.getContext().sampleRate : 48000
     // postmate-midi.js:581 child4 : preRendering scheduling... : Tone.now() = 0 : events = 177,74,127 : timestamp = 0
