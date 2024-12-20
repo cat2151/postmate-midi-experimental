@@ -287,10 +287,11 @@ function getChNum(filename) {
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
 // TODO 検討する：self samplingすると、それがそのままsamplerの波形に反映されているのが現状である。それでよいのか？READMEに整理を書く。
-// TODO 不具合がある。整理する：self sampling2回目がエラーになる。
-  // TODO 期待値は「エラーにならない。さらにprerenderされる。2つのwavを使うseq2で、wav1は1回目のprerenderedが使われ、wav2は既存そのまま使われる。」
-  //  仮説は、2つめのwavが適切に用意されていない可能性。
-  // TODO schedulingPreRender時に、seq2が要求する対象wavがch1,ch2にあるか？の可視化を実装する、ログで。運用においてもトラブル防止の観点から重要である想定。
+// TODO 不具合がある
+  // 事象   : self sampling 2回目がエラーになる。
+  // 期待値 : エラーにならない。さらにprerenderされる。2つのwavを使うseq2で、wav1は1回目のprerenderedが使われ、wav2は既存そのまま使われる。
+  // 仮説   : 2つめのwavが適切に用意されていない可能性。
+  // TODO 可視化。schedulingPreRender時に、seq2が要求する対象wavがch1,ch2にあるか？の可視化を実装する、ログで。運用においてもトラブル防止の観点から重要である想定。
   //  一歩ずつ。まず可視化。次に汎用性。
   //   流れをみた。 schedulingPreRender -> setContextInitSynthAddWav -> samplerAddWavs であると判断する。
   //    samplerAddWavs でlogを出す必要がある、ch1,ch2, gn.wavs, である、と判断する。
