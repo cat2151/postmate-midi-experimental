@@ -287,7 +287,8 @@ function getChNum(filename) {
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
 // TODO 検討する：self samplingすると、それがそのままsamplerの波形に反映されているのが現状である。それでよいのか？READMEに整理を書く。
-// TODO 不具合がある
+
+// TODO 不具合を修正する
   // 事象   : self sampling 2回目がエラーになる。
   // 期待値 : エラーにならない。さらにprerenderされる。2つのwavを使うseq2で、wav1は1回目のprerenderedが使われ、wav2は既存そのまま使われる。
   // 仮説   : 2つめのwavが適切に用意されていない可能性。
