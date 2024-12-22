@@ -222,6 +222,7 @@ function samplerAddWavs(postmateMidi, wavs) {
   if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
+    console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : data : `, data);
     if (!data) {
       continue;
     }
@@ -230,11 +231,11 @@ function samplerAddWavs(postmateMidi, wavs) {
     const ch = i; // wavs[0],1,...を、samplerのch[1-1],2-1,...にsendする
     postmateMidi.checkWavOk(wav);
     if (postmateMidi.ch[ch].synth) {
-      if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : wav add to sampler wav : `, wav);
+      if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav add to sampler wav : `, wav);
       const toneBuffer = Tone.Buffer.fromArray(wav);
-      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
+      console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : wav added to sampler : toneBuffer._buffer.numberOfChannels : `, toneBuffer._buffer.numberOfChannels);
       postmateMidi.ch[ch].synth.add(noteNum, toneBuffer);
-      console.log(`${postmateMidi.getParentOrChild()} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
+      console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
   }
 
