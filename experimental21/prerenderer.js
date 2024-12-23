@@ -327,7 +327,7 @@ function getChNum(filename) {
 //         仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
 //         仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
 //         仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
-//        prerender 後 :
+//        prerender 後：
 //         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
 //    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
@@ -404,7 +404,9 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
   function getWaveform(gnWavs, xSize) {
     let waveform = getPeakOfWavs(gnWavs, xSize);
     waveform = normalizeWav(waveform);
-    console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `, waveform);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `);
+    console.log(waveform);
+    console.groupEnd();
     return waveform;
 
     // 音量は仮、正確さより実装の楽さを優先する

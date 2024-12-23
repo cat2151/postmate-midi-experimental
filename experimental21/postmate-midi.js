@@ -793,7 +793,9 @@ function isPreRenderSeq() {
 
 // postmate parent/child の call/emit 対象関数である
 function onCompletePreRenderSeq(data) {
-  console.log(`${postmateMidi.getParentOrChild()} : recv : onCompletePreRenderSeq : [${data}]`);
+  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : recv : onCompletePreRenderSeq : `);
+  console.log(`${[data]}`);
+  console.groupEnd();
   postmateMidi.preRenderer.doPreRenderAsync(postmateMidi, data);
 }
 
@@ -883,7 +885,11 @@ function checkWavOk(wav) {
   for (let i = 0; i < wav.length; i++) {
     if (wav[i]) {
       const peak = getPeakAbs(wav);
-      if (!isIpad()) console.log(`${getParentOrChild()} : checkWav : wav[${i}]`, wav[i]);
+      if (!isIpad()) {
+        console.groupCollapsed(`${getParentOrChild()} : checkWav : wav[${i}]`);
+        console.log(wav[i]);
+        console.groupEnd();
+      }
       console.log(`${getParentOrChild()} : checkWav : peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
       return true;
     }
