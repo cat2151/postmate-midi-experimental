@@ -15,7 +15,7 @@ function registerPrerenderButton(postmateMidi, buttonSelector) {
   const ui = postmateMidi.ui;
   ui.button = document.querySelector(buttonSelector);
   ui.button.onclick = function() {
-    console.log(`${postmateMidi.getParentOrChild()} : onclick prerenderButton`);
+    console.log(`%c${postmateMidi.getParentOrChild()} : onclick prerenderButton`, 'color:black; background-color:lightblue');
     const gn = postmateMidi.tonejs.generator;
 
     postmateMidi.isPreRenderSynth = true; // noteOn時にprerender用のtimestamp制御をする用
