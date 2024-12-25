@@ -117,10 +117,11 @@ async function doPreRenderAsync(postmateMidi, songs) {
   gn.noteNum = 60;
   for (let songId = 0; songId < songs.length; songId++) {
     const preRenderMidi = songs[songId];
-    console.log(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
     postmateMidi.schedulingPreRender(gn, preRenderMidi);
     gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
+    console.groupEnd();
   }
   gn.wavs = wavs; // generator側のvisualizerでwavsを表示する用
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
@@ -220,10 +221,17 @@ function updateGnWavs(postmateMidi, gn, wavs) {
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function samplerAddWavs(postmateMidi, wavs) {
   if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
+  const gn = postmateMidi.tonejs.generator;
+
+  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : samplerAddWavs`);
+  console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wavs : `, wavs);
+  console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : gn.wavs : `, gn.wavs);
+
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
-    console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : data : `, data);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : data : `, data);
     if (!data) {
+      console.groupEnd();
       continue;
     }
     const noteNum = data[0];
@@ -237,9 +245,12 @@ function samplerAddWavs(postmateMidi, wavs) {
       postmateMidi.ch[ch].synth.add(noteNum, toneBuffer);
       console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wav${i + 1} : wav added to sampler ch${ch + 1} noteNum${noteNum} : time : ${Date.now() % 10000}`);
     }
+    console.groupEnd();
   }
 
-  const gn = postmateMidi.tonejs.generator;
+  console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : completed`);
+  console.groupEnd();
+
   if (gn.visualizer && gn.visualizer.dispWavsSub) gn.visualizer.dispWavsSub(postmateMidi);
 }
 
@@ -372,6 +383,8 @@ function visualizeGeneratedSound_init(postmateMidi) {
 }
 
 function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
+  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub`);
+
   const gn = postmateMidi.tonejs.generator;
   const visualizer = gn.visualizer;
   const canvas = visualizer.canvas;
@@ -379,7 +392,8 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
 
   const ctx = canvas.getContext("2d");
   if (!gn.wavs) {
-    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
+    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : wavがないので、描画しません`);
+    console.groupEnd();
     return;
   }
   const startTime = Date.now(); // かかった時間計測用
@@ -395,23 +409,24 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
   ctx.stroke();
 
   // 一度描画したら描画をとめる
-  // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : stopped`)
+  // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : stopped`)
   Tone.Transport.clear(eventId);
 
   // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
-  console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : completed : ${Date.now() - startTime}msec`);
+  console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : completed : ${Date.now() - startTime}msec`);
+  console.groupEnd();
 
   function getWaveform(gnWavs, xSize) {
     let waveform = getPeakOfWavs(gnWavs, xSize);
     waveform = normalizeWav(waveform);
-    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getWaveform : `);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : getWaveform : `);
     console.log(waveform);
     console.groupEnd();
     return waveform;
 
     // 音量は仮、正確さより実装の楽さを優先する
     function getPeakOfWavs(gnWavs, xSize) {
-      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : getPeakOfWavs : gnWavs : `, gnWavs);
+      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : getPeakOfWavs : gnWavs : `, gnWavs);
       let peakWav = new Float32Array(0);
       for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
         const wav = gnWavs[wavIndex][1]; // gnWavsの構造に依存している
@@ -450,7 +465,7 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
     function normalizeWav(wav) {
       const maxAbs = postmateMidi.getPeakAbs(wav);
       if (!maxAbs) {
-        console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : ERROR : maxAbsが0`);
+        console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : ERROR : maxAbsが0`);
         return wav;
       }
       for (let i = 0; i < wav.length; i++) {
