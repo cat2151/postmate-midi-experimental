@@ -881,20 +881,20 @@ function checkWavOk(wav) {
   const startTime = Date.now();
   const audioCh = wav.length;
   const stereoOrMono = audioCh == 2 ? 'stereo' : 'mono';
-  console.log(`${getParentOrChild()} : checkWav : ${stereoOrMono}`);
+  console.groupCollapsed(`${getParentOrChild()} : checkWavOk : ${stereoOrMono}`);
   for (let i = 0; i < wav.length; i++) {
     if (wav[i]) {
       const peak = getPeakAbs(wav);
       if (!isIpad()) {
-        console.groupCollapsed(`${getParentOrChild()} : checkWav : wav[${i}]`);
-        console.log(wav[i]);
-        console.groupEnd();
+        console.log(`${getParentOrChild()} : checkWavOk : wav[${i}]`, wav[i]);
       }
-      console.log(`${getParentOrChild()} : checkWav : peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
+      console.log(`${getParentOrChild()} : checkWavOk : peak = ${peak} : checkにかかった時間 = ${Date.now() - startTime}msec`);
+      console.groupEnd();
       return true;
     }
   }
-  console.log(`${getParentOrChild()} : checkWav : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
+  console.log(`${getParentOrChild()} : checkWavOk : wavが無音です : checkにかかった時間 = ${Date.now() - startTime}msec`);
+  console.groupEnd();
   return false;
 }
 

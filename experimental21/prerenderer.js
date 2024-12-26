@@ -117,13 +117,13 @@ async function doPreRenderAsync(postmateMidi, songs) {
   gn.noteNum = 60;
   for (let songId = 0; songId < songs.length; songId++) {
     const preRenderMidi = songs[songId];
-    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : doPreRenderAsync : Tone.js preRender scheduling start... : songId ${songId} : time : ${Date.now() % 10000}`);
     postmateMidi.schedulingPreRender(gn, preRenderMidi);
     gn.wav = await postmateMidi.renderContextAsync(gn, Tone.getContext(), gn.orgContext, songId); // 問題、visualizerは、現状、最後にrenderしたwavしか表示できないことになる。対策、ひとまずこのままいく
     wavs.push([gn.noteNum, gn.wav]);
     console.groupEnd();
   }
-  gn.wavs = wavs; // generator側のvisualizerでwavsを表示する用
+  updateGnWavs(postmateMidi, gn, wavs); // generator側のvisualizerでwavsを表示する用 ※備忘、もし単純な gn.wavs上書き にすると、prerenderボタン2回目でエラーになる
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
@@ -134,21 +134,23 @@ function schedulingPreRender(postmateMidi, gn, preRenderMidi) {
   const bufferSec = 7;
   postmateMidi.setContextInitSynthAddWav(new Tone.OfflineContext(audioCh, bufferSec, gn.orgContext.sampleRate));
   console.log(`${postmateMidi.getParentOrChild()} : schedulingPreRender : Tone.getContext().sampleRate : ${Tone.getContext().sampleRate}`); // iPadで再生pitchが下がる不具合の調査用
+  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : schedulingPreRender : scheduling start...`);
   for (let i = 0; i < preRenderMidi.length; i++) {
     postmateMidi.onmidimessage(preRenderMidi[i]);
   }
+  console.groupEnd();
 }
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 async function renderContextAsync(postmateMidi, gn, context, orgContext, songId) {
   const startTime = Date.now();
-  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
+  console.log(`${postmateMidi.getParentOrChild()} : renderContextAsync : Tone.js wav preRendering : start... : songId ${songId} : time : ${Date.now() % 10000}`);
   let wav = await context.render();
   postmateMidi.setContextInitSynthAddWav(orgContext);
   wav = wav.toArray();
-  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : rendered wav : `, wav);
+  if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : renderContextAsync : rendered wav : `, wav);
   postmateMidi.checkWavOk(wav);
-  console.log(`${postmateMidi.getParentOrChild()} : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
+  console.log(`${postmateMidi.getParentOrChild()} : renderContextAsync : Tone.js wav preRendering : completed : songId ${songId} : ${Date.now() - startTime}msec`);
   return wav;
 }
 
@@ -193,7 +195,6 @@ function sendToSampler(postmateMidi, wavs) {
   if (!postmateMidi.ui.isIpad()) console.log(`${postmateMidi.getParentOrChild()} : received : `, wavs); // iPad以外なのは、iPad chrome inspect でログが波形データで埋め尽くされて調査できない、のを防止する用
   const gn = postmateMidi.tonejs.generator;
   gn.wavs = postmateMidi.updateGnWavs(postmateMidi, gn, wavs);
-  console.log(`${postmateMidi.getParentOrChild()} : sendToSampler : gn.wavs : `, gn.wavs);
   postmateMidi.samplerAddWavs(gn.wavs);
 }
 
@@ -220,12 +221,8 @@ function updateGnWavs(postmateMidi, gn, wavs) {
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 function samplerAddWavs(postmateMidi, wavs) {
-  if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
-  const gn = postmateMidi.tonejs.generator;
-
   console.groupCollapsed(`${postmateMidi.getParentOrChild()} : samplerAddWavs`);
-  console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : wavs : `, wavs);
-  console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : gn.wavs : `, gn.wavs);
+  if (!wavs) console.error(`${postmateMidi.getParentOrChild()} : samplerAddWavs : ERROR : wavs : `, wavs);
 
   for (let i = 0; i < wavs.length; i++) {
     const data = wavs[i];
@@ -251,6 +248,7 @@ function samplerAddWavs(postmateMidi, wavs) {
   console.log(`${postmateMidi.getParentOrChild()} : samplerAddWavs : completed`);
   console.groupEnd();
 
+  const gn = postmateMidi.tonejs.generator;
   if (gn.visualizer && gn.visualizer.dispWavsSub) gn.visualizer.dispWavsSub(postmateMidi);
 }
 
