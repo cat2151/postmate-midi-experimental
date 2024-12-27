@@ -298,33 +298,6 @@ function getChNum(filename) {
 
 // TODO 検討する：self samplingすると、それがそのままsamplerの波形に反映されているのが現状である。それでよいのか？READMEに整理を書く。
 
-// TODO 不具合を修正する
-  // 事象   : self sampling 2回目がエラーになる。
-  // 期待値 : エラーにならない。さらにprerenderされる。2つのwavを使うseq2で、wav1は1回目のprerenderedが使われ、wav2は既存そのまま使われる。
-  // 仮説   : 2つめのwavが適切に用意されていない可能性。
-  // TODO 可視化。schedulingPreRender時に、seq2が要求する対象wavがch1,ch2にあるか？の可視化を実装する、ログで。運用においてもトラブル防止の観点から重要である想定。
-  //  一歩ずつ。まず可視化。次に汎用性。
-  //   流れをみた。 schedulingPreRender -> setContextInitSynthAddWav -> samplerAddWavs であると判断する。
-  //    samplerAddWavs でlogを出す必要がある、ch1,ch2, gn.wavs, である、と判断する。
-  //   課題、 エラーメッセージでぐぐった https://github.com/Tonejs/Tone.js/issues/1276 これは関係するか？わからん。対策、様子見。
-  // ログ：
-    // child4 : schedulingPreRender : Tone.getContext().sampleRate : 48000
-    // postmate-midi.js:581 child4 : preRendering scheduling... : Tone.now() = 0 : events = 177,74,127 : timestamp = 0
-    // synth-poly.js:81 cutoff : v:127 -> Hz:7290
-    // postmate-midi.js:581 child4 : preRendering scheduling... : Tone.now() = 0 : events = 145,60,127 : timestamp = 0
-    // Sampler.ts:165 Uncaught (in promise) Error: No available buffers for note: 60
-    //     at aa._findClosest (Sampler.ts:165:9)
-    //     at Sampler.ts:183:28
-    //     at Array.forEach (<anonymous>)
-    //     at aa.triggerAttack (Sampler.ts:178:9)
-    //     at Object.noteOn (synth-poly.js:71:11)
-    //     at Object.onmidimessage (postmate-midi.js:590:19)
-    //     at Object.schedulingPreRender (prerenderer.js:137:18)
-    //     at Object.schedulingPreRender (postmate-midi.js:802:28)
-    //     at Object.doPreRenderAsync (prerenderer.js:121:18)
-    //     at Object.onCompletePreRenderSeq (postmate-midi.js:797:28)
-
-
 // TODO wav import後にも呼び出して、描画する。
 //  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
