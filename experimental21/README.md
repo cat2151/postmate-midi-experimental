@@ -15,6 +15,7 @@
   - import後のvisualizeを実現する。
 - セルフサンプリング
   - プリレンダしたものを、seqとsamplerのsynthで加工し、さらにプリレンダの入力にする、を実現する
+- 検討中 : self samplingすると、それがそのままsamplerの波形に反映されている。それでよいのか？ほかの選択肢は？
 - オートでセルフサンプリング
     - これまでの課題
         - オートでtone generatorでgenerateした
