@@ -290,6 +290,7 @@ function getChNum(filename) {
 }
 
 // TODO 次どうする？整理する
+
 //  test list ざっくり:
 //   済 sampler側 : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
 //   sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。 ※現在は更新されていない認識
@@ -311,7 +312,9 @@ function getChNum(filename) {
 //         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
 //    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
+
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
+
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
 function visualizeGeneratedSound(postmateMidi) {
