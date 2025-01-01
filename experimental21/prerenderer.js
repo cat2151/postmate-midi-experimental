@@ -307,6 +307,7 @@ function getChNum(filename) {
 //       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
 //         仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
+//          TODO ↑ testする。test case : logを書く。visualizeGeneratedSound_dispWavsSub が呼ばれているか？を見る
 //         仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
 //         仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
 //        prerender 後：
