@@ -34,7 +34,7 @@ function registerWavImportButton(postmateMidi, buttonSelector) {
   const ui = postmateMidi.ui;
   ui.wavImportButton = document.querySelector(buttonSelector);
   ui.wavImportButton.onclick = function() {
-    console.log(`${postmateMidi.getParentOrChild()} : onclick wavImportButton`);
+    console.log(`%c${postmateMidi.getParentOrChild()} : onclick wavImportButton`, 'color:black; background-color:lightblue');
     postmateMidi.openDialogForFileUpload(postmateMidi.preRenderer.afterWavFileUploadAsync);
   };
 }
@@ -255,9 +255,9 @@ function samplerAddWavs(postmateMidi, wavs) {
 // wav import用
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 async function afterWavFileUploadAsync(fileContent, filename, postmateMidi) {
-  console.log(`afterWavFileUploadAsync : ${filename}`);
+  console.log(`${postmateMidi.getParentOrChild()} : afterWavFileUploadAsync : ${filename}`);
   if (!postmateMidi.preRenderer.getChNum) console.log(`afterWavFileUploadAsync : ERROR : postmateMidi.preRenderer.getChNum not Found`);
-  const chNum = postmateMidi.preRenderer.getChNum(filename);
+  const chNum = postmateMidi.preRenderer.getChNum(postmateMidi, filename);
   const wav = await postmateMidi.getFloat32ArrayFromWavFileAsync(fileContent);
 
   // update gn wavs
@@ -273,10 +273,10 @@ async function afterWavFileUploadAsync(fileContent, filename, postmateMidi) {
 
 // wav import用
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
-function getChNum(filename) {
+function getChNum(postmateMidi, filename) {
   // "ch1.wav" -> 0, "ch2.wav" -> 1
   const chNum = extractNumberFromStr(filename);
-  console.log(`preRenderer : wav import [${filename}] to ch${chNum + 1}`);
+  console.log(`${postmateMidi.getParentOrChild()} : preRenderer : wav import [${filename}] to ch${chNum + 1}`);
   return chNum;
 
   function extractNumberFromStr(str) {
@@ -404,7 +404,9 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
       console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : getPeakOfWavs : gnWavs : `, gnWavs);
       let peakWav = new Float32Array(0);
       for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
-        const wav = gnWavs[wavIndex][1]; // gnWavsの構造に依存している
+        const gnWav = gnWavs[wavIndex];
+        if (!gnWav) continue;
+        const wav = gnWav[1]; // gnWavsの構造に依存している
         let pw = getPeakOf1wav(wav, xSize / gnWavs.length);
         peakWav = combineFloat32Array(peakWav, pw);
       }
