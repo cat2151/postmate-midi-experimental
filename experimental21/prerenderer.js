@@ -267,6 +267,7 @@ async function afterWavFileUploadAsync(fileContent, filename, postmateMidi) {
   gn.wavs = postmateMidi.updateGnWavs(postmateMidi, gn, wavs);
 
   // add to sampler
+  console.log(`${postmateMidi.getParentOrChild()} : afterWavFileUploadAsync : add to sampler`);
   const context = Tone.getContext();
   postmateMidi.setContextInitSynthAddWav(context);
 }
@@ -293,23 +294,18 @@ function getChNum(postmateMidi, filename) {
 
 //  test list ざっくり:
 //   済 sampler側 : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
-//   sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。
-//    TODO : 現在は更新されていないので修正する、後述の「TODO wav import後にも呼び出して、描画する。」を参照のこと。
+//   済 sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。
 //   済 sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。
 //   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
-// TODO wav import後にも呼び出して、描画する。
-//  test case : 異なるwavをimportするごとに、それに応じた波形が表示されること
 //  実装方式 :
 //    visualizeGeneratedSound_dispWavsSub を、
 //      wav import後にも呼び出すし、prerender後にも呼び出す
 //      具体的にはどこから？
 //       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
-//         仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
-//          ■TODO ↑ testする。↓
-//            test case : log出力を書く。visualizeGeneratedSound_dispWavsSub が呼ばれているか？を見る
-//         仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
+//         済 仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
+//         済 仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
 //         仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
 //        prerender 後：
 //         generator側 : doPreRenderAsync の末尾を想定。
