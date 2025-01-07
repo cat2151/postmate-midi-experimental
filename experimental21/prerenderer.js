@@ -306,7 +306,9 @@ function getChNum(postmateMidi, filename) {
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
 //         済 仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
 //         済 仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
-//         仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
+//         ■仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。
+//          samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
+//           → ■状況をここに整理する
 //        prerender 後：
 //         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
