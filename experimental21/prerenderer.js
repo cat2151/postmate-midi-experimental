@@ -296,7 +296,7 @@ function getChNum(postmateMidi, filename) {
 //   済 sampler側 : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
 //   済 sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。
 //   済 sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。
-//   generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
+//   済 generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
 //  実装方式 :
 //    visualizeGeneratedSound_dispWavsSub を、
@@ -306,12 +306,12 @@ function getChNum(postmateMidi, filename) {
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
 //         済 仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
 //         済 仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
-//         ■仕様検討 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示する？そうすると仕様が統一されてわかりやすそう。
-//          samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
-//           → ■状況をここに整理する
+//         済 仕様追加 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示とする。仕様が統一されてユーザーがわかりやすい。
+//                      samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
 //        prerender 後：
 //         generator側 : doPreRenderAsync の末尾を想定。
 //         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
+//         ■ ↑ TODO test caseを書く
 //    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
