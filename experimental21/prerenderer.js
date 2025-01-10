@@ -309,12 +309,10 @@ function getChNum(postmateMidi, filename) {
 //         済 仕様追加 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示とする。仕様が統一されてユーザーがわかりやすい。
 //                      samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
 //        prerender 後：
-//         generator側 : doPreRenderAsync の末尾を想定。
-//         sampler側 : doPreRenderAsync の末尾を想定。samplerでrenderしたものをsamplerで表示する。課題、initを呼び出しておく必要があるかも。今まではgenerator側でのみinitを呼び出していた想定。検証する。
-//             ■testする: test case:
-//               起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
-//               prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形はヘナkがないこと。
-//    それらtest greenになったら、event登録が不要になる想定で、event登録を外してtest、の順番
+//         test case:
+//          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
+//          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
+//    TODO ■ 上記がtest greenになった。event登録が不要になる想定で、event登録を外してtestする。
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
