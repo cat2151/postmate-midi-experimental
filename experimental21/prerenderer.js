@@ -313,7 +313,7 @@ function getChNum(postmateMidi, filename) {
 //          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
 //          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
 //    TODO 上記がtest greenになった。event登録が不要になる想定で、event登録を外してtestする。
-//           ■ event登録が不要になることを確認する
+//           ■ event登録が不要になることを確認する、つまりregisterEventが不要になることを確認する
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
