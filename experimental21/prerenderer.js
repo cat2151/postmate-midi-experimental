@@ -316,7 +316,7 @@ function getChNum(postmateMidi, filename) {
 //           済 event登録が不要になることを確認する、つまり registerEvent が不要になることを確認する
 //              → 確認した。registerEvent なしでよい、と判断する。根拠は、 samplerAddWavs 末尾で呼ばれていること。あとは実際に動作させる。
 //                もし起動時に表示されない等あれば、samplerAddWavs 末尾同様に、要所にfnc呼び出し追加、を想定している。
-//                  generator側が表示されない可能性はある。
+//                  generator側が表示されない可能性がある。
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
