@@ -313,8 +313,9 @@ function getChNum(postmateMidi, filename) {
 //          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
 //          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
 //    TODO 上記がtest greenになった。event登録が不要になる想定で、event登録を外してtestする。
-//           済 event登録が不要になることを確認する、つまり registerEvent が不要になることを確認する
-//              → 確認した。registerEvent なしでよい、と判断する。根拠は、 samplerAddWavs 末尾で呼ばれていること。あとは実際に動作させる。
+//           済 event登録が不要になることを机上確認する、つまり registerEvent が不要になることを机上確認する
+//              → 机上確認した。registerEvent なしでよい、と判断する。根拠は、 samplerAddWavs 末尾で呼ばれていること。
+//           TODO registerEvent なしで起動して、generator側に波形が表示されることを確認する
 //                もし起動時に表示されない等あれば、samplerAddWavs 末尾同様に、要所にfnc呼び出し追加、を想定している。
 //                  generator側が表示されない可能性がある。
 
