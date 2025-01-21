@@ -313,11 +313,9 @@ function getChNum(postmateMidi, filename) {
 //          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
 //          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
 //    TODO 上記がtest greenになった。event登録が不要になる想定で、event登録を外してtestする。
-//           済 event登録が不要になることを机上確認する、つまり registerEvent が不要になることを机上確認する
-//              → 机上確認した。registerEvent なしでよい、と判断する。根拠は、 samplerAddWavs 末尾で呼ばれていること。
-//           TODO registerEvent なしで起動して、generator側に波形が表示されることを確認する
-//                もし起動時に表示されない場合、samplerAddWavs 末尾同様に、必要な場所にfnc呼び出し追加、を想定している。
-//                  generator側が表示されない可能性がある。
+//           つまり、 registerEvent 関連をコメントアウトしてtestする。
+//            結果、generator側に波形が表示されなかった。
+//             TODO 検討する。event登録なしで、generator側に波形を表示する方法はあるか？
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
@@ -342,22 +340,22 @@ function visualizeGeneratedSound_init(postmateMidi) {
 
   visualizer.canvas = canvas;
 
-  registerEvent();
+  // registerEvent();
 
-  function registerEvent() {
-    // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-    visualizer.eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
-    Tone.Transport.start();
-  }
+  // function registerEvent() {
+  //   // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
+  //   visualizer.eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
+  //   Tone.Transport.start();
+  // }
 
-  function dispWavs() {
-    const gn = postmateMidi.tonejs.generator;
-    if (!gn.wavs) {
-      // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
-      return;
-    }
-    visualizeGeneratedSound_dispWavsSub(postmateMidi);
-  }
+  // function dispWavs() {
+  //   const gn = postmateMidi.tonejs.generator;
+  //   if (!gn.wavs) {
+  //     // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
+  //     return;
+  //   }
+  //   visualizeGeneratedSound_dispWavsSub(postmateMidi);
+  // }
 }
 
 function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
