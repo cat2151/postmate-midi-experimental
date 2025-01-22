@@ -316,6 +316,7 @@ function getChNum(postmateMidi, filename) {
 //           つまり、 registerEvent 関連をコメントアウトしてtestする。
 //            結果、generator側に波形が表示されなかった。
 //             TODO 検討する。event登録なしで、generator側に波形を表示する方法はあるか？
+//               案、generator側で、prerender後に、visualizeGeneratedSound_dispWavsSub を呼び出す
 
 // TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
