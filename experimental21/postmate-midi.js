@@ -6,7 +6,7 @@ const postmateMidi = {
   parent: null, childId: null,   // childのみが保持するもの
   midiOutputIds: [], sendToSamplerIds: [],
   ch: Array.from({ length: 16 }, () => ({ noteOn: null, noteOff: null, controlChange: [] })),
-  ui: { registerPlayButton, registerPrerenderButton, registerWavImportButton, isIpad, isSmartPhone, visualizeCurrentSound, visualizeGeneratedSound, removeButton },
+  ui: { registerPlayButton, registerPrerenderButton, registerWavImportButton, isIpad, isSmartPhone, visualizeCurrentSound, registerGeneratedSoundVisualizer, removeButton },
   seq: { registerSeq }, // register時、seqそのものが外部sqに上書きされる
   isAllSynthReady: false, // 名前が紛らわしいが、seqが持つfncとは別。parentとchildそれぞれが保持する変数。seqが持つfncは外部からこれにアクセスする用のアクセサ。
   tonejs: { isStartTone: false, synth: null, initBaseTimeStampAudioContext, baseTimeStampAudioContext: 0, initTonejsByUserAction,
@@ -486,8 +486,8 @@ function visualizeCurrentSound() {
   }
 }
 
-function visualizeGeneratedSound() {
-  if (postmateMidi.preRenderer.visualizeGeneratedSound) postmateMidi.preRenderer.visualizeGeneratedSound(postmateMidi);
+function registerGeneratedSoundVisualizer() {
+  if (postmateMidi.preRenderer.registerGeneratedSoundVisualizer) postmateMidi.preRenderer.registerGeneratedSoundVisualizer(postmateMidi);
 }
 
 // 公開APIである

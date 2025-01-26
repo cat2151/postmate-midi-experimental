@@ -1,4 +1,4 @@
-const preRenderer = { registerPrerenderButton, registerWavImportButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, visualizeGeneratedSound };
+const preRenderer = { registerPrerenderButton, registerWavImportButton, onCompleteHandshakeAllChildren, onStartPreRender, doPreRenderAsync, schedulingPreRender, renderContextAsync, setContextInitSynthAddWav, sendWavAfterHandshakeAllChildrenSub, saveWavByDialog, sendToSampler, updateGnWavs, samplerAddWavs, afterWavFileUploadAsync, getChNum, registerGeneratedSoundVisualizer };
 
 // 用途の例：
 //  generatorにて、プリレンダで音色wavを生成する用。生成されたwavはsamplerに送信され、演奏に利用できる。
@@ -124,6 +124,7 @@ async function doPreRenderAsync(postmateMidi, songs) {
     console.groupEnd();
   }
   updateGnWavs(postmateMidi, gn, wavs); // generator側のvisualizerでwavsを表示する用 ※備忘、もし単純な gn.wavs上書き にすると、prerenderボタン2回目でエラーになる
+  if (gn.visualizer && gn.visualizer.dispWavs) gn.visualizer.dispWavs(postmateMidi); // 備忘、samplerAddWavs 末尾と同じ
   postmateMidi.sendWavAfterHandshakeAllChildrenSub(wavs);
 }
 
@@ -249,7 +250,7 @@ function samplerAddWavs(postmateMidi, wavs) {
   console.groupEnd();
 
   const gn = postmateMidi.tonejs.generator;
-  if (gn.visualizer && gn.visualizer.dispWavsSub) gn.visualizer.dispWavsSub(postmateMidi);
+  if (gn.visualizer && gn.visualizer.dispWavs) gn.visualizer.dispWavs(postmateMidi);
 }
 
 // wav import用
@@ -293,16 +294,17 @@ function getChNum(postmateMidi, filename) {
 // TODO 次どうする？整理する
 
 //  test list ざっくり:
+//   済 sampler側 : 起動時にgeneratorでrenderした波形が、generator側に波形表示されること。
 //   済 sampler側 : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
 //   済 sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。
 //   済 sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。
 //   済 generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
 
 //  実装方式 :
-//    visualizeGeneratedSound_dispWavsSub を、
+//    generatedSoundVisualizer_dispWavs を、
 //      wav import後にも呼び出すし、prerender後にも呼び出す
 //      具体的にはどこから？
-//       TODO visualizeGeneratedSound_dispWavsSub の呼び出し元の候補が2つある想定なのでlistupする
+//       TODO generatedSoundVisualizer_dispWavs の呼び出し元の候補が2つある想定なのでlistupする
 //        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
 //         済 仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
 //         済 仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
@@ -312,56 +314,23 @@ function getChNum(postmateMidi, filename) {
 //         test case:
 //          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
 //          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
-//    TODO 上記がtest greenになった。event登録が不要になる想定で、event登録を外してtestする。
-//           つまり、 registerEvent 関連をコメントアウトしてtestする。
-//            結果、generator側に波形が表示されなかった。
-//             TODO 検討する。event登録なしで、generator側に波形を表示する方法はあるか？
-//               案、generator側で、起動時のprerender後に、visualizeGeneratedSound_dispWavsSub を呼び出す。
-//                 具体的にどの関数で実施するか？候補を洗い出す。 : doPreRenderAsync の末尾が候補。
-
-// TODO child2にてprerender完了時に呼び出して、描画する。描画のトリガーは「prerender完了時」にする。
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
-function visualizeGeneratedSound(postmateMidi) {
+function registerGeneratedSoundVisualizer(postmateMidi) {
   const gn = postmateMidi.tonejs.generator;
   const visualizer = gn.visualizer;
-  visualizer.init = visualizeGeneratedSound_init;
-  visualizer.dispWavsSub = visualizeGeneratedSound_dispWavsSub;
-
-  visualizer.init(postmateMidi);
-}
-
-function visualizeGeneratedSound_init(postmateMidi) {
-  const gn = postmateMidi.tonejs.generator;
-  const visualizer = gn.visualizer;
+  visualizer.dispWavs = generatedSoundVisualizer_dispWavs;
 
   const canvas = document.createElement("canvas");
   canvas.width = window.innerWidth;
   document.body.appendChild(canvas);
 
-  visualizer.canvas = canvas;
-
-  // registerEvent();
-
-  // function registerEvent() {
-  //   // 定期的に、wav生成済みかチェックし、wav生成完了していたら一度だけ描画する
-  //   visualizer.eventId = Tone.Transport.scheduleRepeat(dispWavs, "1sec");
-  //   Tone.Transport.start();
-  // }
-
-  // function dispWavs() {
-  //   const gn = postmateMidi.tonejs.generator;
-  //   if (!gn.wavs) {
-  //     // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound : wavがないので、描画しません`);
-  //     return;
-  //   }
-  //   visualizeGeneratedSound_dispWavsSub(postmateMidi);
-  // }
+  gn.visualizer.canvas = canvas;
 }
 
-function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
-  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub`);
+function generatedSoundVisualizer_dispWavs(postmateMidi) {
+  console.groupCollapsed(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs`);
 
   const gn = postmateMidi.tonejs.generator;
   const visualizer = gn.visualizer;
@@ -370,7 +339,7 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
 
   const ctx = canvas.getContext("2d");
   if (!gn.wavs) {
-    // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : wavがないので、描画しません`);
+    // console.log(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : wavがないので、描画しません`);
     console.groupEnd();
     return;
   }
@@ -387,24 +356,24 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
   ctx.stroke();
 
   // 一度描画したら描画をとめる
-  // console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : stopped`)
+  // console.log(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : stopped`)
   Tone.Transport.clear(eventId);
 
   // かかった時間。7秒のwavで、3～5msec等、問題ないことを確認する用
-  console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : completed : ${Date.now() - startTime}msec`);
+  console.log(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : completed : ${Date.now() - startTime}msec`);
   console.groupEnd();
 
   function getWaveform(gnWavs, xSize) {
     let waveform = getPeakOfWavs(gnWavs, xSize);
     waveform = normalizeWav(waveform);
-    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : getWaveform : `);
+    console.groupCollapsed(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : getWaveform : `);
     console.log(waveform);
     console.groupEnd();
     return waveform;
 
     // 音量は仮、正確さより実装の楽さを優先する
     function getPeakOfWavs(gnWavs, xSize) {
-      console.log(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : getPeakOfWavs : gnWavs : `, gnWavs);
+      console.log(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : getPeakOfWavs : gnWavs : `, gnWavs);
       let peakWav = new Float32Array(0);
       for (let wavIndex = 0; wavIndex < gnWavs.length; wavIndex++) {
         const gnWav = gnWavs[wavIndex];
@@ -445,7 +414,7 @@ function visualizeGeneratedSound_dispWavsSub(postmateMidi) {
     function normalizeWav(wav) {
       const maxAbs = postmateMidi.getPeakAbs(wav);
       if (!maxAbs) {
-        console.error(`${postmateMidi.getParentOrChild()} : visualizeGeneratedSound_dispWavsSub : ERROR : maxAbsが0`);
+        console.error(`${postmateMidi.getParentOrChild()} : generatedSoundVisualizer_dispWavs : ERROR : maxAbsが0`);
         return wav;
       }
       for (let i = 0; i < wav.length; i++) {

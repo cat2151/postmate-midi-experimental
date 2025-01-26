@@ -13,5 +13,5 @@ postmateMidi.isPreRenderSynth = true;
 
 postmateMidi.preRenderer.registerPrerenderer(preRenderer);
 
-postmateMidi.ui.visualizeGeneratedSound();
+postmateMidi.ui.registerGeneratedSoundVisualizer();
 console.log(`postmate-midi child:`, postmateMidi);
