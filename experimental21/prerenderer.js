@@ -293,27 +293,11 @@ function getChNum(postmateMidi, filename) {
 
 // TODO 次どうする？整理する
 
-//  test list ざっくり:
-//   済 sampler側 : 起動時にgeneratorでrenderした波形が、generator側に波形表示されること。
-//   済 sampler側 : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
-//   済 sampler側 : wav importしたとき、importした波形が、sampler側に波形表示されること。
-//   済 sampler側 : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。
-//   済 generator側 : （呼び出し構造変更後、リグレッションテスト）起動時にgeneratorでrenderしたあと、その波形がgeneratorに表示されること。
-
-//  実装方式 :
-//    generatedSoundVisualizer_dispWavs を、
-//      wav import後にも呼び出すし、prerender後にも呼び出す
-//      具体的にはどこから？
-//       TODO generatedSoundVisualizer_dispWavs の呼び出し元の候補が2つある想定なのでlistupする
-//        wav import 後 : afterWavFileUploadAsync の末尾を想定。そこは「sampler側のwav import」である。
-//         済 仕様追加 : sampler側でwav importしたとき、その波形を新たにsampler側で表示する
-//         済 仕様追加 : samplerでself samplingした波形は、上記と同じ枠でsampler側で表示する（上書きになる）
-//         済 仕様追加 : 起動時にsamplerにsendされたgeneratorの波形は、（generatorと同じ波形だが）sampler側でも表示とする。仕様が統一されてユーザーがわかりやすい。
-//                      samplerが現在演奏可能な波形、をsampler側で常時表示する、ということ。
-//        prerender 後：
-//         test case:
-//          済 起動時、自動prerenderのち、generator側に波形が表示され、sampler側にも同じ波形が表示されること。
-//          済 prerenderボタンを押したのち、sampler側に新たな波形が表示されること。generator側の波形は変化がないこと。
+//  test list: ※複雑なので備忘用
+//   済 generator側 : 起動時にgeneratorでrenderした波形が、generator側に波形表示されること。
+//   済 sampler側   : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
+//   済 sampler側   : wav importしたとき、importした波形が、sampler側に波形表示されること。
+//   済 sampler側   : `prerender`ボタンでself samplingしたとき、self sampling後の波形が、sampler側に波形表示されること。generator側の波形は変化ないこと。
 
 // Q : なぜここ？ A : 用途に応じていくらでも仕様変更がありうるので、postmate-midi.js側に集約するより、こちらに切り出したほうがよい。
 // 用途、generator(Tone Generator)用。generatorはoutputが波形データであるが、同時に可視化もして、状況把握しやすく使いやすくする用。
