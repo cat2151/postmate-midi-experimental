@@ -299,6 +299,11 @@ function getChNum(postmateMidi, filename) {
 //    対策、仮説、21をシンプルに終了させたのち、22などを検証していくことで、21に不足があったか？があとから見えてくる、という仮説。それを可視化して整理していく。
 //     仮説、「今21で何をやりたいか」の可視化が不足。このままだとあとからわからなくなる、という懸念。なので「あとからわかる、読みやすい」状態に21を持っていく。
 
+// 使い方:
+//  *child.js にて、registerGeneratedSoundVisualizer する
+//  以上。
+//  もし波形表示されていない場所があれば、gn.visualizer.dispWavs の呼び出しを適宜実装する。
+
 //  test list: ※複雑なので備忘用
 //   済 generator側 : 起動時にgeneratorでrenderした波形が、generator側に波形表示されること。
 //   済 sampler側   : 起動時にgeneratorでrenderしてsamplerにsendされた波形が、sampler側に波形表示されること。
