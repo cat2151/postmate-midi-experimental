@@ -11,6 +11,10 @@
 # 21の操作手順、後述、を、ここにまとめて、後から読んで使うとき楽にする
 - generator部
   - 起動時の自動prerender
+    - 手順
+      - 起動します。
+      - 自動prerenderされることを確認します。
+      - now writing...
   - button
 - sampler部
   - 起動時の自動prerender
