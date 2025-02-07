@@ -16,9 +16,19 @@
       - 自動prerenderされることを確認します。
       - now writing...
   - button
+    - 手順
+      - now writing...
 - sampler部
   - 起動時の自動prerender
+    - 手順
+      - now writing...
   - button
+    - prerender
+      - 手順
+        - now writing...
+    - wav import
+      - 手順
+        - now writing...
 
 # セルフサンプリング問題の課題のブレインストーミング、洗い出し、整理
 - 手駒不足
