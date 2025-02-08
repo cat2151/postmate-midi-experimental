@@ -15,9 +15,6 @@
       - 起動します。
       - 自動prerenderされることを確認します。
       - now writing...
-  - button
-    - 手順
-      - now writing...
 - sampler部
   - 起動時の自動prerender
     - 手順
