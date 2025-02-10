@@ -19,6 +19,7 @@
         - wavファイル内容が、seqで指定したとおりの saw 3和音chord であることを確認します。
       - さらにファイル保存ダイアログが開くことを確認します。
         - wavファイル内容が、seqで指定したとおりの saw bass octave重ね であることを確認します。
+      - playボタンを押します。now writing...
       - now writing...
 - sampler部
   - 起動時の自動prerender
