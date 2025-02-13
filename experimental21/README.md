@@ -18,14 +18,13 @@
         - wavファイル内容が、`seq`で指定したとおりの `Saw 3和音chord` であることを確認します。
       - さらに`ファイル保存ダイアログ`が開くことを確認します。
         - wavファイル内容が、`seq`で指定したとおりの `Saw Bass Octave重ね` であることを確認します。
+- sampler部
+  - 起動時の自動prerender → いや起動時にprerenderはされてないはずでは？もしprerenderされてたら2mix wavがdownloadできるはず → 整理します
+    - 手順
+      - `sampler`に波形が表示されていることを確認します。
       - `play`ボタンを押します。
         - ※playボタンは、`seq(samper)` 部にあります
         - LRにpanがふられた曲が無限ループで演奏されることを確認します。
-- sampler部
-  - 起動時の自動prerender
-    - 手順
-      - `sampler`に波形が表示されていることを確認します。
-      - now writing...
   - button
     - prerender
       - 手順
