@@ -28,6 +28,7 @@
   - button
     - prerender
       - 手順
+        - prerenderボタンを押します。
         - now writing...
     - wav import
       - 手順
