@@ -32,6 +32,7 @@
         - now writing...
     - wav import
       - 手順
+        - wav importボタンを推します。
         - now writing...
 
 # セルフサンプリング問題の課題のブレインストーミング、洗い出し、整理
