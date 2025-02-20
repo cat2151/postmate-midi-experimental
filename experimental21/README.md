@@ -36,7 +36,10 @@
       - 手順
         - wav importボタンを押します。
         - `ファイルアップロードダイアログ`が開くことを確認します。
-        - `起動時の自動prerender`で保存済みのwavをuploadします？
+          - `起動時の自動prerender`で保存済みのwavをuploadします？
+            - 演奏？確認？
+          - さらにもう1つ、`起動時の自動prerender`で保存済みのwavをuploadします？
+            - 演奏？確認？
           - now writing...
         - now writing...
 
