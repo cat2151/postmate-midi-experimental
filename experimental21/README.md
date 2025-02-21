@@ -31,6 +31,7 @@
     - prerender
       - 手順
         - prerenderボタンを押します。
+        - ？何を確認する？
         - now writing...
     - wav import
       - 手順
