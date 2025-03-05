@@ -42,6 +42,9 @@
         - wav importボタンを押します。
         - `ファイルアップロードダイアログ`が開くことを確認します。
           - `起動時の自動prerender`で保存済みのwavをuploadします。
+            - たしかch1.wav とかch2.wavとかのファイル名制限があったはず
+            - 保存時に ch1.wav とch2.wavというファイル名にする手順にしておくといい
+            - bassのwavをimportすると、波形がbass表示 sampler になるし、playボタンでplayすると、Lにpanがふられたbass音色、のみでbass seqとmelody seqが鳴る、のを確認する、という手順を整理する
             - 波形表示 確認？
             - 演奏？playボタン？
           - さらにもう1つ、`起動時の自動prerender`で保存済みのwavをuploadします？
