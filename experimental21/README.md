@@ -7,6 +7,7 @@
     - Synth
     - Sampler
   - UI
+    - Keyboard
 
 # 21をクローズに向けて進める
 ## ロードマップ
