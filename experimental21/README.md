@@ -7,7 +7,8 @@
     - Synth
     - Sampler
   - UI
-    - Keyboard
+    - Keyboard（白鍵と黒鍵など）
+    - Keyboard（カットオフツマミ）
 
 # 21をクローズに向けて進める
 ## ロードマップ
