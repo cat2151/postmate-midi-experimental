@@ -23,7 +23,12 @@
       - 最低限
         - keyboard, カットオフツマミ
       - 不足なもの
-        - seq, chord
+        - seq（jsonを受け付けるミニマムなもの）, chord, MML, 音色edit, 音色select, フレーズselect
+        - chord2json, MML2JSON ※ふわっと。seqと連動するイメージ
+        - smf2json？（外部からのimportが楽に）
+        - editor？（その場でのMML編集が楽に）
+        - seqへの機能追加（Tone.jsの、各種波形、各種シーケンス（ディレイビブラート等）、を実現する等）
+        - seqの表現力up（複数chはできている。あとは複雑な楽曲をやれるかの検証。smf2json等の、複雑な楽曲をimportしやすい仕組みと並列で徐々に実現するイメージ）
         - ほか多数
 - project全体(experimental21以外、22以降)の課題は？
   - 課題、軸が可視化不足、対策、書きましょう
