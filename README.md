@@ -1,9 +1,10 @@
 # postmate-midi-experimental
 
 ## demos
-- [MIDIキーボード](https://cat2151.github.io/postmate-midi-experimental/experimental09/)
-- [カットオフツマミ](https://cat2151.github.io/postmate-midi-experimental/experimental10/)
-- [サンプラー](https://cat2151.github.io/postmate-midi-experimental/experimental21/)
+- [MIDIキーボード : マウスドラッグ](https://cat2151.github.io/postmate-midi-experimental/experimental09/)
+- [カットオフツマミ : 下のボタンを押したあと数秒待ち、playを押してからknob上でマウスを動かす](https://cat2151.github.io/postmate-midi-experimental/experimental10/)
+- [サンプラー : ボタンを押したあとダイアログが出るまで待ち、ダウンロードやskipを2回行い、playを押す](https://cat2151.github.io/postmate-midi-experimental/experimental21/)
+- ※うまく動かない場合はリロード
 
 ## notes
 - postmate-midiとは：
