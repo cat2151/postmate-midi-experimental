@@ -34,8 +34,8 @@
         - wav importボタンを押します。
         - `ファイルアップロードダイアログ`が開くことを確認します。
           - `起動時の自動prerender`で保存済みのwavをuploadします。
-            - たしかch1.wav とかch2.wavとかのファイル名制限があったはず
-            - 保存時に ch1.wav とch2.wavというファイル名にする手順にしておくといい
+            - ファイル名は ch1.wav と ch2.wav など、対象ch番号を数字で含むものにしてください。このファイル名フォーマットは prerenderer.js extractNumberFromStr の実装依存です。
+            - ■ ↓ `編集中`
             - bassのwavをimportすると、波形がbass表示 sampler になるし、playボタンでplayすると、Lにpanがふられたbass音色、のみでbass seqとmelody seqが鳴る、のを確認する、という手順を整理する
             - 波形表示 確認？
             - 演奏？playボタン？
