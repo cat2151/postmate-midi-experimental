@@ -1,6 +1,6 @@
-# 編集中
 
-# 21の操作手順、後から読んで使うとき楽にする用
+# 操作手順 (experimental21)
+- ※後から読んで使うとき楽にする用
 - generator部
   - 起動時の自動prerender
     - 手順
@@ -8,9 +8,9 @@
       - `generator`に波形が表示されることを確認します。
       - `ファイル保存ダイアログ`が開くことを確認します。
         - `wavファイル`をローカルに保存できることを確認します。
-        - wavファイル内容が、`seq`で指定したとおりの `Saw 3和音chord` であることを確認します。
+        - wavファイル内容が、`seq`で指定したとおりの `panがR` `Saw 3和音chord` であることを確認します。
       - さらに`ファイル保存ダイアログ`が開くことを確認します。
-        - wavファイル内容が、`seq`で指定したとおりの `Saw Bass Octave重ね` であることを確認します。
+        - wavファイル内容が、`seq`で指定したとおりの `panがL` `Saw Bass Octave重ね` であることを確認します。
 - sampler部
   - 起動時のgeneratorからのwav自動受信
     - 手順
@@ -31,15 +31,15 @@
       - ※この機能は、任意の`wav`ファイルをsampler部に`読み込み`、seq部のシーケンスデータで演奏します。さらにそれをprerenderして`wav保存`もできます。
       - ※用途は、prerenderでwavファイルを保存してimportしそれをprerenderしてwav保存…を繰り返す`セルフサンプリング`等を想定しています。
       - 手順
+        - `起動時の自動prerender`で保存済みのwavをrenameします。
+          - renameファイル名は、1つめを `ch2.wav` 、2つめを `ch1.wav` とします。つまりchを逆転させます。
+          - ※対象ch番号が数字で記載されていればOKです。このファイル名フォーマットは prerenderer.js extractNumberFromStr の実装依存です。
         - wav importボタンを押します。
         - `ファイルアップロードダイアログ`が開くことを確認します。
-          - `起動時の自動prerender`で保存済みのwavをuploadします。
-            - ファイル名は ch1.wav と ch2.wav など、対象ch番号を数字で含むものにしてください。このファイル名フォーマットは prerenderer.js extractNumberFromStr の実装依存です。
-            - ■ ↓ `編集中`
-            - bassのwavをimportすると、波形がbass表示 sampler になるし、playボタンでplayすると、Lにpanがふられたbass音色、のみでbass seqとmelody seqが鳴る、のを確認する、という手順を整理する
-            - 波形表示 確認？
-            - 演奏？playボタン？
-          - さらにもう1つ、`起動時の自動prerender`で保存済みのwavをuploadします？
-            - 演奏？確認？
-          - now writing...
-        - now writing...
+        - 1つめのwavをアップロードします。
+        - さらにwav importボタンを押します。
+        - `ファイルアップロードダイアログ`が開くことを確認します。
+        - 2つめのwavをアップロードします。
+        - playボタンを押します。
+        - `Lにpanがふられたbass音色` がchord側のフレーズを演奏していることを確認します。
+        - `Rにpanがふられたchord音色` がbass側のフレーズを演奏していることを確認します。
