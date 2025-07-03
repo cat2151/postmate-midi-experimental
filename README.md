@@ -129,10 +129,11 @@
 
 ## 21. wav export / import
 - [Demo](https://cat2151.github.io/postmate-midi-experimental/experimental21/)
+- [README 21](experimental21/README.md)
 - Postmate + Tone.js + 疑似MIDImessage + 簡易Seq で鳴ることの確認用。
 - seq + prerenderer + sampler。2つのフレーズをプリレンダリングして2つのwavを生成し、それをsamplerで同時に鳴らすサンプルです。
 - 20との違いは、プリレンダリング結果をwav保存できること（ファイル保存ダイアログが自動で2回開きます）、samplerに任意のwavをimportできることです。
 
-# [今後document作成予定 : なぜ作ったか（思想・背景）](doc/why-postmate-midi.md)
-# [今後document作成予定 : 何を解決するか（課題と対応）](doc/problems-postmate-midi-solves.md)
-# [document編集中 : ロードマップ](doc/roadmap.md)
+# [編集中 : なぜ作ったか](doc/why-postmate-midi.md)
+# [編集中 : 何を解決するか](doc/problems-postmate-midi-solves.md)
+# [編集中 : ロードマップ](doc/roadmap.md)
