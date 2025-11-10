@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-11
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -1549,4 +1549,4 @@ experimental21/README.md
 
 
 ---
-Generated at: 2025-11-10 08:27:59 JST
+Generated at: 2025-11-11 07:07:50 JST

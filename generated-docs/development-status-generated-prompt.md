@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-11
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -426,6 +426,7 @@ Last updated: 2025-11-10
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+8b5172a Update project summaries (overview & development status) [auto]
 bd68c5e github-actionsリポジトリの共通ワークフローを導入
 ae39008 jekyll settings
 
@@ -442,13 +443,12 @@ doc/why-postmate-midi.md
 experimental21/README.md
 "experimental21/doc/20\343\201\25021\343\201\256\346\257\224\350\274\203.md"
 "experimental21/doc/21\343\201\256\343\203\255\343\203\274\343\203\211\343\203\236\343\203\203\343\203\227.md"
-experimental21/doc/LLM.md
 "experimental21/doc/\343\203\226\343\203\254\343\202\244\343\203\263\343\202\271\343\203\210\343\203\274\343\203\237\343\203\263\343\202\260.md"
-"experimental21/doc/\345\256\214\344\272\206\346\270\210\343\201\277\350\252\262\351\241\214_\345\256\237\350\243\205\351\226\242\351\200\243.md"
-"experimental21/doc/\350\252\262\351\241\214_21\343\201\256\346\256\213\350\252\262\351\241\214.md"
-"experimental21/doc/\350\252\262\351\241\214_22\343\201\253\343\201\251\343\201\206\351\200\262\343\202\200\343\201\213\351\226\242\351\200\243.md"
-"experimental21/doc/\350\252\262\351\241\214_\343\202\273\343\203\253\343\203\225\343\202\265\343\203\263\343\203\227\343\203\252\343\203\263\343\202\260.md"
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
 
 
 ---
-Generated at: 2025-11-10 08:27:52 JST
+Generated at: 2025-11-11 07:07:43 JST

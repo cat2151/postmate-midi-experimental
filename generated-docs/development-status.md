@@ -1,50 +1,48 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-11
 
 # Development Status
 
 ## 現在のIssues
-オープン中のIssueはありません。最近導入された共通ワークフローの動作確認と、
-生成される成果物の品質向上に焦点を当て、プロジェクトの整備を進める時期です。
-特に自動生成されるドキュメントの精度と、未整理の実験的コードの扱いが課題となります。
+オープン中のIssueはありません。
 
 ## 次の一手候補
-1. 自動生成される開発状況レポートの品質向上と精度確認 [既存Issueなし]
-   - 最初の小さな一歩: `generated-docs/development-status.md` の内容をレビューし、本プロンプトの出力フォーマットと要件に沿っているか評価する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md, generated-docs/development-status.md
+1.  新規導入されたGitHub Actionsワークフローの安定性確認 [Issue #31](../issue-notes/31.md)
+    -   最初の小さな一歩: `call-daily-project-summary.yml`ワークフローの最新の実行ログを確認し、`generated-docs/development-status.md`と`generated-docs/project-overview.md`が意図通りに生成されているか目視で確認する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: .github/workflows/call-daily-project-summary.yml, generated-docs/development-status.md, generated-docs/project-overview.md, .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md, .github/actions-tmp/.github_automation/project_summary/prompts/project-overview-prompt.md
 
-     実行内容: `generated-docs/development-status.md` の内容が、現在の開発状況生成プロンプトの出力フォーマット（Issue要約、次の一手候補、Agent実行プロンプト形式など）と要件に沿っているかを詳細に確認し、課題点を洗い出してください。特に、Issue番号の取り扱いに関する現在の解決策（例：[既存Issueなし]の利用）が適切であるか評価し、より良い方法を提案してください。
+        実行内容: `call-daily-project-summary.yml`の目的と、それが生成する`development-status.md`および`project-overview.md`の内容を、対応するプロンプトファイル（`development-status-prompt.md`, `project-overview-prompt.md`）と照らし合わせて分析してください。特に、出力されたドキュメントがプロンプトの指示を正確に反映しているか、不必要なハルシネーションがないかを確認してください。
 
-     確認事項: `call-daily-project-summary.yml` ワークフローが正しく実行され、`generated-docs/development-status.md` が最新の状態で更新されていることを確認してください。
+        確認事項: ワークフローが最近正常に実行されたことを確認してください。また、生成されたファイルのタイムスタンプと内容が最新のコミット状況と整合していることを確認してください。
 
-     期待する出力: `generated-docs/development-status.md` の現状の課題点と、それを解決するための具体的な改善案をMarkdown形式で出力してください。改善案には、必要に応じて `development-status-prompt.md` の修正案、およびIssue番号の記載に関するより良い解決策を含めてください。
-     ```
+        期待する出力: `development-status.md`と`project-overview.md`の内容がそれぞれのプロンプトにどれだけ忠実であるか、および改善点があるかを指摘するMarkdown形式の分析レポート。
+        ```
 
-2. 既存の `experimental21` ディレクトリの評価と整理 [既存Issueなし]
-   - 最初の小さな一歩: `experimental21` ディレクトリ内の `README.md`、`doc` ファイル群、および主要なJavaScriptファイルの目的と内容を概観し、プロジェクトにおける役割を理解する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: experimental21/README.md, experimental21/doc/, experimental21/index.html, experimental21/parent/parent.js, experimental21/seq1/seq-child.js, experimental21/synth/synth-poly.js （およびその他 experimental21 配下の関連ファイル）
+2.  `experimental21`の内部ドキュメントの整理と公開 [Issue #32](../issue-notes/32.md)
+    -   最初の小さな一歩: `experimental21/README.md`, `experimental21/doc/USAGE.md`, `experimental21/doc/20と21の比較.md`の内容を読み、全体的な構成と理解しやすさを評価する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: experimental21/README.md, experimental21/doc/USAGE.md, experimental21/doc/20と21の比較.md, experimental21/doc/課題_セルフサンプリング.md
 
-     実行内容: `experimental21` ディレクトリが持つ実験的な性質、含まれるコードやドキュメントの内容、そしてこれらがプロジェクト全体に与える影響を分析してください。このディレクトリを今後のプロジェクトにどのように統合、あるいは破棄・アーカイブすべきかについて、3つ以上の選択肢とそのメリット・デメリットを提示してください。
+        実行内容: `experimental21`ディレクトリ内のドキュメント群を分析し、その内容が網羅的であるか、また外部の読み手が理解しやすいかを評価してください。特に、機能、使用方法、そして`experimental20`との比較点が明確に記述されているかを確認してください。
 
-     確認事項: `experimental21` ディレクトリが、他の機能やワークフローに意図せず依存していないことを確認してください。
+        確認事項: 各ドキュメントが相互に矛盾していないか、そして最新のコードベースの変更を反映しているかを確認してください。
 
-     期待する出力: `experimental21` ディレクトリの現状評価と、その整理・統合に関する具体的な戦略（例: メインブランチへのマージ、別リポジトリへの移行、アーカイブ、部分的な削除など）をMarkdown形式で出力してください。それぞれの戦略について、最初の一歩となるアクションと、Agent実行プロンプトを提示してください。
-     ```
+        期待する出力: `experimental21`のドキュメントに対する改善提案をMarkdown形式で出力してください。具体的には、不足している情報、不明瞭な表現、または重複する内容があれば指摘し、必要であれば新しいセクションの追加を提案してください。
+        ```
 
-3. 主要な共通ワークフローの初期健全性チェックとドキュメント更新 [既存Issueなし]
-   - 最初の小さな一歩: `README.md`、`doc/roadmap.md`、`doc/problems-postmate-midi-solves.md` を開き、最近導入された共通ワークフロー（Daily Project Summary, Issue Note, README翻訳）に関する情報が記載されているかを確認する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: .github/workflows/call-daily-project-summary.yml, .github/workflows/call-issue-note.yml, .github/workflows/call-translate-readme.yml, README.md, doc/roadmap.md, doc/problems-postmate-midi-solves.md, doc/why-postmate-midi.md
+3.  `postmate-midi.js`の進化と現状把握 [Issue #33](../issue-notes/33.md)
+    -   最初の小さな一歩: `experimental20/postmate-midi.js`と`experimental21/postmate-midi.js`の差分を確認し、主な変更点を特定する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: experimental20/postmate-midi.js, experimental21/postmate-midi.js
 
-     実行内容: 最近導入された共通ワークフロー (`call-daily-project-summary.yml`, `call-issue-note.yml`, `call-translate-readme.yml`) の基本的な動作と意図を理解してください。これらのワークフローの導入によって、プロジェクトのREADMEや既存ドキュメントが適切に更新され、利用者が新しい自動化機能について認識できる状態になっているかを確認し、もし不足があれば具体的に指摘してください。
+        実行内容: `experimental20/postmate-midi.js`と`experimental21/postmate-midi.js`間の主要な変更点（例: APIの変更、バグ修正、新機能追加、パフォーマンス改善など）を詳細に分析し、その影響を評価してください。
 
-     確認事項: 各ワークフローがGitHub Actions上でエラーなく実行されていることを確認してください。
+        確認事項: これらの変更が`experimental21`内の他のスクリプト（例: `synth-poly.js`, `seq.js`など）にどのように影響を与えているか、特に互換性の問題がないかを確認してください。
 
-     期待する出力: 各共通ワークフローの導入状況とドキュメントへの反映状況を評価し、不足している情報や改善が必要な点をMarkdown形式で出力してください。特に、これらのワークフローがユーザーにとってどのように役立つか、設定方法や利用方法について、どこに情報があるべきかを提案してください。
+        期待する出力: `postmate-midi.js`のバージョン間での変更履歴と、それによってもたらされた機能的・構造的改善点を記述したMarkdown形式のレポート。
 
 ---
-Generated at: 2025-11-10 08:28:30 JST
+Generated at: 2025-11-11 07:08:00 JST
