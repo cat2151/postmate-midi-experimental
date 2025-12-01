@@ -1,4 +1,4 @@
-Last updated: 2025-11-11
+Last updated: 2025-12-02
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -161,6 +161,7 @@ Last updated: 2025-11-11
 - .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
+- .github/actions-tmp/googled947dc864c270e07.html
 - .github/actions-tmp/issue-notes/10.md
 - .github/actions-tmp/issue-notes/11.md
 - .github/actions-tmp/issue-notes/12.md
@@ -417,6 +418,7 @@ Last updated: 2025-11-11
 - experimental21/synth/index.html
 - experimental21/synth/synth-child.js
 - experimental21/synth/synth-poly.js
+- googled947dc864c270e07.html
 
 ## 現在のオープンIssues
 オープン中のIssueはありません
@@ -426,29 +428,22 @@ Last updated: 2025-11-11
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-8b5172a Update project summaries (overview & development status) [auto]
-bd68c5e github-actionsリポジトリの共通ワークフローを導入
-ae39008 jekyll settings
+7b9db19 Google検索にindexさせる用
+44640e6 Google検索にindexさせる用
 
 ### 変更されたファイル:
 .github/workflows/call-daily-project-summary.yml
 .github/workflows/call-issue-note.yml
 .github/workflows/call-translate-readme.yml
 .github/workflows/issue-note.yml
-README.md
 _config.yml
-doc/problems-postmate-midi-solves.md
-doc/roadmap.md
 doc/why-postmate-midi.md
-experimental21/README.md
-"experimental21/doc/20\343\201\25021\343\201\256\346\257\224\350\274\203.md"
-"experimental21/doc/21\343\201\256\343\203\255\343\203\274\343\203\211\343\203\236\343\203\203\343\203\227.md"
-"experimental21/doc/\343\203\226\343\203\254\343\202\244\343\203\263\343\202\271\343\203\210\343\203\274\343\203\237\343\203\263\343\202\260.md"
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
+googled947dc864c270e07.html
 
 
 ---
-Generated at: 2025-11-11 07:07:43 JST
+Generated at: 2025-12-02 07:06:56 JST

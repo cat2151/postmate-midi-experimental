@@ -1,21 +1,21 @@
-Last updated: 2025-11-11
+Last updated: 2025-12-02
 
 # Project Overview
 
 ## プロジェクト概要
-- ブラウザ上で複数のウェブページ間でのMIDIとオーディオの送受信を可能にする実験的ライブラリです。
-- PostmateとWeb Audio/MIDI APIを利用し、シンプルで軽量な実装を目指しています。
-- 将来の本格リリースに向け、多様な利用シナリオと技術仕様を網羅するためのデモと検証を行っています。
+- このプロジェクトは、Web MIDI APIとPostmate.jsを用いて、複数のWebページ間でMIDIとオーディオを送受信する実験的なライブラリです。
+- Tone.jsを基盤に、仮想キーボード、シーケンサー、サンプラーなど多様な音楽アプリケーションのユースケースを検証しています。
+- 将来の安定版「postmate-midi」リリースに向け、広範な機能と仕様を網羅するための実験と実証を目的としています。
 
 ## 技術スタック
-- フロントエンド: HTML, CSS, JavaScript (ブラウザ上で動作するユーザーインターフェースやアプリケーションロジックの実装に使用)
-- 音楽・オーディオ: Tone.js (Web Audio APIを抽象化し、シンセサイザー、シーケンサー、エフェクトなどのオーディオ処理機能を提供), Web MIDI API (MIDIデバイスからの入力およびMIDIメッセージの送信機能を提供), Postmate (ブラウザの`postMessage` APIをラップし、親ウィンドウと子iframe間で安全な通信を確立するために使用)
-- 開発ツール: (特筆すべき開発ツールは明示されていません。)
-- テスト: (特筆すべきテスト関連技術は明示されていません。)
-- ビルドツール: Jekyll (GitHub Pagesによる静的サイト生成に利用)
-- 言語機能: JavaScript (非同期処理、DOM操作、イベントハンドリングなど、Webブラウザ環境でのプログラミング全般に利用)
-- 自動化・CI/CD: GitHub Pages (リポジトリへの変更をトリガーに、自動的にウェブサイトをデプロイするために利用)
-- 開発標準: (特筆すべき開発標準は明示されていません。)
+- フロントエンド: HTML5 (構造), CSS3 (スタイル), JavaScript (ES6+を用いた動的処理)
+- 音楽・オーディオ: Web MIDI API (MIDIデバイスとの連携), Web Audio API (ブラウザでの音声処理), Tone.js (Web Audio APIをラップした高レベルなオーディオ処理ライブラリ), MIDI (音楽情報をデジタルで表現するプロトコル)
+- 開発ツール: GitHub Pages (デモサイトのホスティング)
+- テスト: (プロジェクト情報からはテスト関連技術の利用は確認できませんでした。)
+- ビルドツール: (プロジェクト情報からは専用のビルドツールは確認できませんでした。主にVanilla JavaScriptで構成されています。)
+- 言語機能: JavaScript ES6+ (モジュール import/export, Promise/async/await を利用した非同期処理, アロー関数など)
+- 自動化・CI/CD: (プロジェクト情報からはCI/CDツールの利用は確認できませんでした。)
+- 開発標準: (プロジェクト情報からは特定のコード品質・統一ルール関連技術の利用は確認できませんでした。)
 
 ## ファイル階層ツリー
 ```
@@ -309,309 +309,225 @@ Last updated: 2025-11-11
     📜 synth-child.js
     📜 synth-poly.js
 📁 generated-docs/
+🌐 googled947dc864c270e07.html
 ```
 
 ## ファイル詳細説明
-- `LICENSE`: プロジェクトのライセンス情報（MITライセンス）が記述されています。
-- `README.md`: プロジェクトの概要、デモへのリンク、開発に関する注意点などが記載されたメインドキュメントです。
-- `_config.yml`: Jekyllサイトの設定ファイルで、GitHub Pagesの生成に使用されます。
-- `doc/`: プロジェクトの背景、ロードマップ、解決する問題などに関するドキュメントが格納されています。
-    - `problems-postmate-midi-solves.md`: このプロジェクトが解決しようとしている問題について記述されたドキュメントです。
-    - `roadmap.md`: プロジェクトのロードマップ（今後の計画）について記述されたドキュメントです。
-    - `why-postmate-midi.md`: なぜこのプロジェクトが作られたのか、その背景について記述されたドキュメントです。
-- `experimentalXX/ (各ディレクトリ)`: Postmate-MIDIの様々な機能やユースケースを検証するための個別のデモを格納するディレクトリです。各デモは独立しており、それぞれ異なるWeb MIDI/Audio機能の組み合わせを示します。
-    - `child.html`: 各デモにおいて、Postmateの子ウィンドウ（iframe）としてロードされるHTMLファイルです。
-    - `child.js`: 子ウィンドウ側で動作するJavaScriptロジックが含まれており、Postmateを介して親からのMIDI/オーディオメッセージを受信・処理します。
-    - `index.html`: 各デモのメインページとなるHTMLファイルです。通常、Postmateの親ウィンドウとして機能したり、アプリケーション全体を統括したりします。
-    - `parent.js`: 親ウィンドウ側で動作するJavaScriptロジックが含まれており、Postmateを介して子ウィンドウへMIDI/オーディオメッセージを送信・制御します。
-    - `postmate-midi.js`: Postmate-MIDIライブラリのコアロジックを実装したファイルです。Postmateによる通信、MIDIメッセージの送受信、Tone.jsとの連携、オーディオレンダリング、UI連携など、プロジェクトの中心的な機能を提供します。
-    - `saw.js` (experimental03, 04, 05): シンプルなノコギリ波シンセサイザーの初期実装です。Tone.jsを使用して音を生成します。
-    - `seq.js` (experimental05以降の各`seq/`ディレクトリ内): 簡易的なシーケンサーのロジックを実装しています。MIDIイベントのスケジュール管理や送出を行います。
-    - `poly.js` (experimental06): ポリフォニック（和音）に対応したシンセサイザーの初期実装です。
-    - `saw-poly.js` (experimental07, 08): 和音に対応したノコギリ波シンセサイザーの実装です。
-    - `keyboard.js` (experimental09): マウスやタッチ操作で音を鳴らせる仮想MIDIキーボードのUIとロジックです。
-    - `synth-poly.js` (experimental09, 10, 11, 12, 13, 14, 15, 20, 21): ポリフォニック対応のシンセサイザーの実装です。デモに応じてカットオフ制御やマルチティンバー機能が追加されています。
-    - `index.css` (experimental10以降の各ディレクトリ): 各デモページに適用されるスタイルシートです。
-    - `knob/knob.js` (experimental10): 仮想的なツマミ（カットオフ周波数など）のUIと、それに応じたMIDIコントロールチェンジ(CC)メッセージ送信ロジックです。
-    - `midifilter/midifilter.js` (experimental12): MIDIメッセージをフィルタリングしたり、単音を和音に変換したりするロジックを実装しています。
-    - `seq-and-synth-saw/parent-or-child.js` (experimental13): URL引数に基づいて、親シーケンサーまたは子シンセサイザーのいずれかとして機能するスクリプトです。
-    - `parent/parent.js` (experimental14以降の各`parent/`ディレクトリ内): 複数の子ウィンドウやモジュールを管理・連携させるための親側のPostmateロジックです。
-    - `seq/seq-child.js` (experimental14以降の各`seq/`ディレクトリ内): 親ウィンドウからMIDIメッセージを受け取る子シーケンサーのPostmateロジックです。
-    - `sampler/sampler.js` (experimental16, 17, 18, 19, 20): サンプラーのロジックです。WAVファイルのロード、再生、場合によっては生成にも対応しています。
-    - `generator/generator.js` (experimental17): プログラムでオーディオデータを生成し、WAV形式で出力するロジックです。
-    - `synth/synth.js` (experimental18, 19): Tone.jsのOfflineContextを利用したプリレンダリング機能を特化したシンセサイザーです。
-    - `experimental21/README.md`: `experimental21`デモに特化したREADMEドキュメントです。
-    - `experimental21/doc/`: `experimental21`デモに関する詳細なドキュメント群です。
-        - `20と21の比較.md`: experimental20とexperimental21の機能比較について説明しています。
-        - `USAGE.md`: experimental21デモの利用方法を説明しています。
-        - `課題_セルフサンプリング.md`: セルフサンプリングに関する課題について記述しています。
-    - `prerenderer.js` (experimental21): オーディオのプリレンダリング、WAVファイルのエクスポート・インポート、生成されたサウンドの視覚化など、高度なオーディオ処理を担当する中心的なロジックファイルです。
+- `LICENSE`: プロジェクトのライセンス情報が記載されています。
+- `README.md`: プロジェクトの概要、デモ、注意事項などの主要な情報が記述されています。
+- `_config.yml`: GitHub PagesのJekyll設定ファイルです。
+- `doc/problems-postmate-midi-solves.md`, `doc/roadmap.md`, `doc/why-postmate-midi.md`: プロジェクトの目的、解決する問題、将来の計画に関するドキュメント（編集中）。
+- `experimentalXX/index.html`: 各デモのルートとなるHTMLファイルです。Parent/Childページのiframeを埋め込んだり、UI要素を配置したりします。
+- `experimentalXX/child.html`: 各デモでPostmateの"child"として機能するiframe用のHTMLファイルです。
+- `experimentalXX/child.js`: `child.html`にロードされ、Postmateの子側として親ページとの通信やMIDI/オーディオ処理を行います。
+- `experimentalXX/parent.js`: `index.html`にロードされ、Postmateの親側として子ページを生成し、MIDI/オーディオデータや制御コマンドを送信します。
+- `experimentalXX/postmate-midi.js`: このプロジェクトの核となる共通ライブラリです。Postmate.jsを利用してWebページ間のハンドシェイク、MIDIメッセージの送受信、オーディオデータのルーティング、UI要素（テキストエリア、ドロップダウンなど）との連携、Tone.jsの初期化・制御など、多岐にわたる機能を提供します。
+- `experimentalXX/saw.js`, `experimentalXX/poly.js`, `experimentalXX/synth-poly.js`, `experimentalXX/synth/synth-poly.js`, `experimentalXX/synth/synth.js`: Tone.jsを用いて各種シンセサイザーの音源を定義するスクリプトです。ノコギリ波シンセ、ポリフォニックシンセ、カットオフフィルタ付きシンセなど、多様な音色や機能を提供します。
+- `experimentalXX/seq.js`, `experimentalXX/seq/seq.js`: MIDIシーケンサーのロジックを実装しています。定義されたMIDIノートシーケンスを時間通りに再生し、MIDIメッセージとして送信します。
+- `experimentalXX/keyboard.js`: 仮想MIDIキーボードのUI要素と、マウス/タッチ操作をMIDIノートイベントに変換して送信するロジックを扱います。
+- `experimentalXX/knob/knob.js`: 仮想コントロールノブ（ツマミ）のUI要素と、マウス/タッチ操作をMIDIコントロールチェンジメッセージ（CC）に変換して送信するロジックを扱います。
+- `experimentalXX/midifilter/midifilter.js`: 受信したMIDIメッセージを加工・変換するフィルタリングロジックを実装しています（例: 単音を和音に変換）。
+- `experimentalXX/sampler/sampler.js`: サンプラーの機能を提供します。オーディオデータの読み込み、再生、MIDIノートイベントへの応答などを管理します。
+- `experimentalXX/generator/generator.js`: オーディオデータ（WAV形式）を生成するためのロジックを含みます。主にTone.jsのOfflineContextを利用して音声をプリレンダリングします。
+- `experimentalXX/prerenderer.js`: `experimental21`に特化したモジュールで、音声のプリレンダリング機能、WAVファイルのエクスポート/インポート機能、生成された音声の波形可視化機能などを提供します。
+- `experimentalXX/index.css`: 各デモページのデザインを定義するスタイルシートです。
+- `googled947dc864c270e07.html`: Googleサイト所有権確認のためのHTMLファイルです。
 
 ## 関数詳細説明
-- `onChangeTextarea (experimental01/child.js, experimental01/parent.js など)`: テキストエリアの内容が変更されたときに呼び出されるハンドラ関数です。通常、その変更内容をPostmateを介して相手側に送信するなどの処理を行います。（引数・戻り値は明示されていません）
-- `onCompleteHandshakeParent (experimental01/child.js, experimental03/postmate-midi.js など)`: Postmateのハンドシェイクが完了した際に、親から子へ、またはPostmateライブラリ内で呼び出されるコールバック関数です。初期設定やUIの状態更新などが含まれます。（引数・戻り値は明示されていません）
-- `onChangeParent (experimental01/child.js, experimental03/postmate-midi.js など)`: 親ウィンドウからデータが変更された際に子ウィンドウ側で呼び出されるコールバック関数です。（引数・戻り値は明示されていません）
-- `initTonejs (experimental02/child.js, experimental02/parent.js)`: Tone.jsの初期化を行う関数です。オーディオコンテキストの準備などが含まれます。（引数・戻り値は明示されていません）
-- `playTonejs (experimental02/child.js, experimental02/parent.js)`: Tone.jsを使用したサウンド再生を開始する関数です。（引数・戻り値は明示されていません）
-- `initSynthSaw (experimental03/saw.js, experimental04/saw.js, experimental05/saw.js)`: ノコギリ波シンセサイザーを初期化する関数です。Tone.jsのシンセインスタンスを生成します。（引数・戻り値は明示されていません）
-- `noteOn (experimental03/saw.js, experimental06/poly.js など)`: 指定されたノート番号とベロシティで音を鳴らす関数です。（引数・戻り値は明示されていません）
-- `noteOff (experimental03/saw.js, experimental06/poly.js など)`: 指定されたノート番号の音を停止する関数です。（引数・戻り値は明示されていません）
-- `seqPlay (experimental05/seq.js, experimental06/seq.js など)`: シーケンサーの再生を開始する関数です。シーケンスデータに基づいてMIDIイベントをスケジュールします。（引数・戻り値は明示されていません）
-- `calcNextTime (experimental05/seq.js, experimental06/seq.js など)`: シーケンサーにおいて、次のステップの再生タイミングを計算する関数です。（引数・戻り値は明示されていません）
-- `calcStepTimeMsec (experimental05/seq.js, experimental06/seq.js など)`: 1ステップあたりの時間をミリ秒単位で計算する関数です。（引数・戻り値は明示されていません）
-- `sendNoteOn (experimental05/seq.js, experimental09/keyboard.js など)`: ノートオンMIDIメッセージを送信する関数です。（引数・戻り値は明示されていません）
-- `sendNoteOff (experimental05/seq.js, experimental09/keyboard.js など)`: ノートオフMIDIメッセージを送信する関数です。（引数・戻り値は明示されていません）
-- `sendMidiMessage (experimental05/seq.js, experimental06/postmate-midi.js など)`: MIDIメッセージをPostmateを介して送信するための汎用関数です。（引数・戻り値は明示されていません）
-- `initSynthPoly (experimental06/poly.js, experimental09/synth-poly.js など)`: ポリフォニックシンセサイザーを初期化する関数です。（引数・戻り値は明示されていません）
-- `init (experimental06/seq.js, experimental07/seq.js など)`: シーケンサーなどのモジュールを初期化する関数です。（引数・戻り値は明示されていません）
-- `playStep (experimental06/seq.js, experimental07/seq.js など)`: シーケンサーの個々のステップを処理する関数です。MIDIイベントの送出などが含まれます。（引数・戻り値は明示されていません）
-- `setupNoteOff (experimental07/seq.js, experimental08/seq.js など)`: ノートオフイベントのタイミングを設定・管理する関数です。（引数・戻り値は明示されていません）
-- `isNoteOn (experimental07/seq.js, experimental08/seq.js など)`: 特定のノートが現在アクティブ（鳴っている）かどうかを判定する関数です。（引数・戻り値は明示されていません）
-- `procNextTime (experimental07/seq.js, experimental08/seq.js など)`: 次のシーケンスイベントの処理時刻を計算・管理する関数です。（引数・戻り値は明示されていません）
-- `allNoteOff (experimental07/seq.js, experimental08/seq.js など)`: 現在鳴っているすべてのノートをオフにする関数です。（引数・戻り値は明示されていません）
-- `onChangeParentTextarea (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 親ウィンドウのテキストエリアが変更された際に子側で呼び出されるハンドラです。（引数・戻り値は明示されていません）
-- `isParent (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 現在のウィンドウがPostmateの親として動作しているかを判定する関数です。（引数・戻り値は明示されていません）
-- `isChild (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 現在のウィンドウがPostmateの子として動作しているかを判定する関数です。（引数・戻り値は明示されていません）
-- `getParentOrChild (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 現在のウィンドウが親か子かに応じて適切なPostmateインスタンスを返す関数です。（引数・戻り値は明示されていません）
-- `setupDropDownListForTextareaTemplate (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: テキストエリアのテンプレートを選択するためのドロップダウンリストを設定する関数です。（引数・戻り値は明示されていません）
-- `onChangeSelect (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: ドロップダウンリストの選択が変更されたときに呼び出されるハンドラ関数です。（引数・戻り値は明示されていません）
-- `addOptionToSelect (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: ドロップダウンリストに新しいオプションを追加する関数です。（引数・戻り値は明示されていません）
-- `removeIndent (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 文字列からインデントを削除するヘルパー関数です。（引数・戻り値は明示されていません）
-- `initOnStartPlaying (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 再生開始時の初期化処理を行う関数です。（引数・戻り値は明示されていません）
-- `onStartPlaying (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: 再生が開始されたときに呼び出されるハンドラ関数です。（引数・戻り値は明示されていません）
-- `onmidimessage (experimental03/postmate-midi.js, experimental04/postmate-midi.js など)`: Web MIDI APIまたはPostmate経由でMIDIメッセージを受信した際に呼び出されるコールバック関数です。受信したMIDIメッセージを解析し、音源の制御などを行います。（引数・戻り値は明示されていません）
-- `getMidiEventName (experimental08/postmate-midi.js, experimental09/postmate-midi.js など)`: MIDIイベントのバイトコードから可読なイベント名を取得するヘルパー関数です。（引数・戻り値は明示されていません）
-- `allSoundOff (experimental08/postmate-midi.js, experimental08/seq.js など)`: 全ての音を停止する関数です。（引数・戻り値は明示されていません）
-- `onmousedownOrTouchStart (experimental09/keyboard.js, experimental10/knob/knob.js)`: マウスダウンまたはタッチ開始イベント時に呼び出され、仮想キーボードのノートオンやツマミ操作を開始する関数です。（引数・戻り値は明示されていません）
-- `onmousemoveOrTouchMove (experimental09/keyboard.js, experimental10/knob/knob.js)`: マウス移動またはタッチ移動イベント時に呼び出され、音高の変更やツマミの値変更を処理する関数です。（引数・戻り値は明示されていません）
-- `onmouseupOrTouchEnd (experimental09/keyboard.js)`: マウスアップまたはタッチ終了イベント時に呼び出され、仮想キーボードのノートオフをトリガーする関数です。（引数・戻り値は明示されていません）
-- `getMouseNoteNum (experimental09/keyboard.js, experimental10/knob/knob.js)`: マウスのY座標から対応するノート番号を計算する関数です。（引数・戻り値は明示されていません）
-- `getKeyboardNoteNum (experimental09/keyboard.js, experimental10/knob/knob.js)`: キーボードの押下キーから対応するノート番号を計算する関数です。（引数・戻り値は明示されていません）
-- `i2penta (experimental09/keyboard.js)`: 整数値をペンタトニックスケール上の位置に変換する関数です。（引数・戻り値は明示されていません）
-- `getPenta (experimental09/keyboard.js)`: 特定のノート番号がペンタトニックスケールに属するかどうかを判定し、スケール上の位置を返す関数です。（引数・戻り値は明示されていません）
-- `semitone2penta (experimental09/keyboard.js)`: 半音階のノート番号をペンタトニックスケール上の位置に変換する関数です。（引数・戻り値は明示されていません）
-- `sendAllNoteOff (experimental09/keyboard.js)`: 全てのノートオフMIDIメッセージを送信する関数です。（引数・戻り値は明示されていません）
-- `checkAndSend (experimental09/keyboard.js)`: MIDIメッセージを送信する前に条件をチェックする関数です。（引数・戻り値は明示されていません）
-- `isIpad (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: 現在のデバイスがiPadであるかを判定する関数です。（引数・戻り値は明示されていません）
-- `startTonejs (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: Tone.jsのオーディオコンテキストを起動する関数です。（引数・戻り値は明示されていません）
-- `afterTonejsStart (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: Tone.jsが起動した後に実行されるコールバック関数です。（引数・戻り値は明示されていません）
-- `onSynthReady (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: シンセサイザーが準備完了した際に呼び出されるコールバック関数です。（引数・戻り値は明示されていません）
-- `isSynthReady (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: シンセサイザーが準備完了状態にあるかを判定する関数です。（引数・戻り値は明示されていません）
-- `isAllSynthReady (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: 全てのシンセサイザーが準備完了状態にあるかを判定する関数です。（引数・戻り値は明示されていません）
-- `checkAllSynthReady (experimental09/postmate-midi.js, experimental10/postmate-midi.js など)`: 全てのシンセサイザーの準備状況をチェックし、完了していれば次の処理へ進む関数です。（引数・戻り値は明示されていません）
-- `doHandshake (experimental10/postmate-midi.js, experimental11/postmate-midi.js など)`: Postmateのハンドシェイク処理を開始する関数です。（引数・戻り値は明示されていません）
-- `visualizeCurrentSound (experimental10/postmate-midi.js, experimental11/postmate-midi.js など)`: 現在鳴っているサウンドを視覚化する機能を開始する関数です。（引数・戻り値は明示されていません）
-- `cc74 (experimental10/knob/knob.js)`: MIDIコントロールチェンジ番号74（通常カットオフ周波数）を送信または処理する関数です。（引数・戻り値は明示されていません）
-- `cutoff (experimental10/synth/synth-poly.js, experimental11/synth/synth-poly.js など)`: シンセサイザーのカットオフ周波数を設定する関数です。（引数・戻り値は明示されていません）
-- `v2mul (experimental10/synth/synth-poly.js, experimental11/synth/synth-poly.js など)`: ベロシティ値を乗算して音量調整などを行うヘルパー関数です。（引数・戻り値は明示されていません）
-- `isSmartPhone (experimental11/postmate-midi.js, experimental12/postmate-midi.js など)`: 現在のデバイスがスマートフォンであるかを判定する関数です。（引数・戻り値は明示されていません）
-- `getInitialInterval (experimental11/postmate-midi.js, experimental12/postmate-midi.js など)`: サウンド視覚化の初期インターバルを取得する関数です。（引数・戻り値は明示されていません）
-- `startVisualization (experimental11/postmate-midi.js, experimental12/postmate-midi.js など)`: サウンド視覚化を開始する関数です。（引数・戻り値は明示されていません）
-- `changeVisualization (experimental11/postmate-midi.js, experimental12/postmate-midi.js など)`: サウンド視覚化の状態を変更する関数です。（引数・戻り値は明示されていません）
-- `initCh (experimental11/postmate-midi.js, experimental12/postmate-midi.js など)`: MIDIチャンネルごとの初期設定を行う関数です。（引数・戻り値は明示されていません）
-- `getMidiOutputIds (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 利用可能なMIDI出力デバイスのIDリストを取得する関数です。（引数・戻り値は明示されていません）
-- `getOutputIds (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 特定の種類の出力デバイスIDリストを取得する汎用関数です。（引数・戻り値は明示されていません）
-- `getOutputId (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 特定の出力デバイスのIDを取得する関数です。（引数・戻り値は明示されていません）
-- `onAllSynthReady (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 全てのシンセサイザーが準備完了した際に呼び出されるコールバック関数です。（引数・戻り値は明示されていません）
-- `sendMidiMessageFromDevice (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 外部MIDIデバイスから受信したMIDIメッセージを送信する関数です。（引数・戻り値は明示されていません）
-- `checkAllSynthReadyParent (experimental12/postmate-midi.js, experimental13/postmate-midi.js など)`: 親ウィンドウ側で全てのシンセサイザーの準備状況をチェックする関数です。（引数・戻り値は明示されていません）
-- `midifilter (experimental12/midifilter/midifilter.js)`: 受信したMIDIメッセージを加工・変換するためのフィルター関数です。例えば、単音を和音に変換します。（引数・戻り値は明示されていません）
-- `addShiftedNotes (experimental12/midifilter/midifilter.js)`: 特定のノートに対して、音高をずらしたノート（和音を生成するためなど）を追加する関数です。（引数・戻り値は明示されていません）
-- `getShiftedNote (experimental12/midifilter/midifilter.js)`: 指定されたノートからのオフセットに基づいてシフトされたノート番号を取得する関数です。（引数・戻り値は明示されていません）
-- `registerParent (experimental14/postmate-midi.js, experimental15/postmate-midi.js など)`: Postmateの親インスタンスを初期化し、登録する関数です。（引数・戻り値は明示されていません）
-- `registerChild (experimental14/postmate-midi.js, experimental15/postmate-midi.js など)`: Postmateの子インスタンスを初期化し、登録する関数です。（引数・戻り値は明示されていません）
-- `onChangeAnyTextarea (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: いずれかのテキストエリアが変更されたときに呼び出される汎用ハンドラ関数です。（引数・戻り値は明示されていません）
-- `registerPlayButton (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: 再生ボタンを登録し、クリックイベントハンドラを設定する関数です。（引数・戻り値は明示されていません）
-- `linkPlayButton (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: 複数の再生ボタンの動作を同期させるためのリンク設定を行う関数です。（引数・戻り値は明示されていません）
-- `onClickPlayButton (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: 再生ボタンがクリックされたときに呼び出されるハンドラ関数です。（引数・戻り値は明示されていません）
-- `registerSeq (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: シーケンサーモジュールを登録する関数です。（引数・戻り値は明示されていません）
-- `initTonejsByUserAction (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: ユーザーアクションをトリガーとしてTone.jsのオーディオコンテキストを初期化する関数です。（引数・戻り値は明示されていません）
-- `initBaseTimeStampAudioContext (experimental15/postmate-midi.js, experimental16/postmate-midi.js など)`: オーディオコンテキストのベースタイムスタンプを初期化する関数です。（引数・戻り値は明示されていません）
-- `initSampler (experimental16/sampler/sampler.js, experimental17/sampler/sampler.js など)`: サンプラーを初期化する関数です。サンプルのロードや再生準備を行います。（引数・戻り値は明示されていません）
-- `createWav (experimental16/sampler/sampler.js, experimental17/generator/generator.js)`: 生のオーディオデータからWAVファイル形式のデータを生成する関数です。（引数・戻り値は明示されていません）
-- `onCompleteHandshakeAllChildren (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: 全ての子ウィンドウとのPostmateハンドシェイクが完了した際に呼び出されるコールバック関数です。（引数・戻り値は明示されていません）
-- `visualizeGeneratedSound (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: 生成されたサウンドデータを視覚化する機能を開始する関数です。（引数・戻り値は明示されていません）
-- `registerGenerator (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: オーディオジェネレーターモジュールを登録する関数です。（引数・戻り値は明示されていません）
-- `sendWavAfterHandshakeAllChildren (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: 全ての子ウィンドウとのハンドシェイク完了後にWAVデータを送信する関数です。（引数・戻り値は明示されていません）
-- `sendToSamplerFromDevice (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: 外部デバイスから取得したWAVデータをサンプラーへ送信する関数です。（引数・戻り値は明示されていません）
-- `sendToSampler (experimental17/postmate-midi.js, experimental18/postmate-midi.js など)`: 指定されたWAVデータをサンプラーへ送信する関数です。（引数・戻り値は明示されていません）
-- `renderContextAsync (experimental18/postmate-midi.js, experimental19/postmate-midi.js など)`: Tone.jsのOfflineContextを使用して、指定されたオーディオデータを非同期にレンダリングする関数です。（引数・戻り値は明示されていません）
-- `sendWavAfterHandshakeAllChildrenSub (experimental18/postmate-midi.js, experimental19/postmate-midi.js など)`: 全ての子ウィンドウとのハンドシェイク完了後にWAVデータを送信するサブルーチンです。（引数・戻り値は明示されていません）
-- `setupTonejsPreRenderer (experimental18/synth/synth.js, experimental19/synth/synth.js)`: Tone.jsのプリレンダラー設定を行う関数です。OfflineContextの準備などが含まれます。（引数・戻り値は明示されていません）
-- `getWaveform (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: オーディオデータから波形データを取得する関数です。（引数・戻り値は明示されていません）
-- `getPeakWav (experimental20/postmate-midi.js)`: WAVデータのピーク値（最大振幅）を計算する関数です。（引数・戻り値は明示されていません）
-- `normalizeWav (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: WAVデータをノーマライズ（正規化）して音量を均一にする関数です。（引数・戻り値は明示されていません）
-- `getPeakAbs (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: オーディオデータの絶対値のピークを計算する関数です。（引数・戻り値は明示されていません）
-- `isPreRenderSynth (experimental20/postmate-midi.js)`: シンセサイザーがプリレンダリング対応かを判定する関数です。（引数・戻り値は明示されていません）
-- `onStartPreRender (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: プリレンダリング開始時に呼び出されるハンドラ関数です。（引数・戻り値は明示されていません）
-- `isPreRenderSeq (experimental20/postmate-midi.js)`: シーケンサーがプリレンダリング対応かを判定する関数です。（引数・戻り値は明示されていません）
-- `onCompletePreRenderSeq (experimental20/postmate-midi.js)`: シーケンスのプリレンダリングが完了した際に呼び出されるコールバック関数です。（引数・戻り値は明示されていません）
-- `doPreRenderAsync (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: 非同期でオーディオプリレンダリングを実行するメイン関数です。（引数・戻り値は明示されていません）
-- `schedulingPreRender (experimental20/postmate-midi.js, experimental21/prerenderer.js)`: プリレンダリングのタスクをスケジューリングする関数です。（引数・戻り値は明示されていません）
-- `removeButton (experimental21/postmate-midi.js)`: 指定されたHTMLボタン要素を削除する関数です。（引数・戻り値は明示されていません）
-- `registerPrerenderButton (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: プリレンダリングを開始するためのボタンを登録する関数です。（引数・戻り値は明示されていません）
-- `registerWavImportButton (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: WAVファイルをインポートするためのボタンを登録する関数です。（引数・戻り値は明示されていません）
-- `openDialogForFileUpload (experimental21/postmate-midi.js)`: ファイルアップロードダイアログを開く関数です。（引数・戻り値は明示されていません）
-- `readFileContentAsync (experimental21/postmate-midi.js)`: 指定されたファイルを非同期で読み込み、その内容を取得する関数です。（引数・戻り値は明示されていません）
-- `getFloat32ArrayFromWavFileAsync (experimental21/postmate-midi.js)`: WAVファイルの内容を非同期で読み込み、Float32Array形式のオーディオデータとして取得する関数です。（引数・戻り値は明示されていません）
-- `registerGeneratedSoundVisualizer (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: 生成されたサウンドを視覚化するコンポーネントを登録する関数です。（引数・戻り値は明示されていません）
-- `registerSynth (experimental21/postmate-midi.js)`: シンセサイザーモジュールをPostmate-MIDIシステムに登録する関数です。（引数・戻り値は明示されていません）
-- `registerPrerenderer (experimental21/postmate-midi.js)`: プリレンダラーモジュールをPostmate-MIDIシステムに登録する関数です。（引数・戻り値は明示されていません）
-- `setContextInitSynthAddWav (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: 特定のオーディオコンテキストを設定し、シンセサイザーを初期化し、WAVデータを追加する関数です。（引数・戻り値は明示されていません）
-- `saveWavByDialog (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: 生成されたオーディオデータをWAVファイルとして保存するためのダイアログを開く関数です。（引数・戻り値は明示されていません）
-- `getWavFileFromFloat32 (experimental21/postmate-midi.js)`: Float32Array形式のオーディオデータからWAVファイルデータを生成する関数です。（引数・戻り値は明示されていません）
-- `openDownloadDialog (experimental21/postmate-midi.js)`: ファイルダウンロードダイアログを開く関数です。（引数・戻り値は明示されていません）
-- `updateGnWavs (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: 生成されたWAVデータを更新し、関連するUI要素に反映させる関数です。（引数・戻り値は明示されていません）
-- `samplerAddWavs (experimental21/postmate-midi.js, experimental21/prerenderer.js)`: サンプラーにWAVデータを追加する関数です。（引数・戻り値は明示されていません）
-- `checkWavOk (experimental21/postmate-midi.js)`: WAVデータが有効かどうかをチェックする関数です。（引数・戻り値は明示されていません）
-- `isAutoStartPrerender (experimental21/prerenderer.js)`: プリレンダリングが自動的に開始される設定になっているかを判定する関数です。（引数・戻り値は明示されていません）
-- `autoExecPrerender (experimental21/prerenderer.js)`: プリレンダリングを自動的に実行する関数です。（引数・戻り値は明示されていません）
-- `createPreRenderSeqData (experimental21/prerenderer.js)`: プリレンダリングに使用するシーケンスデータを生成する関数です。（引数・戻り値は明示されていません）
-- `afterWavFileUploadAsync (experimental21/prerenderer.js)`: WAVファイルのアップロード完了後に実行される非同期処理です。（引数・戻り値は明示されていません）
-- `getChNum (experimental21/prerenderer.js)`: MIDIチャンネル番号を取得する関数です。（引数・戻り値は明示されていません）
-- `extractNumberFromStr (experimental21/prerenderer.js)`: 文字列から数値を抽出するヘルパー関数です。（引数・戻り値は明示されていません）
-- `generatedSoundVisualizer_dispWavs (experimental21/prerenderer.js)`: 生成されたWAVデータを視覚化して表示する関数です。（引数・戻り値は明示されていません）
-- `getPeakOfWavs (experimental21/prerenderer.js)`: 複数のWAVデータコレクション全体のピーク値を計算する関数です。（引数・戻り値は明示されていません）
-- `getPeakOf1wav (experimental21/prerenderer.js)`: 単一のWAVデータからピーク値を計算する関数です。（引数・戻り値は明示されていません）
-- `combineFloat32Array (experimental21/prerenderer.js)`: 複数のFloat32Arrayオーディオデータを結合する関数です。（引数・戻り値は明示されていません）
-- `getPeakOfSliced (experimental21/prerenderer.js)`: スライスされた（部分的な）オーディオデータのピーク値を計算する関数です。（引数・戻り値は明示されていません）
-- `initSynthCommon (experimental21/synth/synth-poly.js)`: シンセサイザーの共通初期化処理を行う関数です。（引数・戻り値は明示されていません）
-- `panpot (experimental21/synth/synth-poly.js)`: 音源のパンポット（左右の定位）を設定する関数です。（引数・戻り値は明示されていません）
+- `onChangeTextarea(event)`: テキストエリアの内容が変更された際に呼び出されます。イベントオブジェクトを引数にとり、更新された内容を親/子ページ間で同期したり、関連するロジックをトリガーしたりします。戻り値はありません。
+- `onCompleteHandshakeParent()`: Postmateの親ページと子ページ間のハンドシェイクが完了した際に呼び出されます。初期設定や通信開始後の処理を実行します。戻り値はありません。
+- `onChangeParent(data)`: 親ページからデータが変更されたことを示すメッセージを受信した際に呼び出されます。受信したデータに基づいてUIやオーディオの状態を更新します。引数としてデータオブジェクトを受け取ります。戻り値はありません。
+- `initTonejs()`: Tone.jsのAudioContextを初期化し、オーディオエンジンを準備します。戻り値はありません。
+- `playTonejs()`: Tone.jsの再生を開始します。戻り値はありません。
+- `initSynthSaw(context)`: Tone.jsのAudioContextを引数にとり、基本的なノコギリ波シンセサイザーを初期化します。戻り値として初期化されたシンセサイザーオブジェクトを返します。
+- `noteOn(midiNote, velocity, time)`: 指定されたMIDIノート番号、ベロシティ、タイミングで音を発します。引数: `midiNote` (数値), `velocity` (数値), `time` (時間指定)。戻り値はありません。
+- `noteOff(midiNote, time)`: 指定されたMIDIノート番号、タイミングで音を停止します。引数: `midiNote` (数値), `time` (時間指定)。戻り値はありません。
+- `seqPlay()`: シーケンサーの再生を開始または制御します。戻り値はありません。
+- `calcNextTime(currentTime)`: 現在時刻を基に、シーケンスの次のステップの再生時刻を計算します。引数: `currentTime` (数値)。戻り値として次の再生時刻を数値で返します。
+- `sendNoteOn(noteNum, velocity, time)`: 指定されたノートオンメッセージをMIDI出力に送信します。引数: `noteNum` (MIDIノート番号), `velocity` (音量), `time` (タイミング)。戻り値はありません。
+- `sendNoteOff(noteNum, time)`: 指定されたノートオフメッセージをMIDI出力に送信します。引数: `noteNum` (MIDIノート番号), `time` (タイミング)。戻り値はありません。
+- `sendMidiMessage(portId, message)`: 特定のMIDI出力ポートにMIDIメッセージを送信します。引数: `portId` (文字列、MIDIポートID), `message` (MIDIメッセージデータ)。戻り値はありません。
+- `initSynthPoly(context)`: Tone.jsのAudioContextを引数にとり、ポリフォニックなシンセサイザーを初期化します。戻り値として初期化されたシンセサイザーオブジェクトを返します。
+- `setupSelect()`: ドロップダウンリストのUIを初期設定します。戻り値はありません。
+- `onChangeSelect(event)`: ドロップダウンリストの選択が変更された際に呼び出されます。イベントオブジェクトを引数にとり、選択された項目に基づいて処理を行います。戻り値はありません。
+- `addOptionToSelect(selectElement, value, text)`: 指定されたドロップダウンリストにオプション項目を追加します。引数: `selectElement` (HTML Select要素), `value` (オプションの値), `text` (表示テキスト)。戻り値はありません。
+- `removeIndent(text)`: テキストからインデントを削除します。引数: `text` (文字列)。戻り値として整形された文字列を返します。
+- `allNoteOff()`: 現在発音中のすべてのノートを停止します。戻り値はありません。
+- `isParent()`: 現在のページがPostmateの親ページかどうかを判定します。戻り値として真偽値を返します。
+- `isChild()`: 現在のページがPostmateの子ページかどうかを判定します。戻り値として真偽値を返します。
+- `getParentOrChild()`: 現在のページが親か子かを判定し、対応するPostmateインスタンスを返します。戻り値としてPostmateインスタンスを返します。
+- `initOnStartPlaying()`: 再生開始時の初期設定を行います。戻り値はありません。
+- `onStartPlaying()`: 再生開始時に呼び出されるハンドラです。オーディオコンテキストの開始などをトリガーします。戻り値はありません。
+- `getMidiEventName(midiMessage)`: MIDIメッセージのタイプ（例: Note On, Note Off）を示す文字列を取得します。引数: `midiMessage` (MIDIメッセージデータ)。戻り値としてイベント名を表す文字列を返します。
+- `allSoundOff()`: すべての音を停止します（緊急停止など）。戻り値はありません。
+- `isIpad()`: 現在のデバイスがiPadであるかどうかを判定します。戻り値として真偽値を返します。
+- `startTonejs()`: Tone.jsオーディオエンジンを開始します。戻り値はありません。
+- `afterTonejsStart()`: Tone.jsオーディオエンジン開始後に実行される処理です。戻り値はありません。
+- `onSynthReady()`: シンセサイザーが利用可能になった際に呼び出されます。戻り値はありません。
+- `isSynthReady()`: シンセサイザーが準備完了状態にあるかを確認します。戻り値として真偽値を返します。
+- `isAllSynthReady()`: すべてのシンセサイザーが準備完了状態にあるかを確認します。戻り値として真偽値を返します。
+- `checkAllSynthReady()`: すべてのシンセサイザーの準備完了状態をチェックし、必要に応じて処理を進めます。戻り値はありません。
+- `onmousedownOrTouchStart(event)`: マウスボタンの押し下げまたはタッチ開始イベントを処理します。引数: `event` (イベントオブジェクト)。戻り値はありません。
+- `onmousemoveOrTouchMove(event)`: マウス移動またはタッチ移動イベントを処理します。引数: `event` (イベントオブジェクト)。戻り値はありません。
+- `onmouseupOrTouchEnd(event)`: マウスボタンの離上またはタッチ終了イベントを処理します。引数: `event` (イベントオブジェクト)。戻り値はありません。
+- `getMouseNoteNum(event)`: マウスイベントの座標から仮想キーボードのノート番号を取得します。引数: `event` (イベントオブジェクト)。戻り値としてMIDIノート番号を数値で返します。
+- `getKeyboardNoteNum(event)`: キーボードイベントからノート番号を取得します。引数: `event` (イベントオブジェクト)。戻り値としてMIDIノート番号を数値で返します。
+- `cc74(value)`: コントロールチェンジ74（カットオフ周波数）の値を設定します。引数: `value` (0-127の数値)。戻り値はありません。
+- `initCh(channel, synthType)`: 指定されたMIDIチャンネルにシンセサイザーを初期化します。引数: `channel` (数値), `synthType` (シンセの種類を示す文字列)。戻り値はありません。
+- `midifilter(midiMessage)`: 受信したMIDIメッセージをフィルタリングし、変換されたMIDIメッセージを返します。引数: `midiMessage` (MIDIメッセージデータ)。戻り値として変換後のMIDIメッセージデータを返します。
+- `addShiftedNotes(originalNote, shiftSemitones)`: 元のノートから指定された半音数だけシフトしたノートを追加生成します。引数: `originalNote` (数値), `shiftSemitones` (数値)。戻り値としてシフトされたノートの配列を返します。
+- `getShiftedNote(originalNote, shiftSemitones)`: 元のノートから指定された半音数だけシフトしたノートを計算します。引数: `originalNote` (数値), `shiftSemitones` (数値)。戻り値としてシフトされたノート番号を数値で返します。
+- `registerParent(options)`: Postmateの親インスタンスを登録します。引数: `options` (設定オブジェクト)。戻り値として登録された親インスタンスを返します。
+- `registerChild(options)`: Postmateの子インスタンスを登録します。引数: `options` (設定オブジェクト)。戻り値として登録された子インスタンスを返します。
+- `initSampler(context, sampleUrl)`: Tone.jsのAudioContextとサンプル音声のURLを引数にとり、サンプラーを初期化します。戻り値として初期化されたサンプラーオブジェクトを返します。
+- `createWav(buffer, channels, sampleRate)`: オーディオバッファからWAVファイルデータを生成します。引数: `buffer` (Float32Array), `channels` (数値), `sampleRate` (数値)。戻り値としてWAVファイルのBlobを返します。
+- `renderContextAsync(context, duration)`: Tone.jsのOfflineContextを使用して、指定されたAudioContextと期間で音声を非同期にレンダリングします。引数: `context` (Tone.js AudioContext), `duration` (レンダリング期間)。戻り値としてレンダリングされたオーディオバッファのPromiseを返します。
+- `saveWavByDialog(wavData, filename)`: 生成されたWAVデータをブラウザのダウンロードダイアログを通じて保存します。引数: `wavData` (BlobまたはURL), `filename` (文字列)。戻り値はありません。
+- `getFloat32ArrayFromWavFileAsync(file)`: WAVファイルオブジェクトからFloat32Array形式のオーディオデータを非同期で読み込みます。引数: `file` (Fileオブジェクト)。戻り値としてFloat32ArrayのPromiseを返します。
+- `isAutoStartPrerender()`: プリレンダリングを自動で開始するかどうかを判定します。戻り値として真偽値を返します。
+- `autoExecPrerender()`: プリレンダリング処理を自動で実行します。戻り値はありません。
+- `createPreRenderSeqData()`: プリレンダリング用のシーケンスデータを生成します。戻り値としてシーケンスデータオブジェクトを返します。
+- `generatedSoundVisualizer_dispWavs(wavs)`: 生成されたWAVデータ（複数）を視覚化して表示します。引数: `wavs` (WAVデータの配列)。戻り値はありません。
 
 ## 関数呼び出し階層ツリー
 ```
-- アプリケーション起動とPostmateハンドシェイク
-  - registerParent() (postmate-midi.js)
-  - registerChild() (postmate-midi.js)
-  - doHandshake() (postmate-midi.js)
-  - onCompleteHandshakeParent() (postmate-midi.js)
-  - onCompleteHandshakeAllChildren() (postmate-midi.js)
-    - initTonejsByUserAction() (postmate-midi.js)
-      - startTonejs() (postmate-midi.js)
-      - afterTonejsStart() (postmate-midi.js)
-      - initBaseTimeStampAudioContext() (postmate-midi.js)
-    - registerSynth() (postmate-midi.js)
-      - initSynthPoly() (synth-poly.js)
-      - initSampler() (sampler.js)
-      - initSynthSaw() (saw.js)
-        - noteOn() (シンセ/サンプラー)
-        - noteOff() (シンセ/サンプラー)
-        - cutoff() (synth-poly.js)
-        - v2mul() (synth-poly.js)
-        - panpot() (synth-poly.js)
-        - initSynthCommon() (synth-poly.js)
-    - onSynthReady() (postmate-midi.js)
-    - isSynthReady() (postmate-midi.js)
-    - isAllSynthReady() (postmate-midi.js)
-    - checkAllSynthReady() (postmate-midi.js)
-    - checkAllSynthReadyParent() (postmate-midi.js)
-    - registerSeq() (postmate-midi.js)
-    - registerGenerator() (postmate-midi.js)
-    - registerPrerenderer() (postmate-midi.js)
-
-- MIDIメッセージの送受信と処理
-  - sendMidiMessage() (postmate-midi.js, seq.js)
-  - sendMidiMessageFromDevice() (postmate-midi.js)
-  - onmidimessage() (postmate-midi.js)
-    - noteOn() (シンセ/サンプラー)
-    - noteOff() (シンセ/サンプラー)
-    - midifilter() (midifilter.js)
-      - addShiftedNotes() (midifilter.js)
-      - getShiftedNote() (midifilter.js)
-    - cutoff() (synth-poly.js)
-    - allNoteOff() (postmate-midi.js, seq.js)
-    - allSoundOff() (postmate-midi.js, seq.js)
-    - getMidiEventName() (postmate-midi.js, seq.js)
-
-- シーケンサーの再生
-  - seqPlay() (seq.js)
-    - init() (seq.js)
-    - clearTimeouts() (seq.js)
-    - playStep() (seq.js)
-      - procNextTime() (seq.js)
-      - calcStepTimeMsec() (seq.js)
-      - sendNoteOn() (seq.js)
-      - sendNoteOff() (seq.js)
-      - setupNoteOff() (seq.js)
-        - isNoteOn() (seq.js)
-
-- 仮想キーボード/ノブ操作
-  - onmousedownOrTouchStart() (keyboard.js, knob.js)
-    - getMouseNoteNum() (keyboard.js, knob.js)
-    - getKeyboardNoteNum() (keyboard.js, knob.js)
-    - sendNoteOn() (keyboard.js)
-    - cc74() (knob.js)
-  - onmousemoveOrTouchMove() (keyboard.js, knob.js)
-    - cc74() (knob.js)
-  - onmouseupOrTouchEnd() (keyboard.js)
-    - sendNoteOff() (keyboard.js)
-    - sendAllNoteOff() (keyboard.js)
-    - checkAndSend() (keyboard.js)
-  - i2penta() (keyboard.js)
-  - getPenta() (keyboard.js)
-  - semitone2penta() (keyboard.js)
-
-- オーディオプリレンダリングとファイル操作 (experimental20, 21)
-  - registerPrerenderButton() (prerenderer.js)
-  - registerWavImportButton() (prerenderer.js)
-  - isAutoStartPrerender() (prerenderer.js)
-    - autoExecPrerender() (prerenderer.js)
-      - onStartPreRender() (prerenderer.js)
-      - createPreRenderSeqData() (prerenderer.js)
-      - doPreRenderAsync() (prerenderer.js)
-        - schedulingPreRender() (prerenderer.js)
-        - renderContextAsync() (prerenderer.js)
-          - setContextInitSynthAddWav() (prerenderer.js)
-      - sendWavAfterHandshakeAllChildrenSub() (prerenderer.js)
-      - saveWavByDialog() (prerenderer.js)
-        - getWavFileFromFloat32() (postmate-midi.js)
-        - openDownloadDialog() (postmate-midi.js)
-      - afterWavFileUploadAsync() (prerenderer.js)
-        - openDialogForFileUpload() (postmate-midi.js)
-        - readFileContentAsync() (postmate-midi.js)
-        - getFloat32ArrayFromWavFileAsync() (postmate-midi.js)
-        - samplerAddWavs() (prerenderer.js)
-        - updateGnWavs() (prerenderer.js)
-      - registerGeneratedSoundVisualizer() (prerenderer.js)
-        - generatedSoundVisualizer_dispWavs() (prerenderer.js)
-          - getWaveform() (prerenderer.js)
-          - getPeakOfWavs() (prerenderer.js)
-            - getPeakOf1wav() (prerenderer.js)
-            - combineFloat32Array() (prerenderer.js)
-            - getPeakOfSliced() (prerenderer.js)
-          - normalizeWav() (prerenderer.js)
-          - getPeakAbs() (prerenderer.js)
-
-- その他ユーティリティ・ヘルパー (主にpostmate-midi.js内の汎用関数)
-  - onChangeTextarea()
-  - onChangeParentTextarea()
-  - isParent()
-  - isChild()
-  - getParentOrChild()
-  - setupDropDownListForTextareaTemplate()
-  - onChangeSelect()
-  - addOptionToSelect()
-  - removeIndent()
-  - isIpad()
-  - isSmartPhone()
-  - visualizeCurrentSound()
-  - getInitialInterval()
-  - startVisualization()
-  - changeVisualization()
-  - visualizeGeneratedSound()
-  - getMidiOutputIds()
-  - getOutputIds()
-  - getOutputId()
-  - registerPlayButton()
-  - removeButton()
-  - linkPlayButton()
-  - onClickPlayButton()
-  - createWav() (sampler.js, generator.js)
-  - isPreRenderSynth()
-  - isPreRenderSeq()
-  - checkWavOk()
-  - getChNum() (prerenderer.js)
-  - extractNumberFromStr() (prerenderer.js)
+- if (experimental03/postmate-midi.js)
+  - onChangeTextarea (experimental01/child.js)
+    - onCompleteHandshakeParent ()
+      - onChangeParent ()
+      - postmateChild (experimental02/child.js)
+      - initTonejs ()
+      - playTonejs ()
+      - onmidimessage ()
+      - function ()
+      - noteOn ()
+      - initTonejsByUserAction ()
+      - noteOff ()
+      - calcStepTimeMsec ()
+      - createDefaultSynth ()
+      - setupSelect ()
+      - onChangeSelect ()
+      - addOptionToSelect ()
+      - removeIndent ()
+      - allNoteOff ()
+      - sendMidiMessage ()
+      - onChangeParentTextarea ()
+      - isParent ()
+      - isChild ()
+      - getParentOrChild ()
+      - setupDropDownListForTextareaTemplate ()
+      - initOnStartPlaying ()
+      - onStartPlaying ()
+      - getMidiEventName ()
+      - allSoundOff ()
+      - initBaseTimeStampAudioContext ()
+      - isIpad ()
+      - startTonejs ()
+      - afterTonejsStart ()
+      - onSynthReady ()
+      - isSynthReady ()
+      - isAllSynthReady ()
+      - checkAllSynthReady ()
+      - doHandshake (experimental10/postmate-midi.js)
+      - visualizeCurrentSound ()
+      - isSmartPhone ()
+      - getInitialInterval ()
+      - startVisualization ()
+      - changeVisualization ()
+      - initCh ()
+      - getMidiOutputIds ()
+      - getOutputIds ()
+      - getOutputId ()
+      - onAllSynthReady ()
+      - sendMidiMessageFromDevice ()
+      - checkAllSynthReadyParent ()
+      - registerParent ()
+      - registerChild ()
+      - onChangeAnyTextarea ()
+      - registerPlayButton ()
+      - linkPlayButton ()
+      - onClickPlayButton ()
+      - registerSeq ()
+      - createWav ()
+      - onCompleteHandshakeAllChildren ()
+      - visualizeGeneratedSound ()
+      - registerGenerator ()
+      - sendWavAfterHandshakeAllChildren ()
+      - sendToSamplerFromDevice ()
+      - sendToSampler ()
+      - renderContextAsync ()
+      - sendWavAfterHandshakeAllChildrenSub ()
+      - setupTonejsPreRenderer ()
+      - getWaveform ()
+      - getPeakWav ()
+      - normalizeWav ()
+      - getPeakAbs ()
+      - isPreRenderSynth ()
+      - onStartPreRender ()
+      - isPreRenderSeq ()
+      - onCompletePreRenderSeq ()
+      - doPreRenderAsync ()
+      - schedulingPreRender ()
+      - removeButton ()
+      - registerPrerenderButton ()
+      - registerWavImportButton ()
+      - openDialogForFileUpload ()
+      - readFileContentAsync ()
+      - getFloat32ArrayFromWavFileAsync ()
+      - registerGeneratedSoundVisualizer ()
+      - registerSynth ()
+      - registerPrerenderer ()
+      - setContextInitSynthAddWav ()
+      - saveWavByDialog ()
+      - getWavFileFromFloat32 ()
+      - openDownloadDialog ()
+      - updateGnWavs ()
+      - samplerAddWavs ()
+      - checkWavOk ()
+    - postmateParent (experimental02/parent.js)
+  - seqPlay (experimental05/seq.js)
+    - calcNextTime ()
+      - sendNoteOn ()
+      - sendNoteOff ()
+      - init ()
+      - playStep ()
+    - setupNoteOff ()
+      - isNoteOn ()
+      - procNextTime ()
+      - replace ()
+      - clearTimeouts ()
+  - onmousedownOrTouchStart (experimental09/keyboard.js)
+    - onmousemoveOrTouchMove ()
+      - onmouseupOrTouchEnd ()
+      - getMouseNoteNum ()
+      - getKeyboardNoteNum ()
+      - i2penta ()
+      - getPenta ()
+      - semitone2penta ()
+      - sendAllNoteOff ()
+      - checkAndSend ()
+      - cc74 ()
+  - initSynth (experimental07/saw-poly.js)
+    - cutoff ()
+      - v2mul ()
+      - initSynthPoly (experimental06/poly.js)
+      - initSampler (experimental16/sampler/sampler.js)
+      - initSynthCommon ()
+      - panpot ()
+  - isAutoStartPrerender (experimental21/prerenderer.js)
+    - autoExecPrerender ()
+      - createPreRenderSeqData ()
+      - afterWavFileUploadAsync ()
+      - getChNum ()
+      - extractNumberFromStr ()
+      - generatedSoundVisualizer_dispWavs ()
+      - getPeakOfWavs ()
+      - getPeakOf1wav ()
+      - combineFloat32Array ()
+      - getPeakOfSliced ()
+- switch (experimental03/postmate-midi.js)
+- for (experimental07/postmate-midi.js)
+- while (experimental07/seq.js)
 
 ---
-Generated at: 2025-11-11 07:10:12 JST
+Generated at: 2025-12-02 07:08:01 JST

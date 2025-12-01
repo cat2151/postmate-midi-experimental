@@ -1,4 +1,4 @@
-Last updated: 2025-11-11
+Last updated: 2025-12-02
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -496,6 +496,7 @@ Last updated: 2025-11-11
     📜 synth-child.js
     📜 synth-poly.js
 📁 generated-docs/
+🌐 googled947dc864c270e07.html
 
 ## ファイル詳細分析
 **experimental01/child.html** (11行, 340バイト)
@@ -1350,6 +1351,10 @@ Last updated: 2025-11-11
   - 関数: initSynth, initSynthPoly, initSampler, initSynthCommon, noteOn, noteOff, cutoff, v2mul, panpot, for, switch, if, function
   - インポート: tone
 
+**googled947dc864c270e07.html** (1行, 53バイト)
+  - 関数: なし
+  - インポート: なし
+
 ## 関数呼び出し階層
 - if (experimental03/postmate-midi.js)
   - onChangeTextarea (experimental01/child.js)
@@ -1538,6 +1543,7 @@ experimental18/index.css
 experimental19/index.css
 experimental20/index.css
 experimental21/README.md
+googled947dc864c270e07.html
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -1549,4 +1555,4 @@ experimental21/README.md
 
 
 ---
-Generated at: 2025-11-11 07:07:50 JST
+Generated at: 2025-12-02 07:07:03 JST
